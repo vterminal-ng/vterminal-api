@@ -1,0 +1,88 @@
+version: "3"
+
+networks:
+    laravel:
+
+services:
+    nginx:
+        container_name: vterminal-nginx
+        image: nginx:stable-alpine
+        ports:
+            - "2022:80"
+        volumes:
+            - ./:/var/www/html
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - php
+            - mysql
+        networks:
+            - laravel
+
+    mysql:
+        image: mysql:8
+        container_name: vterminal-mysql
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "2306:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: vterminal
+            MYSQL_USER: root_user
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: password
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - laravel
+
+    php:
+        build: ./
+        container_name: vterminal-php
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - laravel
+
+    mailhog:
+        image: "mailhog/mailhog:latest"
+        container_name: vterminal-mailhog
+        ports:
+            - "${FORWARD_MAILHOG_PORT:-2025}:1025"
+            - "${FORWARD_MAILHOG_DASHBOARD_PORT:-9025}:8025"
+        networks:
+            - laravel
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: vterminal-pma
+        links:
+            - mysql
+        environment:
+            PMA_HOST: vterminal-mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: always
+        ports:
+            - 8083:80
+        networks:
+            - laravel
+        depends_on:
+            - php
+            - mysql
+    # ngrok:
+    #     image: wernight/ngrok:latest
+    #     container_name: vterminal-ngrok
+
+    #     ports:
+    #         - 4041:4040
+    #     environment:
+    #         NGROK_AUTH: ${NGROK_AUTH_KEY}
+    #         NGROK_REGION: eu
+    #         NGROK_PROTOCOL: http
+    #         NGROK_PORT: vterminal-nginx:80
+    #     networks:
+    #         - laravel
+    #     depends_on:
+    #         - nginx
