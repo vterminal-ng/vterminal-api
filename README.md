@@ -8,7 +8,8 @@ A Laravel based API that exposes endpoints of the vterminal application.
 -   [Running database migrations](#running-database-migrations)
 -   [Database Dashboard](#database-dashboard)
 -   [Emails](#emails)
--   [API Documentation](#api-documentation)
+-   [Running Composer commands](#running-composer-commands)
+<!-- -   [API Documentation](#api-documentation) -->
 
 ## Dependencies
 
@@ -63,6 +64,15 @@ View the database with phpmyadmin database dashboard at : [http://localhost:8083
 ## Emails
 
 View test emails on mailhog here: [http://localhost:9025](http://localhost:9025).
+
+## Running composer commands
+
+To avoid dependency or versioning issues with the composer you have installed locally, we have added `composer` into the docker environment. To run composer in the container use the following
+
+```
+docker exec vterminal-php composer [COMMAND] [ARGS]
+docker exec vterminal-php composer --version
+```
 
 <!-- ## API Documentation
 
