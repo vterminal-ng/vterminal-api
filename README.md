@@ -49,7 +49,7 @@ Before running the migrations, make sure you have started the docker container b
 To run the migrations, run the following command.
 
 ```
-docker exec shawarma_jungle-php php artisan migrate
+docker exec vterminal-php php artisan migrate
 ```
 
 ## Database Dashboard
