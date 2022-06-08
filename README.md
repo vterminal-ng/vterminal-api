@@ -8,7 +8,8 @@ A Laravel based API that exposes endpoints of the vterminal application.
 -   [Running database migrations](#running-database-migrations)
 -   [Database Dashboard](#database-dashboard)
 -   [Emails](#emails)
--   [API Documentation](#api-documentation)
+-   [Running Composer commands](#running-composer-commands)
+<!-- -   [API Documentation](#api-documentation) -->
 
 ## Dependencies
 
@@ -28,17 +29,19 @@ git clone https://github.com/vterminal-ng/vterminal-api.git
 
 From inside the `vterminal-api` folder run the following command.
 
-```
-docker exec vterminal-php composer run project-setup-development
-```
-
-Now, to run the project in a docker environment, run the following command.
+To run the project in a docker environment, run the following command.
 
 ```
 docker-compose up -d
 ```
 
 The first time you run the above command it takes a few minutes, but subsequent runs are quick.
+
+Install composer dependencies from the docker environment with the following command:
+
+```
+docker exec vterminal-php composer run project-setup-development
+```
 
 Once the application's Docker containers have been started, you can access the application in your web browser at: [http://localhost:2022](http://localhost:2022).
 
@@ -63,6 +66,15 @@ View the database with phpmyadmin database dashboard at : [http://localhost:8083
 ## Emails
 
 View test emails on mailhog here: [http://localhost:9025](http://localhost:9025).
+
+## Running composer commands
+
+To avoid dependency or versioning issues with the composer you have installed locally, we have added `composer` into the docker environment. To run composer in the container use the following
+
+```
+docker exec vterminal-php composer [COMMAND] [ARGS]
+docker exec vterminal-php composer --version
+```
 
 <!-- ## API Documentation
 
