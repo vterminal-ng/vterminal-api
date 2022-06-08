@@ -29,17 +29,19 @@ git clone https://github.com/vterminal-ng/vterminal-api.git
 
 From inside the `vterminal-api` folder run the following command.
 
-```
-docker exec vterminal-php composer run project-setup-development
-```
-
-Now, to run the project in a docker environment, run the following command.
+To run the project in a docker environment, run the following command.
 
 ```
 docker-compose up -d
 ```
 
 The first time you run the above command it takes a few minutes, but subsequent runs are quick.
+
+Install composer dependencies from the docker environment with the following command:
+
+```
+docker exec vterminal-php composer run project-setup-development
+```
 
 Once the application's Docker containers have been started, you can access the application in your web browser at: [http://localhost:2022](http://localhost:2022).
 
