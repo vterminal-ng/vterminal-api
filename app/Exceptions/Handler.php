@@ -4,9 +4,18 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Traits\ApiResponder;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponder;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -46,5 +55,53 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     *
+     * @throws \Throwable
+     */
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof HttpException) {
+            $code = $exception->getStatusCode();
+            $message = Response::$statusTexts[$code];
+
+            return $this->failureResponse($message, $code);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return $this->failureResponse("You are not authorized to access this resource", Response::HTTP_FORBIDDEN);
+        }
+
+        if ($exception instanceof ModelNotFoundException) {
+            $model = strtolower(class_basename($exception->getModel()));
+
+            return $this->failureResponse("Does not exist any instance of {$model} with the given id", Response::HTTP_NOT_FOUND);
+        }
+
+        if ($exception instanceof AuthenticationException) {
+
+            return $this->failureResponse("You are not logged in", Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($exception instanceof ValidationException) {
+            $errors = $exception->validator->errors()->getMessages();
+
+            return $this->failureResponse($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if (config('app.env') == 'production') {
+            if ($exception instanceof Exception) {
+                return $this->failureResponse("An error occurred!",  Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        return parent::render($request, $exception);
     }
 }
