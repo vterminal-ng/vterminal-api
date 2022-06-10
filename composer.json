@@ -51,7 +51,8 @@
         "project-setup-development": [
             "@composer install --ignore-platform-reqs",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate --ansi"
+            "@php artisan key:generate --ansi",
+            "@php artisan storage:link"
         ]
     },
     "extra": {
