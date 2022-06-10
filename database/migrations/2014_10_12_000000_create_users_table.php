@@ -18,10 +18,8 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone_number')->unique()->nullable();
+            $table->string('phone_number')->unique();
             $table->dateTime('phone_number_verified_at')->nullable();
-            $table->integer('otp')->nullable();
-            $table->dateTime('otp_expires_at')->nullable();
             $table->enum('role', ['customer', 'merchant', 'admin'])->default('customer');
             $table->rememberToken();
             $table->timestamps();
