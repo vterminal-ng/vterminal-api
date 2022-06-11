@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\TermiiService;
 use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,8 @@ class AuthController extends Controller
         // dd($user);
 
         $verificationResponse = $this->termiiService->verifyOtp($user, $request->pin_code);
+
+        $user->phone_number_verified_at = Carbon::now();
 
         return $this->successResponse("Verified", $verificationResponse);
     }
