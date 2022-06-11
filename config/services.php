@@ -31,4 +31,68 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'termii' => [
+        /**
+         * Your API key (It can be found on your Termii dashboard).
+         */
+        'key' => env('TERMII_API_KEY'),
+
+        /**
+         * Your secret key (It can be found on your Termii dashboard).
+         */
+        'secret' => env('TERMII_SECRET_KEY'),
+
+        /**
+         * Termii API Base URL.
+         */
+        'base_url' => env('TERMII_BASE_URL'),
+
+        /**
+         * Enum: "NUMERIC" "ALPHANUMERIC"
+         * Type of message that will be generated and sent as part of the OTP message. You can set message type to numeric or alphanumeric
+         */
+        "message_type" => "NUMERIC",
+
+        /**
+         * Represents a sender ID which can be alphanumeric or numeric. Alphanumeric sender ID length should be between 3 and 11 characters (Example:CompanyName)
+         */
+        "from" => "VTerminal",
+
+        /**
+         * This is the route through which the message is sent. It is either dnd, WhatsApp, or generic
+         */
+        "channel" => "dnd",
+
+        /**
+         * Represents the number of times the PIN can be attempted before expiration. It has a minimum of one attempt
+         */
+        "pin_attempts" => 10,
+
+        /**
+         * Represents how long the PIN is valid before expiration. The time is in minutes. The minimum time value is 0 and the maximum time value is 60
+         */
+        "pin_time_to_live" =>  30,
+
+        /**
+         * The length of the PIN code.It has a minimum of 4 and maximum of 8.
+         */
+        "pin_length" => 6,
+
+        /**
+         * PIN placeholder. Right before sending the message, PIN code placeholder will be replaced with generate PIN code.
+         */
+        "pin_placeholder" => "< 1234 >",
+
+        /**
+         * Text of a message that would be sent to the destination phone number
+         */
+        "message_text" => "Your VTerminal One-Time-Password is: < 1234 >",
+
+        /**
+         * Your API key (It can be found on your Termii dashboard).
+         */
+        "pin_type" => "NUMERIC",
+    ],
+
+
 ];
