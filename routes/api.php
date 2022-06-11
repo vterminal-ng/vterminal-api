@@ -20,3 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/register', [AuthController::class, 'register']);
+
+// AUTHENTICATED ROUTES
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+});
