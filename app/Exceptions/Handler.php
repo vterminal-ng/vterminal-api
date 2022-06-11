@@ -6,6 +6,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use App\Traits\ApiResponder;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -68,6 +69,32 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof ClientException) {
+            $errorJson = json_decode((string) $exception->getResponse()->getBody()->getContents());
+
+            $code = $exception->getCode();
+            switch ($code) {
+                case Response::HTTP_BAD_REQUEST:
+                    $message = $errorJson->message;
+                    break;
+                case Response::HTTP_UNPROCESSABLE_ENTITY:
+                    $message = $errorJson->errors;
+                    break;
+
+                default:
+                    $message = $errorJson->message;
+                    break;
+            }
+            return $this->failureResponse($message, $code);
+        }
+
+        // if ($exception instanceof ClientException) {
+        //     $errorJson = json_decode((string) $exception->getResponse()->getBody()->getContents());
+        //     $message = $errorJson->message;
+        //     $code = $exception->getCode();
+        //     return $this->failureResponse($message, $code);
+        // }
+
         if ($exception instanceof HttpException) {
             $code = $exception->getStatusCode();
             $message = Response::$statusTexts[$code];
