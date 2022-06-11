@@ -68,8 +68,7 @@ class TermiiService
     {
         $response = $this->performRequest('POST', '/api/sms/otp/verify', [
             "api_key" => config('services.termii.key'),
-            "pin_id" => "c8dcd048-5e7f-4347-8c89-4470c3af0b",
-            // "pin_id" => $user->otp->pin_id,
+            "pin_id" => $user->otp->pin_id,
             "pin" => $pinCode
         ]);
 
