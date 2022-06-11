@@ -73,6 +73,9 @@ class TermiiService
             "pin" => $pinCode
         ]);
 
+        // delete previous OTP data if any
+        $user->otp->delete();
+
         return json_decode((string) $response);
     }
 }
