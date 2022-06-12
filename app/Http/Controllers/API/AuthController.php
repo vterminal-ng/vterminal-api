@@ -68,7 +68,7 @@ class AuthController extends Controller
         // find user with email
         $user = User::where('phone_number', $request->phoneNumber)->first();
 
-        if(!$user || !$request->phoneNumber) {
+        if(!$user || !Hash::check($request->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Incorrect login credentials'
