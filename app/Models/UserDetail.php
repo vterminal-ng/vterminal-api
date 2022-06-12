@@ -19,4 +19,8 @@ class UserDetail extends Model
         'referral_code',
         'referrer'
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
