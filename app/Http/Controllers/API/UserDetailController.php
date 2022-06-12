@@ -47,25 +47,26 @@ class UserDetailController extends Controller
         );
     }
 
-    public function read(User $user)
+    public function read()
     {
-        $userId = auth()->id();
+        // $userId = auth()->id();
 
-        $userDetails = UserDetail::where('user_id', '=', $userId)->first();
+        // $userDetails = UserDetail::where('user_id', '=', $userId)->first();
 
-        if (!$userDetails) {
-            return $this->failureResponse(
-                "User Not Found",
-                Response::HTTP_NOT_FOUND
-            );
-        }
+        // if (!$userDetails) {
+        //     return $this->failureResponse(
+        //         "User Not Found",
+        //         Response::HTTP_NOT_FOUND
+        //     );
+        // }
+
+        $user = auth()->user();
 
         return $this->successResponse(
             "Details Found",
             [
-                "user_details" => $userDetails
+                "userDetails" => $user->UserDetail
             ],
-            Response::HTTP_FOUND
         );
     }
 
