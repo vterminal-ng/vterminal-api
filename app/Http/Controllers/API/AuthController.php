@@ -59,6 +59,37 @@ class AuthController extends Controller
         );
     }
 
+    function login(Request $request) {
+        $request->validate([
+            'phoneNumber' => ['required', 'string', 'max:15'],
+            'password' => ['required'],
+        ]);
+
+        // find user with email
+        $user = User::where('phone_number', $request->phoneNumber)->first();
+
+        if(!$user || !$request->phoneNumber) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect login credentials'
+            ]);
+        }
+
+        // delete any existing token for the user
+        $user->tokens()->delete();
+
+        // create a new token for the user
+        $token = $user->createToken("login")->plainTextToken;
+
+        return $this->successResponse(
+            "Login Successful",
+            [
+                "token" => $token,
+            ],
+            Response::HTTP_OK
+        );
+    }
+
     public function verifyOtp(Request $request)
     {
         $request->validate([
