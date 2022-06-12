@@ -20,7 +20,8 @@ class UserDetail extends Model
         'referrer'
     ];
 
-    public function User() {
+    public function User()
+    {
         return $this->belongsTo(User::class);
     }
 }

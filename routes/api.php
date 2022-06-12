@@ -30,8 +30,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //Add user details
     Route::post('user/details/{user}', [UserDetailController::class, 'create']);
-     //Add user details
+    //Add user details
     Route::get('user/details/{user}', [UserDetailController::class, 'read']);
+
+    Route::patch('users/user-details/', [UserDetailController::class, 'update']);
+    Route::put('users/user-details/', [UserDetailController::class, 'update']);
+
     // Create Merchant
     Route::post('user/merchant-details', [MerchantDetailController::class, 'create']);
     // View Merchant Details
