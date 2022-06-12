@@ -13,7 +13,7 @@ class UserDetailController extends Controller
 {
     use ApiResponder;
     
-    public function create (Request $request) {
+    public function create (Request $request, User $user) {
         $request->validate([
             'firstName' => ['required', 'string', 'min:3'],
             'lastName' => ['required', 'string', 'min:3'],
@@ -24,8 +24,10 @@ class UserDetailController extends Controller
             'referrer' => ['string']
         ]);
 
+        $userId = auth()->id();
+        
         $user_details = UserDetail::create([
-            'user_id' => auth('sanctum')->user()->id,
+            'user_id' => $userId,
             'first_name' => $request->firstName,
             'last_name' => $request->lastName,
             'other_names' => $request->otherNames,
@@ -44,10 +46,10 @@ class UserDetailController extends Controller
         );
     }
 
-    public function read (Request $request) {
-        $userId = auth('sanctum')->user()->id;
+    public function read (User $user) {
+        $userId = auth()->id();
 
-        $userDetails = UserDetail::where('user_id','=', $userId)->get();
+        $userDetails = UserDetail::where('user_id','=', $userId)->first();
 
         if(!$userDetails) {
             return $this->failureResponse(
@@ -75,7 +77,7 @@ class UserDetailController extends Controller
             'gender' => ['required', 'in:male,female']
         ]);
 
-        $userId = auth('sanctum')->user()->id;
+        $userId = auth()->id();
 
         $details = UserDetail::where('user_id','=', $userId)->get();
 

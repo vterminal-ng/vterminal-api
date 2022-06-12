@@ -17,4 +17,8 @@ class MerchantDetail extends Model
         'business_verified',
         'has_physical_location'
     ];
+
+    public function User() {
+        return $this->belongsTo(User::class);
+    }
 }

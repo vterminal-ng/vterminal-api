@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('business_state');
             $table->string('business_address');
             $table->dateTime('business_verified')->nullable();
-            $table->boolean('has_physical_locaiton')->default(false);
+            $table->boolean('has_physical_location')->default(false);
 
             $table->timestamps();
         });
