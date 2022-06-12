@@ -49,7 +49,7 @@ class User extends Authenticatable
         return $this->hasOne(Otp::class);
     }
 
-    public function userDetails() {
+    public function UserDetail() {
         return $this->hasOne(UserDetail::class);
     }
 }

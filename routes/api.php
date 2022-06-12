@@ -30,5 +30,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //Add user details
     Route::post('user/details', [UserDetailController::class, 'create']);
      //Add user details
-     Route::get('user/details', [UserDetailController::class, 'read']);
+    Route::get('user/details', [UserDetailController::class, 'read']);
 });
