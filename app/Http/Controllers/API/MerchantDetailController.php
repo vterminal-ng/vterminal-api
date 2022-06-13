@@ -51,6 +51,12 @@ class MerchantDetailController extends Controller
         // $merchant_details = MerchantDetail::where('user_id','=', $userId)->first();
 
         $user = auth()->user();
+        if(!$user->MerchantDetail) {
+            return $this->failureResponse(
+                "No Merchant Details",
+                Response::HTTP_NOT_FOUND
+            );
+        }
         return $this->successResponse(
             "Merchant Found",
             [
@@ -95,7 +101,8 @@ class MerchantDetailController extends Controller
             "Merchant Details Updated",
             [
                 'merchantDetail' => new MerchantDetailResource($merchantDetail)
-            ]
+            ],
+            Response::HTTP_ACCEPTED
         );
     }
 }
