@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class UserDetailController extends Controller
         return $this->successResponse(
             "User Details Added Successfully",
             [
-                "userDetails" => $userDetails
+                "userDetails" => new UserDetailResource($userDetails)
             ],
             Response::HTTP_CREATED
         );
@@ -65,12 +66,18 @@ class UserDetailController extends Controller
         // }
 
         $user = auth()->user();
-
+        if(!$user->UserDetail) {
+            return $this->failureResponse(
+                "No User Details",
+                Response::HTTP_NOT_FOUND
+            );
+        }
         return $this->successResponse(
             "Details Found",
             [
-                "userDetails" => $user->UserDetail
+                "userDetails" => new UserDetailResource($user->UserDetail)
             ],
+            Response::HTTP_FOUND
         );
     }
 
@@ -128,7 +135,7 @@ class UserDetailController extends Controller
         return $this->successResponse(
             "User Details Updated",
             [
-                'userDetail' => $userDetail
+                'userDetail' => new UserDetailResource($userDetail)
             ]
         );
     }
