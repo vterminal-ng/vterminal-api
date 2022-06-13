@@ -27,10 +27,18 @@ class UserDetailController extends Controller
             'referrer' => ['string']
         ]);
 
-        User::findOrFail($request->user_id);
+        $user = User::findOrFail($request->user_id);
 
+        // Check if auth()->id is same as user_id
+        // Then return failure response if not the same
+        if(!(auth()->id() === $user->id)) {
+            return $this->failureResponse(
+                "You are not authorized to access this resource",
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
         // make sure that the user_id provided in the request belongs to the currently authenticated user 
-        $this->authorize('create', $request->user_id);
+        //$this->authorize('create', $request->user_id);
 
         $userDetails = UserDetail::create([
             'user_id' => $request->user_id,
