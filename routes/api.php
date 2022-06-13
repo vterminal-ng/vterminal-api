@@ -28,9 +28,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 
-    //Add user details
-    Route::post('user/details/{user}', [UserDetailController::class, 'create']);
-
+    //Routes to User details CRUD functions
+    Route::post('users/user-details', [UserDetailController::class, 'create']);
     Route::get('users/user-details', [UserDetailController::class, 'read']);
     Route::patch('users/user-details', [UserDetailController::class, 'update']);
     Route::put('users/user-details', [UserDetailController::class, 'update']);

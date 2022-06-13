@@ -13,35 +13,39 @@ class UserDetailController extends Controller
 {
     use ApiResponder;
 
-    public function create(Request $request, User $user)
+    public function create(Request $request)
     {
         $request->validate([
-            'firstName' => ['required', 'string', 'min:3'],
-            'lastName' => ['required', 'string', 'min:3'],
-            'otherNames' => ['string', 'min:3'],
-            'dateOfBirth' => ['required'],
+            'user_id' => ['required', 'integer', 'unique:user_details'],
+            'first_name' => ['required', 'string', 'min:3'],
+            'last_name' => ['required', 'string', 'min:3'],
+            'other_names' => ['string', 'min:3'],
+            'date_of_birth' => ['required'],
             'gender' => ['required', 'in:male,female'],
-            'referralCode' => ['string'],
+            'referral_code' => ['string'],
             'referrer' => ['string']
         ]);
 
-        $userId = auth()->id();
+        User::findOrFail($request->user_id);
 
-        $user_details = UserDetail::create([
-            'user_id' => $userId,
-            'first_name' => $request->firstName,
-            'last_name' => $request->lastName,
-            'other_names' => $request->otherNames,
-            'date_of_birth' => $request->dateOfBirth,
+        // make sure that the user_id provided in the request belongs to the currently authenticated user 
+        $this->authorize('create', $request->user_id);
+
+        $userDetails = UserDetail::create([
+            'user_id' => $request->user_id,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'other_names' => $request->other_names,
+            'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
-            'referral_code' => $request->referralCode,
+            'referral_code' => $request->referral_code,
             'referrer' => $request->referrer,
         ]);
 
         return $this->successResponse(
             "User Details Added Successfully",
             [
-                "user_details" => $user_details
+                "userDetails" => $userDetails
             ],
             Response::HTTP_CREATED
         );
@@ -123,8 +127,9 @@ class UserDetailController extends Controller
 
         return $this->successResponse(
             "User Details Updated",
-            $userDetail,
-            Response::HTTP_OK
+            [
+                'userDetail' => $userDetail
+            ]
         );
     }
 }
