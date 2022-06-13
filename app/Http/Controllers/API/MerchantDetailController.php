@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MerchantDetailResource;
 use App\Models\MerchantDetail;
 use App\Models\User;
 use App\Traits\ApiResponder;
@@ -38,7 +39,7 @@ class MerchantDetailController extends Controller
         return $this->successResponse(
             "Merchant Successfully Created",
             [
-                "merchantDetails" => $merchantDetails 
+                "merchantDetails" => new MerchantDetailResource($merchantDetails)
             ],
             Response::HTTP_CREATED
         );
@@ -53,7 +54,7 @@ class MerchantDetailController extends Controller
         return $this->successResponse(
             "Merchant Found",
             [
-                "merchant_details" => $user->MerchantDetail
+                "merchant_details" => new MerchantDetailResource($user->MerchantDetail)
             ],
             Response::HTTP_FOUND
         );
@@ -93,7 +94,7 @@ class MerchantDetailController extends Controller
         return $this->successResponse(
             "Merchant Details Updated",
             [
-                'merchantDetail' => $merchantDetail
+                'merchantDetail' => new MerchantDetailResource($merchantDetail)
             ]
         );
     }
