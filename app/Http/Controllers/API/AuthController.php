@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\TermiiService;
 use App\Traits\ApiResponder;
@@ -51,7 +52,7 @@ class AuthController extends Controller
         return $this->successResponse(
             "Registeration Successful",
             [
-                "user" => $user,
+                "user" => new UserResource($user),
                 "otp" => $otpData,
                 "token" => $token,
             ],
