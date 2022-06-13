@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\MeController;
 use App\Http\Controllers\API\MerchantDetailController;
 use App\Http\Controllers\API\UserDetailController;
 use Illuminate\Http\Request;
@@ -17,10 +18,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
+// PUBLIC ROUTES
+Route::get('me', [MeController::class, 'getMe']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

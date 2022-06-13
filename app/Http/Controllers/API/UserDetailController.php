@@ -66,7 +66,7 @@ class UserDetailController extends Controller
         // }
 
         $user = auth()->user();
-        if(!$user->UserDetail) {
+        if (!$user->userDetail) {
             return $this->failureResponse(
                 "No User Details",
                 Response::HTTP_NOT_FOUND
@@ -75,7 +75,7 @@ class UserDetailController extends Controller
         return $this->successResponse(
             "Details Found",
             [
-                "userDetails" => new UserDetailResource($user->UserDetail)
+                "userDetails" => new UserDetailResource($user->userDetail)
             ],
             Response::HTTP_FOUND
         );
@@ -117,7 +117,7 @@ class UserDetailController extends Controller
         // using the relationship function between User and userDetail model to update the user details
         //  request->only() takes the an array of values we want to pick from the resquest
         $userDetail = $user
-            ->UserDetail
+            ->userDetail
             ->fill($request->only(
                 [
                     'first_name',

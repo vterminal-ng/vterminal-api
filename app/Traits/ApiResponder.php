@@ -24,4 +24,15 @@ trait ApiResponder
             'code' => $code,
         ], $code);
     }
+
+    public static function meEndpointResponse($user)
+    {
+        $isLoggedIn = $user == null ? false : true;
+        return response()->json(
+            [
+                "logged_in" => $isLoggedIn,
+                "user" => $user,
+            ],
+        );
+    }
 }
