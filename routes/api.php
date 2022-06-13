@@ -34,8 +34,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('users/user-details', [UserDetailController::class, 'update']);
     Route::put('users/user-details', [UserDetailController::class, 'update']);
 
-    // Create Merchant
-    Route::post('user/merchant-details', [MerchantDetailController::class, 'create']);
-    // View Merchant Details
-    Route::get('user/merchant-details', [MerchantDetailController::class, 'read']);
+    // CRUD functions routes for Merchant Details
+    Route::post('users/merchant-details', [MerchantDetailController::class, 'create']);
+    Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
+    Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
+    Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
 });

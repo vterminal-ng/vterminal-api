@@ -15,16 +15,20 @@ class MerchantDetailController extends Controller
 
     public function create(Request $request) {
         $request->validate([
+            'user_id' => ['required', 'integer', 'unique:merchant_details'],
             'business_name' => ['required', 'string', 'min:3', 'unique:merchant_details,business_name'],
             'business_state' => ['required', 'alpha', 'min:1'],
             'business_address' => ['required', 'string', 'min:5'],
             'has_physical_location' => ['required']
         ]);
 
-        $userId = auth()->id();
+        User::findOrFail($request->user_id);
+        
+        // make sure that the user_id provided in the request belongs to the currently authenticated user 
+        $this->authorize('create', $request->user_id);
 
-        MerchantDetail::create([
-            'user_id' => $userId,
+        $merchantDetails = MerchantDetail::create([
+            'user_id' => $request->user_id,
             'business_name' => $request->business_name,
             'business_state' => $request->business_state,
             'business_address' => $request->business_address,
@@ -33,21 +37,64 @@ class MerchantDetailController extends Controller
 
         return $this->successResponse(
             "Merchant Successfully Created",
+            [
+                "merchantDetails" => $merchantDetails 
+            ],
             Response::HTTP_CREATED
         );
     }
 
     public function read() {
-        $userId = auth()->id();
+        // $userId = auth()->id();
 
-        $merchant_details = MerchantDetail::where('user_id','=', $userId)->first();
+        // $merchant_details = MerchantDetail::where('user_id','=', $userId)->first();
+
+        $user = auth()->user();
         return $this->successResponse(
             "Merchant Found",
             [
-                "merchant_details" => $merchant_details
+                "merchant_details" => $user->MerchantDetail
             ],
             Response::HTTP_FOUND
         );
 
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'business_name' => ['string', 'min:3', 'unique:merchant_details,business_name'],
+            'business_state' => ['alpha', 'min:1'],
+            'business_address' => ['string', 'min:5'],
+            'has_physical_location' => []
+        ]);
+
+        // get authenticated user instance
+        $user = auth()->user();
+        // dd($user);
+
+        // using the relationship function between User and userDetail model to update the user details
+        //  request->only() takes the an array of values we want to pick from the resquest
+        $merchantDetail = $user
+            ->MerchantDetail
+            ->fill($request->only(
+                [
+                    'business_name',
+                    'business_state',
+                    'business_address',
+                    'has_physical_location'
+                ]
+            ));
+
+        if ($merchantDetail->isClean()) return $this->failureResponse('At least one value must change', Response::HTTP_NOT_ACCEPTABLE);
+
+        $merchantDetail->save();
+
+        return $this->successResponse(
+            "Merchant Details Updated",
+            [
+                'merchantDetail' => $merchantDetail
+            ]
+        );
     }
 }
