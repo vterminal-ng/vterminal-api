@@ -18,7 +18,8 @@ class MerchantDetail extends Model
         'has_physical_location'
     ];
 
-    public function User() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }
