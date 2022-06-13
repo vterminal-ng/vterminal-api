@@ -16,17 +16,25 @@ class MerchantDetailController extends Controller
 
     public function create(Request $request) {
         $request->validate([
-            'user_id' => ['required', 'integer', 'unique:merchant_details'],
+            'user_id' => ['required', 'integer'],
             'business_name' => ['required', 'string', 'min:3', 'unique:merchant_details,business_name'],
             'business_state' => ['required', 'alpha', 'min:1'],
             'business_address' => ['required', 'string', 'min:5'],
             'has_physical_location' => ['required']
         ]);
 
-        User::findOrFail($request->user_id);
-        
+        $user = User::findOrFail($request->user_id);
+
+        // Check if auth()->id is same as user_id
+        // Then return failure response if not the same
+        if(!(auth()->id() === $user->id)) {
+            return $this->failureResponse(
+                "You are not authorized to access this resource",
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
         // make sure that the user_id provided in the request belongs to the currently authenticated user 
-        $this->authorize('create', $request->user_id);
+        //$this->authorize('create', $request->user_id);
 
         $merchantDetails = MerchantDetail::create([
             'user_id' => $request->user_id,
