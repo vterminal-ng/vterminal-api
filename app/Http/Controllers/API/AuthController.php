@@ -31,6 +31,7 @@ class AuthController extends Controller
         // validate the request
         $request->validate([
             'phone_number' => ['required', 'string', 'max:15', 'unique:users'],
+            'role' => ['string', 'in:customer,merchant'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -38,6 +39,7 @@ class AuthController extends Controller
         // create the user
         $user = User::create([
             'phone_number' => $request->phone_number,
+            'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
 
@@ -60,7 +62,8 @@ class AuthController extends Controller
         );
     }
 
-    function login(Request $request) {
+    function login(Request $request)
+    {
         $request->validate([
             'phoneNumber' => ['required', 'string', 'max:15'],
             'password' => ['required'],
@@ -69,7 +72,7 @@ class AuthController extends Controller
         // find user with email
         $user = User::where('phone_number', $request->phoneNumber)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Incorrect login credentials'
