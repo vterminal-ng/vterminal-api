@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Rules\CheckCurrentAndNewPassword;
+use App\Rules\CheckCurrentPassword;
 use App\Services\TermiiService;
 use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
@@ -94,6 +96,30 @@ class AuthController extends Controller
         );
     }
 
+    public function changePassword(Request $request) {
+        $request->validate([
+            'currentPassword' => ['required', new CheckCurrentPassword()],
+            'newPassword' => ['required', 'min:6', new CheckCurrentAndNewPassword(), 'confirmed'],
+        ]);
+
+        $user = auth()->user();
+
+        $user->update([
+            'password' => Hash::make($request->newPassword)
+        ]);
+
+        $user->tokens()->delete();
+
+        $token = $user->createToken("default")->plainTextToken;
+
+        return $this->successResponse("Password Updated Successfuly",
+            [
+                "token" => $token
+            ]
+        );
+
+    }
+
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -109,4 +135,5 @@ class AuthController extends Controller
 
         return $this->successResponse("Verified", $verificationResponse);
     }
+
 }

@@ -26,6 +26,8 @@ Route::post('/login', [AuthController::class, 'login']);
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+    //Update password
+    Route::post('users/password-update', [AuthController::class, 'changePassword']);
 
     //Routes to User details CRUD functions
     Route::post('users/user-details', [UserDetailController::class, 'create']);
