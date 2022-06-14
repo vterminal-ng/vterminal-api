@@ -15,13 +15,11 @@ class MerchantDetailResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
-            "user_id" => $this->User->id,
-            "name" => $this->business_name,
+            "buisnessName" => $this->business_name,
             "state" => $this->business_state,
             "address" => $this->business_adress,
-            "verified_date" => $this->business_verified,
-            "has_physical_location" => $this->has_physical_location
+            "verifiedDate" => $this->business_verified,
+            "hasPhysicalLocation" => $this->has_physical_location
         ];
     }
 }

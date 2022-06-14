@@ -14,10 +14,30 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            "phone_number" => $this->phone_number,
-            "email_address" => $this->email,
-            "role" => $this->role
+        $user = [
+            "id" => $this->id,
+            "phoneNumber" => $this->phone_number,
+            "emailAddress" => $this->email,
+            "role" => $this->role,
+            "hasVerifiedPhone" => $this->hasVerifiedPhone(),
+            "hasVerifiedEmail" => $this->hasVerifiedEmail(),
+            "userDetails" => new UserDetailResource($this->userDetail),
         ];
+
+        if ($this->isMerchant()) {
+            $user['merchantDetails'] = new MerchantDetailResource($this->merchantDetail);
+        }
+
+        $user['createDates'] = [
+            'creadtedAtHuman' => $this->created_at->diffForHumans(),
+            'creadtedAt' => $this->created_at,
+        ];
+
+        $user['updateDates'] = [
+            'updatedAtHuman' => $this->updated_at->diffForHumans(),
+            'updatedAt' => $this->updated_at,
+        ];
+
+        return $user;
     }
 }
