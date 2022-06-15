@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\MeController;
 use App\Http\Controllers\API\MerchantDetailController;
+use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('me', [MeController::class, 'getMe']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/password/email', [ResetPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {

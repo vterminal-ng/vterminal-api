@@ -52,11 +52,15 @@ return [
     | the Artisan command line tool. You should set this to the root of
     | your application so that it is used when running Artisan tasks.
     |
+    |The CLIENT_URL is the url to our front end application
+    |
     */
 
     'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL'),
+
+    'client_url' => env('CLIENT_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
