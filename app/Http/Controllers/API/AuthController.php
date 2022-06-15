@@ -67,7 +67,7 @@ class AuthController extends Controller
     function login(Request $request)
     {
         $request->validate([
-            'phoneNumber' => ['required', 'string', 'max:15'],
+            'phone_number' => ['required', 'string', 'max:15'],
             'password' => ['required'],
         ]);
 
@@ -96,10 +96,11 @@ class AuthController extends Controller
         );
     }
 
-    public function changePassword(Request $request) {
+    public function changePassword(Request $request)
+    {
         $request->validate([
-            'currentPassword' => ['required', new CheckCurrentPassword()],
-            'newPassword' => ['required', 'min:6', new CheckCurrentAndNewPassword(), 'confirmed'],
+            'current_password' => ['required', new CheckCurrentPassword()],
+            'new_password' => ['required', 'min:6', new CheckCurrentAndNewPassword(), 'confirmed'],
         ]);
 
         $user = auth()->user();
@@ -112,12 +113,12 @@ class AuthController extends Controller
 
         $token = $user->createToken("default")->plainTextToken;
 
-        return $this->successResponse("Password Updated Successfuly",
+        return $this->successResponse(
+            "Password Updated Successfuly",
             [
                 "token" => $token
             ]
         );
-
     }
 
     public function verifyOtp(Request $request)
@@ -135,5 +136,4 @@ class AuthController extends Controller
 
         return $this->successResponse("Verified", $verificationResponse);
     }
-
 }
