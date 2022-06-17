@@ -61,7 +61,7 @@ return [
         /**
          * This is the route through which the message is sent. It is either dnd, WhatsApp, or generic
          */
-        "channel" => "dnd",
+        "channel" => env('TERMII_SMS_CHANNEL', 'generic'),
 
         /**
          * Represents the number of times the PIN can be attempted before expiration. It has a minimum of one attempt
