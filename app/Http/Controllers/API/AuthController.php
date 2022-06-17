@@ -54,14 +54,14 @@ class AuthController extends Controller
         $token = $user->createToken("access Token")->plainTextToken;
 
         // send otp
-        $otpData = $this->termiiService->sendOtp($user);
+        // $otpData = $this->termiiService->sendOtp($user);
 
         // return the token
         return $this->successResponse(
             "Registeration Successful",
             [
                 "user" => new UserResource($user),
-                "otp" => $otpData,
+                // "otp" => $otpData,
                 "token" => $token,
             ],
             Response::HTTP_CREATED
