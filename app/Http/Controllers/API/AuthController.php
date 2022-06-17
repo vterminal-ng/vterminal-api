@@ -37,13 +37,17 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $params = [
+            'phone_number' => $request->phone_number,
+            'password' => Hash::make($request->password),
+        ];
+
+        if ($request->has('role')) {
+            $params['role'] = $request->role;
+        }
         // dd($request->all());
         // create the user
-        $user = User::create([
-            'phone_number' => $request->phone_number,
-            'role' => $request->role,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = User::create($params);
 
 
         //create token for user
