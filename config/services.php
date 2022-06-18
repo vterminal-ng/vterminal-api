@@ -92,6 +92,11 @@ return [
          * Your API key (It can be found on your Termii dashboard).
          */
         "pin_type" => "NUMERIC",
+
+        /**
+         * The kind of message that is sent, which is a plain message.
+         */
+        "sms_type" => "plain",
     ],
 
 
