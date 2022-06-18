@@ -71,7 +71,7 @@ class AuthController extends Controller
         ]);
 
         // find user with email
-        $user = User::where('phone_number', $request->phoneNumber)->first();
+        $user = User::where('phone_number', $request->phone_number)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([

@@ -16,8 +16,8 @@ class MeController extends Controller
 
     public function getMe(Request $request)
     {
-        if (auth()->check()) {
-            return $this->meEndpointResponse(new UserResource(auth()->user()));
+        if (auth("sanctum")->check()) {
+            return $this->meEndpointResponse(new UserResource(auth("sanctum")->user()));
         }
 
         return $this->meEndpointResponse(null);
