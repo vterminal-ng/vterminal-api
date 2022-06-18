@@ -93,7 +93,7 @@ class TermiiService
             "from" =>  config('services.termii.from'),
             "sms" => $message,
             "type" => config('services.termii.sms_type'),
-            "channel" => "config('services.termii.channel')",
+            "channel" => config('services.termii.channel'),
             "api_key" => config('services.termii.key'),
         ]);
 
