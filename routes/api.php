@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\MeController;
 use App\Http\Controllers\API\MerchantDetailController;
 use App\Http\Controllers\API\OtpController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use Illuminate\Http\Request;
@@ -35,9 +36,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
     Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
+
     //Update password
     Route::post('users/password-update', [AuthController::class, 'changePassword']);
-
+    //Update Email
+    Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
     //Routes to User details CRUD functions
     Route::post('users/user-details', [UserDetailController::class, 'create']);
     Route::get('users/user-details', [UserDetailController::class, 'read']);
