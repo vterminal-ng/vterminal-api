@@ -45,11 +45,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function otp()
-    {
-        return $this->hasOne(Otp::class);
-    }
-
     public function userDetail()
     {
         return $this->hasOne(UserDetail::class);
@@ -64,6 +59,14 @@ class User extends Authenticatable
     {
         return (bool)$this->phone_number_verified_at;
     }
+
+    public function markPhoneAsVerified()
+    {
+        return $this->forceFill([
+            'phone_number_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+
 
     public function isMerchant()
     {
