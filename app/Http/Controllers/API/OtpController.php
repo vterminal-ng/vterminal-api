@@ -72,14 +72,14 @@ class OtpController extends Controller
     public function sendEmailOtp(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
         // generate random 6 digit value
         $otp = rand(100000, 999999);
 
-        // save email and OTP to databse
-        $user = auth()->user()->forceFill(['email_otp' => $otp, 'email' => $request->email])->save();
+        // save OTP to databse
+        $user = User::where('email', '=', $request->email)->update(['email_otp' => $otp]);
 
         // Fail if user email is not in the DB
         if (!$user) {
