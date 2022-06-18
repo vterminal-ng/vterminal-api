@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\MeController;
 use App\Http\Controllers\API\MerchantDetailController;
+use App\Http\Controllers\API\OtpController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use Illuminate\Http\Request;
@@ -21,15 +22,19 @@ use Illuminate\Support\Facades\Route;
 
 // PUBLIC ROUTES
 Route::get('me', [MeController::class, 'getMe']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
 
-Route::post('/password/email', [ResetPasswordController::class, 'sendResetLinkEmail']);
-Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+Route::post('password/email', [ResetPasswordController::class, 'sendResetLinkEmail']);
+Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
+    Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
+
+    Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
+    Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
     //Update password
     Route::post('users/password-update', [AuthController::class, 'changePassword']);
 
