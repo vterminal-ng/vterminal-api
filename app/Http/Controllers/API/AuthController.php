@@ -49,19 +49,14 @@ class AuthController extends Controller
         // create the user
         $user = User::create($params);
 
-
         //create token for user
         $token = $user->createToken("access Token")->plainTextToken;
-
-        // send otp
-        // $otpData = $this->termiiService->sendOtp($user);
 
         // return the token
         return $this->successResponse(
             "Registeration Successful",
             [
                 "user" => new UserResource($user),
-                // "otp" => $otpData,
                 "token" => $token,
             ],
             Response::HTTP_CREATED
@@ -123,21 +118,5 @@ class AuthController extends Controller
                 "token" => $token
             ]
         );
-    }
-
-    public function verifyOtp(Request $request)
-    {
-        $request->validate([
-            'pin_code' => ['required', 'string', 'size:6'],
-        ]);
-
-        $user = auth('sanctum')->user();
-        // dd($user);
-
-        $verificationResponse = $this->termiiService->verifyOtp($user, $request->pin_code);
-
-        $user->phone_number_verified_at = Carbon::now();
-
-        return $this->successResponse("Verified", $verificationResponse);
     }
 }
