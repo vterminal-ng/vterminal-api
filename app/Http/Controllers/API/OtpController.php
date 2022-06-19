@@ -26,19 +26,22 @@ class OtpController extends Controller
     public function sendSmsOtp(Request $request)
     {
         $request->validate([
-            'phone_number' => ['required', 'string', 'max:15'],
+            'phone_number' => ['required', 'string', 'max:15', 'exists:users,phone_number'],
         ]);
+
+
+        $user = User::where('phone_number', '=', $request->phone_number)->first();
+
+        // check if phone number is already verified 
+        if ($user->hasVerifiedPhone()) {
+            return $this->failureResponse(['phone_number' => ['Phone number is already verified']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         // generate random 6 digit value
         $otp = rand(100000, 999999);
 
         // save OTP to databse
-        $user = User::where('phone_number', '=', $request->phone_number)->update(['phone_otp' => $otp]);
-
-        // Fail if user phone number is not in the DB
-        if (!$user) {
-            return $this->failureResponse('Invalid phone number', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        $user->forceFill(['phone_otp' => $otp])->save();
 
         // The sms message
         $message = "Your Vterminal OTP is $otp. If you did not request a OTP, no further action is required.";
@@ -75,16 +78,19 @@ class OtpController extends Controller
             'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
+        $user = User::where('email', '=', $request->email)->first();
+
+        // check if phone number is already verified 
+        if ($user->hasVerifiedEmail()) {
+            return $this->failureResponse(['email' => ['Email is already verified']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         // generate random 6 digit value
         $otp = rand(100000, 999999);
 
         // save OTP to databse
-        $user = User::where('email', '=', $request->email)->update(['email_otp' => $otp]);
+        $user->forceFill(['email_otp' => $otp])->save();
 
-        // Fail if user email is not in the DB
-        if (!$user) {
-            return $this->failureResponse('Invalid', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
 
         Mail::to($request->email)->send(new SendVerificationOtp($otp));
 
