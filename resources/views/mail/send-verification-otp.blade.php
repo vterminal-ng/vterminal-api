@@ -1,9 +1,7 @@
 @component('mail::message')
-# Hi {{ Auth::user()->fullname }}
+# Hi {{ $user->userDetail->fullname }},
 
 Welcome to {{ config('app.name') }}. Verify your email by using the verification code below. 
-
-Verification code
 
 # {{$otp}}.
 

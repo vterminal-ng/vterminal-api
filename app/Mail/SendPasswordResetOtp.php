@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class SendVerificationOtp extends Mailable
+class SendPasswordResetOtp extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,9 +29,8 @@ class SendVerificationOtp extends Mailable
      */
     public function build()
     {
-        return $this->subject('Email Verification')->markdown('mail.send-verification-otp', [
+        return $this->subject('Forgot Password Reset')->markdown('mail.send-password-reset-otp', [
             'otp' => $this->otp,
-            'user' => auth()->user()
         ]);
     }
 }

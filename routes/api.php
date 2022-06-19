@@ -26,7 +26,7 @@ Route::get('me', [MeController::class, 'getMe']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-Route::post('password/email', [ResetPasswordController::class, 'sendResetLinkEmail']);
+Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
 // AUTHENTICATED ROUTES
