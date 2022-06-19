@@ -119,4 +119,14 @@ class AuthController extends Controller
             ]
         );
     }
+
+    function logout()
+    {
+        // delete token for the logged in user
+        auth("sanctum")->user()->tokens()->delete();
+
+        return $this->successResponse(
+            "Logout Successful", NULL, Response::HTTP_OK
+        );
+    }
 }
