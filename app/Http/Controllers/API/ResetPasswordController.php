@@ -47,7 +47,7 @@ class ResetPasswordController extends Controller
             $timeDifference = Carbon::now()->timestamp - strtotime($lastTime);
 
             if ($timeDifference < config('auth.passwords.users.throttle')) {
-                return $this->failureResponse(['email' => 'Please wait before retrying.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+                return $this->failureResponse(['email' => ['Please wait before retrying.']], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             DB::table('password_reset_otps')->where('email', $request->email)->delete();

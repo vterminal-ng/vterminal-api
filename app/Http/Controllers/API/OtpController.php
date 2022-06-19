@@ -34,7 +34,7 @@ class OtpController extends Controller
 
         // check if phone number is already verified 
         if ($user->hasVerifiedPhone()) {
-            return $this->failureResponse(['phone_number' => ['Phone number is already verified']], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->failureResponse('Phone number is already verified', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         // generate random 6 digit value
@@ -55,7 +55,7 @@ class OtpController extends Controller
     public function verifySmsOtp(Request $request)
     {
         $request->validate([
-            'phone_number' => ['required', 'string', 'max:15'],
+            'phone_number' => ['required', 'string', 'max:15', 'exists:users,phone_number'],
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
@@ -82,7 +82,7 @@ class OtpController extends Controller
 
         // check if phone number is already verified 
         if ($user->hasVerifiedEmail()) {
-            return $this->failureResponse(['email' => ['Email is already verified']], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->failureResponse('Email is already verified', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         // generate random 6 digit value
@@ -100,7 +100,7 @@ class OtpController extends Controller
     public function verifyEmailOtp(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'string', 'max:15'],
+            'email' => ['required', 'email', 'exists:users,email'],
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
