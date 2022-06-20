@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license']);
             $table->unsignedBigInteger('identity_number')->unique();
-            // $table->string('id');
             $table->string('passport');
             $table->string('first_name');
             $table->string('last_name');
