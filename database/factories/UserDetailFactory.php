@@ -17,7 +17,13 @@ class UserDetailFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'gender' => $gender = $this->faker->randomElement(['male', 'female']),
+            'first_name' => $this->faker->firstName($gender),
+            'last_name' => $this->faker->lastName(),
+            'date_of_birth' => $this->faker->date(),
+            // 'other_names' => null,
+            // 'referral_code' => null,
+            // 'referrer' => null
         ];
     }
 }
