@@ -5,8 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Rules\CheckCurrentAndNewPassword;
-use App\Rules\CheckCurrentPassword;
 use App\Services\TermiiService;
 use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
@@ -95,28 +93,13 @@ class AuthController extends Controller
         );
     }
 
-    public function changePassword(Request $request)
+    function logout()
     {
-        $request->validate([
-            'current_password' => ['required', new CheckCurrentPassword()],
-            'new_password' => ['required', 'min:6', new CheckCurrentAndNewPassword(), 'confirmed'],
-        ]);
-
-        $user = auth()->user();
-
-        $user->update([
-            'password' => Hash::make($request->newPassword)
-        ]);
-
-        $user->tokens()->delete();
-
-        $token = $user->createToken("default")->plainTextToken;
+        // delete token for the logged in user
+        auth("sanctum")->user()->tokens()->delete();
 
         return $this->successResponse(
-            "Password Updated Successfuly",
-            [
-                "token" => $token
-            ]
+            "Logout Successful", NULL, Response::HTTP_OK
         );
     }
 }

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('me', [MeController::class, 'getMe']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout']);
 
 Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
@@ -38,7 +39,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
 
     //Update password
-    Route::post('users/password-update', [AuthController::class, 'changePassword']);
+    Route::post('users/password-update', [ProfileController::class, 'changePassword']);
     //Update Email
     Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
     //Routes to User details CRUD functions
