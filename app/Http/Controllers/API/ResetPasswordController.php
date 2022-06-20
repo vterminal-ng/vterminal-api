@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\SendPasswordResetOtp;
 use App\Models\User;
 use App\Traits\ApiResponder;
+use App\Traits\OtpCheck;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,7 +18,7 @@ use Str;
 
 class ResetPasswordController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, OtpCheck;
 
     /**
      * sendResetOtpEmail
@@ -89,9 +90,7 @@ class ResetPasswordController extends Controller
         // check if expired
         $record = DB::table('password_reset_otps')->where('email', $request->email)->first();
 
-        if (!Hash::check($request->otp, $record->otp) || $this->isOtpExpired($record->created_at)) {
-            return $this->failureResponse("Incorrect or expired otp", Response::HTTP_UNAUTHORIZED);
-        }
+        $this->checkOtpValidity($request, $record);
 
         User::where('email', $request->email)->first()->forceFill([
             'password' => Hash::make($request->password)
@@ -100,23 +99,5 @@ class ResetPasswordController extends Controller
         DB::table('password_reset_otps')->where('email', $request->email)->delete();
 
         return $this->successResponse('Password Reset Successfully');
-    }
-
-    /**
-     * isOtpExpired
-     *
-     * @param  mixed $createTime
-     * @return bool
-     */
-    public function isOtpExpired($createTime)
-    {
-        $now = Carbon::now()->timestamp;
-
-        $timeDifference = $now - strtotime($createTime);
-
-        $minutes = round($timeDifference / 60);
-
-        // return true, if $minutes is greater than the otp expiration duration in minutes, default is 60 minutes.
-        return $minutes > config('auth.passwords.users.expire');
     }
 }
