@@ -14,7 +14,7 @@ class MerchantDetail extends Model
         'business_name',
         'business_state',
         'business_address',
-        'business_verified',
+        'business_verified_at',
         'has_physical_location'
     ];
 
