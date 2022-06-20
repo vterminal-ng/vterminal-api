@@ -55,6 +55,11 @@ class User extends Authenticatable
         return $this->hasOne(MerchantDetail::class);
     }
 
+    public function role()
+    {
+        return $this->role;
+    }
+
     public function hasVerifiedPhone()
     {
         return (bool)$this->phone_number_verified_at;
