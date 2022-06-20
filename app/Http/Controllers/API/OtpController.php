@@ -7,14 +7,18 @@ use App\Mail\SendVerificationOtp;
 use App\Models\User;
 use App\Services\TermiiService;
 use App\Traits\ApiResponder;
+use App\Traits\OtpCheck;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 class OtpController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, OtpCheck;
 
     protected $termiiService;
 
@@ -32,16 +36,44 @@ class OtpController extends Controller
 
         $user = User::where('phone_number', '=', $request->phone_number)->first();
 
+        $this->checkIfUserCanVerifyThisOtp($user);
+
         // check if phone number is already verified 
         if ($user->hasVerifiedPhone()) {
             return $this->failureResponse('Phone number is already verified', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+
+        // check if you are trying to resend otp
+        $count = DB::table('mobile_verification_otps')->where('phone_number', $request->phone_number)->count();
+        if ($count) {
+            $record = DB::table('mobile_verification_otps')->where('phone_number', $request->phone_number)->first();
+
+            $lastTime = $record->created_at;
+
+            $timeDifference = Carbon::now()->timestamp - strtotime($lastTime);
+
+            // wait one minute before retrying
+            if ($timeDifference < 60) {
+                return $this->failureResponse('Please wait before retrying.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            // delete old otp
+            DB::table('mobile_verification_otps')->where('phone_number', $request->phone_number)->delete();
+        }
+
         // generate random 6 digit value
         $otp = rand(100000, 999999);
 
-        // save OTP to databse
-        $user->forceFill(['phone_otp' => $otp])->save();
+        try {
+            // save new OTP to databse
+            DB::table('mobile_verification_otps')->insert([
+                'phone_number' => $request->phone_number,
+                'otp' => Hash::make($otp),
+                'created_at' => Carbon::now()
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
 
         // The sms message
         $message = "Your Vterminal OTP is $otp. If you did not request a OTP, no further action is required.";
@@ -55,17 +87,21 @@ class OtpController extends Controller
     public function verifySmsOtp(Request $request)
     {
         $request->validate([
-            'phone_number' => ['required', 'string', 'max:15', 'exists:users,phone_number'],
+            'phone_number' => ['required', 'string', 'max:15', 'exists:users,phone_number', 'exists:mobile_verification_otps,phone_number'],
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
-        $user  = User::where([['phone_number', '=', $request->phone_number], ['phone_otp', '=', $request->otp]])->first();
+        $user  = User::where('phone_number', $request->phone_number)->first();
 
-        if (!$user) {
-            return $this->failureResponse('Invalid OTP', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        $this->checkIfUserCanVerifyThisOtp($user);
 
-        User::where('phone_number', '=', $request->phone_number)->update(['phone_otp' => null]);
+        $record = DB::table('mobile_verification_otps')->where('phone_number', $request->phone_number)->first();
+
+        // check otp hash
+        // check if expired
+        $this->checkOtpValidity($request, $record);
+
+        DB::table('mobile_verification_otps')->where('phone_number', $request->phone_number)->delete();
 
         $user->markPhoneAsVerified();
 
@@ -85,13 +121,38 @@ class OtpController extends Controller
             return $this->failureResponse('Email is already verified', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        // check if you are trying to resend otp
+        $count = DB::table('email_verification_otps')->where('email', $request->email)->count();
+        if ($count) {
+            $record = DB::table('email_verification_otps')->where('email', $request->email)->first();
+
+            $lastTime = $record->created_at;
+
+            $timeDifference = Carbon::now()->timestamp - strtotime($lastTime);
+
+            // wait one minute before retrying
+            if ($timeDifference < 60) {
+                return $this->failureResponse('Please wait before retrying.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            // delete old otp
+            DB::table('email_verification_otps')->where('email', $request->email)->delete();
+        }
+
         // generate random 6 digit value
         $otp = rand(100000, 999999);
 
-        // save OTP to databse
-        $user->forceFill(['email_otp' => $otp])->save();
+        try {
+            // save new OTP to databse
+            DB::table('email_verification_otps')->insert([
+                'email' => $request->email,
+                'otp' => Hash::make($otp),
+                'created_at' => Carbon::now()
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
 
-
+        // send otp to email
         Mail::to($request->email)->send(new SendVerificationOtp($otp));
 
         return $this->successResponse("OTP sent to $request->email");
@@ -100,17 +161,21 @@ class OtpController extends Controller
     public function verifyEmailOtp(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
+            'email' => ['required', 'email', 'exists:users,email', 'exists:email_verification_otps,email'],
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
-        $user  = User::where([['email', '=', $request->email], ['email_otp', '=', $request->otp]])->first();
+        $user  = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return $this->failureResponse('Invalid OTP', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        $this->checkIfUserCanVerifyThisOtp($user);
 
-        $user->forceFill(['email_otp' => null])->save();
+        $record = DB::table('email_verification_otps')->where('email', $request->email)->first();
+
+        // check otp hash
+        // check if expired
+        $this->checkOtpValidity($request, $record);
+
+        DB::table('email_verification_otps')->where('email', $request->email)->delete();
 
         $user->markEmailAsVerified();
 
