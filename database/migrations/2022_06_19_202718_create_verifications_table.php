@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->enum('identity_type',['bvn','voters_card','nin','drivers_license']);
+            $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license']);
             $table->unsignedBigInteger('identity_number')->unique();
-            $table->string('id');
+            // $table->string('id');
             $table->string('passport');
             $table->string('first_name');
             $table->string('last_name');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('reference');
             $table->string('payload');
             $table->string('phone_number')->unique();
-            $table->enum('gender',['male','female']);
+            $table->enum('gender', ['male', 'female']);
             $table->timestamps();
         });
     }
