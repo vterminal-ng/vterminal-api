@@ -17,7 +17,7 @@ class MerchantDetailResource extends JsonResource
         return [
             "buisnessName" => $this->business_name,
             "state" => $this->business_state,
-            "address" => $this->business_adress,
+            "address" => $this->business_address,
             "verifiedDate" => $this->business_verified,
             "hasPhysicalLocation" => $this->has_physical_location
         ];
