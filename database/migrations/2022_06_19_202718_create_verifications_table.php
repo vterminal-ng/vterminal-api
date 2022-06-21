@@ -16,9 +16,11 @@ return new class extends Migration
         Schema::create('verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license']);
-            $table->unsignedBigInteger('identity_number')->unique();
-            $table->string('passport');
+            $table->string('identity_number')->unique();
+            $table->string('id_base64_string');
+            $table->string('passport_base64_string');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('middle_name');

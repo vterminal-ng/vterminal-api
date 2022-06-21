@@ -14,6 +14,7 @@ class BankDetail extends Model
         'account_number',
         'account_name',
         'bank_name',
+        'bank_code',
         'is_verified'
     ];
 
