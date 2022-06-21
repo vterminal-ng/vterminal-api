@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('account_number');
             $table->string('bank_name');
+            $table->string('bank_code');
             $table->boolean('is_verified')->default(false);
 
             $table->foreign('user_id')->references('id')->on('users');

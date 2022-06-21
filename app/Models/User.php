@@ -76,6 +76,10 @@ class User extends Authenticatable
         ])->save();
     }
 
+    public function verification() {
+        return $this->hasOne(Verification::class);
+    }
+
 
     public function isMerchant()
     {
