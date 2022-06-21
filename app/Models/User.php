@@ -55,6 +55,10 @@ class User extends Authenticatable
         return $this->hasOne(MerchantDetail::class);
     }
 
+    public function bankDetails() {
+        return $this->hasMany(BankDetail::class);
+    }
+
     public function role()
     {
         return $this->role;
