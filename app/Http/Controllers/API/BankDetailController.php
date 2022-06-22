@@ -16,24 +16,14 @@ class BankDetailController extends Controller
 
     public function create(Request $request) {
         $request->validate([
-            'user_id' => ['required', 'integer'],
             'account_number' => ['required', 'string', 'min:3'],
             'account_name' => ['required', 'min:3'],
             'bank_name' => ['required', 'string', 'min:3'],
             'bank_code' => ['required']
         ]);
 
-        $user = User::findOrFail($request->user_id);
-
-        if(!(auth()->id() === $user->id)) {
-            return $this->failureResponse(
-                "You are not authorized to access this resource",
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
         //Check if user already added the same bank details
-        $detail = BankDetail::where('user_id', $request->user_id)
+        $detail = BankDetail::where('user_id', auth()->id())
         ->where('account_number', '=', $request->account_number)
         ->where('bank_name', '=', $request->bank_name)
         ->first();
@@ -46,7 +36,7 @@ class BankDetailController extends Controller
         }
 
         $bankDetails = BankDetail::create([
-            'user_id' => $request->user_id,
+            'user_id' => auth()->id(),
             'account_number' => $request->account_number,
             'account_name' => $request->account_name,
             'bank_name' => $request->bank_name,
@@ -61,36 +51,11 @@ class BankDetailController extends Controller
         );
     }
 
-    public function delete(Request $request) {
-        $request->validate([
-            'user_id' => ['required', 'integer'],
-            'account_number' => ['required'],
-            'bank_name' => ['required']
-        ]);
+    public function deleteBankDetail(BankDetail $bankDetail) {
 
-        $user = User::findOrFail($request->user_id);
+        $this->authorize('delete', $bankDetail);
 
-        if(!(auth()->id() === $user->id)) {
-            return $this->failureResponse(
-                "You are not authorized to access this resource",
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        // Get bank details
-        $detail = BankDetail::where('user_id', $request->user_id)
-        ->where('account_number', '=', $request->account_number)
-        ->where('bank_name', '=', $request->bank_name)
-        ->first();
-
-        if(!$detail) {
-            return $this->failureResponse(
-                "Bank Details Not Found",
-                Response::HTTP_NOT_FOUND
-            );
-        }
-        //dd($detail);
-        $detail->delete();
+        $bankDetail->delete();
 
         return $this->successResponse(
             "Bank Details Deleted", NULL,
