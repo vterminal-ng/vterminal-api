@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BankDetailResource;
 use App\Models\BankDetail;
 use App\Models\User;
 use App\Traits\ApiResponder;
@@ -31,6 +32,19 @@ class BankDetailController extends Controller
             );
         }
 
+        //Check if user already added the same bank details
+        $detail = BankDetail::where('user_id', $request->user_id)
+        ->where('account_number', '=', $request->account_number)
+        ->where('bank_name', '=', $request->bank_name)
+        ->first();
+
+        if($detail) {
+            return $this->failureResponse(
+                "Duplicate Bank Details",
+                Response::HTTP_NOT_ACCEPTABLE
+            );
+        }
+
         $bankDetails = BankDetail::create([
             'user_id' => $request->user_id,
             'account_number' => $request->account_number,
@@ -41,7 +55,7 @@ class BankDetailController extends Controller
 
         return $this->successResponse(
             "Bank Details Added Successfully",            [
-                "bankDetail" => $bankDetails
+                "bankDetail" => new BankDetailResource($bankDetails)
             ],
             Response::HTTP_CREATED
         );
@@ -63,6 +77,7 @@ class BankDetailController extends Controller
             );
         }
 
+        // Get bank details
         $detail = BankDetail::where('user_id', $request->user_id)
         ->where('account_number', '=', $request->account_number)
         ->where('bank_name', '=', $request->bank_name)
