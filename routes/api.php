@@ -58,4 +58,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
+    Route::delete('users/bank-details', [BankDetailController::class, 'delete']);
 });

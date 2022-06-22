@@ -46,4 +46,40 @@ class BankDetailController extends Controller
             Response::HTTP_CREATED
         );
     }
+
+    public function delete(Request $request) {
+        $request->validate([
+            'user_id' => ['required', 'integer'],
+            'account_number' => ['required'],
+            'bank_name' => ['required']
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        if(!(auth()->id() === $user->id)) {
+            return $this->failureResponse(
+                "You are not authorized to access this resource",
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $detail = BankDetail::where('user_id', $request->user_id)
+        ->where('account_number', '=', $request->account_number)
+        ->where('bank_name', '=', $request->bank_name)
+        ->first();
+
+        if(!$detail) {
+            return $this->failureResponse(
+                "Bank Details Not Found",
+                Response::HTTP_NOT_FOUND
+            );
+        }
+        //dd($detail);
+        $detail->delete();
+
+        return $this->successResponse(
+            "Bank Details Deleted", NULL,
+            Response::HTTP_OK
+        );
+    }
 }
