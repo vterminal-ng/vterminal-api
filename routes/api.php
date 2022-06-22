@@ -7,6 +7,7 @@ use App\Http\Controllers\API\OtpController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
+use App\Http\Controllers\API\BankDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('users/user-details', [UserDetailController::class, 'update']);
     Route::put('users/user-details', [UserDetailController::class, 'update']);
 
+    Route::post('users/bank-details', [BankDetailController::class, 'create']);
+
     Route::group(['middleware' => ['merchant.user']], function () {
         // CRUD functions routes for Merchant Details
         Route::post('users/merchant-details', [MerchantDetailController::class, 'create']);
@@ -55,4 +58,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
         Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
     });
+
 });
