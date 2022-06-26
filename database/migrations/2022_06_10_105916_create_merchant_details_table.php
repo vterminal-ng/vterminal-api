@@ -16,15 +16,14 @@ return new class extends Migration
         Schema::create('merchant_details', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
             $table->string('business_name');
             $table->string('business_state');
             $table->string('business_address');
             $table->dateTime('business_verified_at')->nullable();
             $table->boolean('has_physical_location')->default(false);
-
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

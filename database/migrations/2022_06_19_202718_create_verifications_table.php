@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
             $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license']);
             $table->string('identity_number')->unique();
             $table->string('id_base64_string');
@@ -30,6 +29,8 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->enum('gender', ['male', 'female']);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -15,10 +15,7 @@ return new class extends Migration
     {
         Schema::create('user_details', function (Blueprint $table) {
             $table->id();
-
             $table->unsignedBigInteger('user_id')->unique();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
             $table->string('first_name');
             $table->string('last_name');
             $table->string('other_names')->nullable();
@@ -27,6 +24,8 @@ return new class extends Migration
             $table->string('referral_code')->nullable();
             $table->string('referrer')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
