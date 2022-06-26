@@ -15,14 +15,11 @@ class BankDetailResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "user" => [
-                "name" => $this->user->id,
-                "phoneNumber" => $this->user->phone_numer
-            ],
             "accountName" => $this->account_name,
             "accountNumber" => $this->account_number,
             "bankName" => $this->bank_name,
-            "isVerified" => $this->is_verified
+            "isVerified" => $this->is_verified,
+            "user" => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

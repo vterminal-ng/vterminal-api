@@ -18,7 +18,8 @@ class BankDetail extends Model
         'is_verified'
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

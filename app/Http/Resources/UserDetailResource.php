@@ -23,7 +23,9 @@ class UserDetailResource extends JsonResource
             "dateOfBirth" => $this->date_of_birth,
             "gender" => $this->gender,
             "referralCode" => $this->referral_code,
-            "referrer" => $this->referrer
+            "referrer" => $this->referrer,
+            "user" => new UserResource($this->whenLoaded('user')),
+
         ];
     }
 }

@@ -14,7 +14,8 @@ class BankDetailController extends Controller
 {
     use ApiResponder;
 
-    public function create(Request $request) {
+    public function create(Request $request)
+    {
         $request->validate([
             'account_number' => ['required', 'string', 'min:3'],
             'account_name' => ['required', 'min:3'],
@@ -24,11 +25,11 @@ class BankDetailController extends Controller
 
         //Check if user already added the same bank details
         $detail = BankDetail::where('user_id', auth()->id())
-        ->where('account_number', '=', $request->account_number)
-        ->where('bank_name', '=', $request->bank_name)
-        ->first();
+            ->where('account_number', '=', $request->account_number)
+            ->where('bank_name', '=', $request->bank_name)
+            ->first();
 
-        if($detail) {
+        if ($detail) {
             return $this->failureResponse(
                 "Duplicate Bank Details",
                 Response::HTTP_NOT_ACCEPTABLE
@@ -44,22 +45,23 @@ class BankDetailController extends Controller
         ]);
 
         return $this->successResponse(
-            "Bank Details Added Successfully",            [
-                "bankDetail" => new BankDetailResource($bankDetails)
-            ],
+            "Bank Details Added Successfully",
+            new BankDetailResource($bankDetails),
             Response::HTTP_CREATED
         );
     }
 
-    public function deleteBankDetail(BankDetail $bankDetail) {
+    public function deleteBankDetail(BankDetail $bankDetail)
+    {
 
         $this->authorize('delete', $bankDetail);
 
         $bankDetail->delete();
 
         return $this->successResponse(
-            "Bank Details Deleted", NULL,
-            Response::HTTP_OK
+            "Bank Details Deleted",
+            NULL,
+            Response::HTTP_NO_CONTENT
         );
     }
 }

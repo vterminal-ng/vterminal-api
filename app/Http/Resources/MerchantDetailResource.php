@@ -19,7 +19,9 @@ class MerchantDetailResource extends JsonResource
             "state" => $this->business_state,
             "address" => $this->business_adddress,
             "verifiedDate" => $this->business_verified,
-            "hasPhysicalLocation" => $this->has_physical_location
+            "hasPhysicalLocation" => $this->has_physical_location,
+            "user" => new UserResource($this->whenLoaded('user')),
+
         ];
     }
 }

@@ -55,7 +55,8 @@ class User extends Authenticatable
         return $this->hasOne(MerchantDetail::class);
     }
 
-    public function bankDetails() {
+    public function bankDetails()
+    {
         return $this->hasMany(BankDetail::class);
     }
 
@@ -76,14 +77,15 @@ class User extends Authenticatable
         ])->save();
     }
 
-    public function verification() {
+    public function verification()
+    {
         return $this->hasOne(Verification::class);
     }
 
 
     public function isMerchant()
     {
-        return (bool)$this->role == 'merchant';
+        return $this->role() === 'merchant';
     }
 
     public function sendPasswordResetNotification($token)
