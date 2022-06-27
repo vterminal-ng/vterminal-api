@@ -99,5 +99,12 @@ return [
         "sms_type" => "plain",
     ],
 
+    'flwave' => [
+        'public_key' => env('FLW_PUBLIC_KEY'),
+        'secret' => env('FLW_SECRET_KEY'),
+        'base_url' => env('FLW_BASE_URL'),
+        'api_version' => env('FLW_API_VERSION')
+    ],
+
 
 ];
