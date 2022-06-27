@@ -53,7 +53,7 @@ class BankDetailPolicy
      */
     public function update(User $user, BankDetail $bankDetail)
     {
-        //
+        return $user->id === $bankDetail->user_id;
     }
 
     /**
