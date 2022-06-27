@@ -8,6 +8,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
     });
 
+    Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
+    Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
     Route::delete('users/bank-details/{bankDetail}', [BankDetailController::class, 'deleteBankDetail']);
+
+    Route::post('users/verify-identity', [VerificationController::class, 'verifyBvn']);
 });
