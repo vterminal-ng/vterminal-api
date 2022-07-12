@@ -27,11 +27,10 @@ class FlutterwaveService
      * get user details from BVN
      *
      * @param  User $user
-     * @param integer $bvn
      * @return object
      */
-    public function getValidBvnData($bvn) {
-        $response = $this->performRequest('POST', '/v3/kyc/bvns/12345678901');
+    public function getValidBvnData() {
+        $response = $this->performRequest('POST', '/v3/kyc/bvns/123456789');
         dd($response);
         $bvnData = json_decode((string)$response);
 
