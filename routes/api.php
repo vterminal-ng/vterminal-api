@@ -9,6 +9,7 @@ use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
 use App\Http\Controllers\API\VerificationController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -65,4 +66,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('users/bank-details/{bankDetail}', [BankDetailController::class, 'deleteBankDetail']);
 
     Route::post('users/verify-identity', [VerificationController::class, 'verifyBvn']);
+
+    // Wallet
+    Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
+    Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
+    Route::post('my-wallet/transfer', [WalletController::class, 'verifyBvn']);
 });

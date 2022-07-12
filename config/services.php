@@ -106,5 +106,11 @@ return [
         'api_version' => env('FLW_API_VERSION')
     ],
 
+    'paystack' => [
+        'public_key' => env('PAYSTACK_PUBLIC_KEY', 'pk_test_f932a35900a5fc7cf584961158201f7cb6e98b4c'),
+        'secret' => env('PAYSTACK_SECRET_KEY', 'sk_test_570f4a5e56689f1a14aae854dec4de39913c03c6'),
+        'base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co'),
+    ],
+
 
 ];
