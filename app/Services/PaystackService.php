@@ -144,15 +144,13 @@ class FlutterwaveService
         return json_decode((string)$response);
     }
 
-    public function createDedicatedVirtualAccount($email, $firstName, $lastName)
+    public function createDedicatedVirtualAccount($customerCode)
     {
         $response = $this->performRequest(
             'POST',
             "/dedicated_account",
             [
-                "customer" => $email,
-                "first_name" => $firstName,
-                "last_name" => $lastName,
+                "customer" => $customerCode,
             ],
             [
                 "Content-Type" => "application/json",
