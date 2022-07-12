@@ -68,7 +68,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // find user with email
+        // find user with phone number
         $user = User::where('phone_number', $request->phone_number)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -93,6 +93,39 @@ class AuthController extends Controller
         );
     }
 
+    function emailLogin(Request $request) {
+        // logging in with email and password
+
+        $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required'],
+        ]);
+
+        // find user with email
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect login credentials'
+            ]);
+        }
+
+        // delete any existing token for the user
+        $user->tokens()->delete();
+
+        // create a new token for the user
+        $token = $user->createToken("login")->plainTextToken;
+
+        return $this->successResponse(
+            "Login Successful",
+            [
+                "token" => $token,
+            ],
+            Response::HTTP_OK
+        );
+    }
+    
     function logout()
     {
         // delete token for the logged in user
