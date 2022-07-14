@@ -57,9 +57,9 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(MerchantDetail::class);
     }
 
-    public function bankDetails()
+    public function bankDetail()
     {
-        return $this->hasMany(BankDetail::class);
+        return $this->hasOne(BankDetail::class);
     }
 
     public function role()

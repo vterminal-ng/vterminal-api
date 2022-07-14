@@ -24,14 +24,11 @@ class BankDetailController extends Controller
         ]);
 
         //Check if user already added the same bank details
-        $detail = BankDetail::where('user_id', auth()->id())
-            ->where('account_number', '=', $request->account_number)
-            ->where('bank_name', '=', $request->bank_name)
-            ->first();
+        $detail = BankDetail::where('user_id', auth()->id())->first();
 
         if ($detail) {
             return $this->failureResponse(
-                "Duplicate Bank Details",
+                "You can only add 1 Bank Account Details",
                 Response::HTTP_NOT_ACCEPTABLE
             );
         }
@@ -53,7 +50,7 @@ class BankDetailController extends Controller
 
     public function getBankDetail() {
         $user = auth()->user();
-        if(!$user->bankDetails) {
+        if(!$user->bankDetail) {
             return $this->failureResponse(
                 "No Bank Details Found",
                 Response::HTTP_NOT_FOUND
@@ -62,7 +59,7 @@ class BankDetailController extends Controller
         return $this->successResponse(
             "Bank Details Found",
             [
-                "bank_details" => BankDetailResource::collection($user->bankDetails)
+                "bank_details" => new BankDetailResource($user->bankDetails)
             ],
             Response::HTTP_FOUND
         );
