@@ -130,13 +130,19 @@ class BankDetailController extends Controller
         $user = auth()->user();
 
         $bankDetail = $user->bankDetail;
-
+        
+        $rcode = $bankDetail->recipient_code;
+        
         $this->authorize('delete', $bankDetail);
+        
+        $response = $this->paystackService->deleteTranferRecipient($rcode);
 
+        //dd($response);
+        
         $bankDetail->delete();
 
         return $this->successResponse(
-            "Bank Details Deleted",
+            ["Bank Details Deleted", $response->message],
             NULL,
             Response::HTTP_NO_CONTENT
         );

@@ -84,6 +84,17 @@ class PaystackService
         return json_decode((string)$response);
     }
 
+    public function deleteTranferRecipient($recipientCode)
+    {
+        $response = $this->performRequest(
+            'DELETE',
+            "/transferrecipient/$recipientCode",
+        );
+        //dd($response);
+
+        return json_decode((string)$response);
+    }
+
     public function initiateTransfer($amount, $recipientCode)
     {
         $response = $this->performRequest(
