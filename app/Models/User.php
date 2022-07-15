@@ -62,6 +62,11 @@ class User extends Authenticatable implements Wallet
         return $this->hasMany(BankDetail::class);
     }
 
+    public function authorizedCard()
+    {
+        return $this->hasOne(AuthorizedCard::class);
+    }
+
     public function role()
     {
         return $this->role;
