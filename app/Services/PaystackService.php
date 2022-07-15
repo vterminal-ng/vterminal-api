@@ -76,13 +76,10 @@ class PaystackService
                 "type" => "nuban",
                 "name" => $name,
                 "account_number" => $accountNumber,
-                "bank_code" => $bankCode,
-            ],
-            [
-                "Content-Type" => "application/json",
+                "bank_code" => $bankCode
             ]
         );
-        // dd($response);
+        //dd($response);
 
         return json_decode((string)$response);
     }

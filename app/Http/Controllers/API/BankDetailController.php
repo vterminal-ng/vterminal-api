@@ -31,7 +31,7 @@ class BankDetailController extends Controller
             'bank_code' => ['required']
         ]);
 
-        //Check if user already added the same bank details
+        //Check if user already added bank details
         $detail = BankDetail::where('user_id', auth()->id())->first();
 
         if ($detail) {
@@ -41,18 +41,22 @@ class BankDetailController extends Controller
             );
         }
 
+        // Create transfer receipient
+        $response = $this->paystackService->createTranferRecipient($request->account_name, $request->account_number, $request->bank_code);
+        
+        // Get recipient code from response
+        $recipientcode = $response->data->recipient_code;
+        
+        //dd($recipientcode);
+
         $bankDetails = BankDetail::create([
             'user_id' => auth()->id(),
             'account_number' => $request->account_number,
             'account_name' => $request->account_name,
             'bank_name' => $request->bank_name,
-            'bank_code' => $request->bank_code
+            'bank_code' => $request->bank_code,
+            'recipient_code' => $recipientcode
         ]);
-
-        // Create transfer receipt
-        $response = $this->paystackService($request->account_name, $request->account_number, $request->bank_code);
-        
-        dd($response['data']->recipient_code);
         
         return $this->successResponse(
             "Bank Details Added Successfully",
@@ -121,8 +125,11 @@ class BankDetailController extends Controller
         );
     }
 
-    public function deleteBankDetail(BankDetail $bankDetail)
+    public function deleteBankDetail(User $user, BankDetail $bankDetail)
     {
+        $user = auth()->user();
+
+        $bankDetail = $user->bankDetail;
 
         $this->authorize('delete', $bankDetail);
 
