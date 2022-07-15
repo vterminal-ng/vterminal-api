@@ -7,7 +7,7 @@ use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
 
 
-class FlutterwaveService
+class PaystackService
 {
     use ConsumeExternalService, ApiResponder;
 

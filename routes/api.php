@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\AuthorizedCardController;
 use App\Http\Controllers\API\MeController;
 use App\Http\Controllers\API\MerchantDetailController;
 use App\Http\Controllers\API\OtpController;
@@ -71,4 +72,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
     Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
     Route::post('my-wallet/transfer', [WalletController::class, 'verifyBvn']);
+
+    //Card
+    Route::post('cards/add', [AuthorizedCardController::class, 'add']);
+    Route::post('cards/delete', [AuthorizedCardController::class, 'delete']);
+    Route::get('cards/my-card', [AuthorizedCardController::class, 'getUserCard']);
 });
