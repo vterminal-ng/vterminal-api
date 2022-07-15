@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BankDetailResource;
 use App\Models\BankDetail;
 use App\Models\User;
+use App\Services\PaystackService;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,6 +14,13 @@ use Illuminate\Http\Response;
 class BankDetailController extends Controller
 {
     use ApiResponder;
+
+    protected $paystackService;
+
+    public function __construct(PaystackService $paystackService)
+    {
+        $this->paystackService = $paystackService;
+    }
 
     public function create(Request $request)
     {
@@ -41,9 +49,14 @@ class BankDetailController extends Controller
             'bank_code' => $request->bank_code
         ]);
 
+        // Create transfer receipt
+        $response = $this->paystackService($request->account_name, $request->account_number, $request->bank_code);
+        
+        dd($response['data']->recipient_code);
+        
         return $this->successResponse(
             "Bank Details Added Successfully",
-            new BankDetailResource($bankDetails),
+            [new BankDetailResource($bankDetails), $response->message],
             Response::HTTP_CREATED
         );
     }
