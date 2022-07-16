@@ -75,6 +75,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //Card
     Route::post('cards/add', [AuthorizedCardController::class, 'add']);
-    Route::post('cards/delete', [AuthorizedCardController::class, 'delete']);
-    Route::get('cards/my-card', [AuthorizedCardController::class, 'getUserCard']);
+    Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
+    Route::get('cards/my-card', [AuthorizedCardController::class, 'getCard']);
 });

@@ -10,6 +10,7 @@ class AuthorizedCard extends Model
     use HasFactory;
 
     protected $fillable = [
+        "user_id",
         "authorization_code",
         "card_type",
         "last4",
@@ -17,7 +18,6 @@ class AuthorizedCard extends Model
         "exp_year",
         "bin",
         "bank",
-        "channel",
         "signature",
         "account_name",
         "reference",

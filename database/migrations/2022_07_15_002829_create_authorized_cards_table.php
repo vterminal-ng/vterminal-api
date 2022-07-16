@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('bin');
             $table->string('bank');
             $table->string('signature');
-            $table->string('account_name');
+            $table->string('account_name')->nullable();
             $table->string('reference');
 
             $table->timestamps();

@@ -28,6 +28,20 @@ class PaystackService
         return json_decode((string)$response);
     }
 
+    public function refundTransaction($reference)
+    {
+        $response = $this->makeRequest(
+            'POST',
+            "/refund",
+            [
+                "transaction" => $reference
+            ]
+        );
+        // dd($response);
+
+        return json_decode((string)$response);
+    }
+
     public function checkAuthorization($email, $amount, $authorizationCode)
     {
         $response = $this->performRequest(

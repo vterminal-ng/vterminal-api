@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             "userDetails" => new UserDetailResource($this->userDetail),
             "balance" => $this->balance,
             "transactions" => $this->transactions,
+            "card" => new AuthorizedCardResource($this->authorizedCard),
         ];
 
         if ($this->isMerchant()) {
