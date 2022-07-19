@@ -10,7 +10,7 @@ use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
 use App\Http\Controllers\API\VerificationController;
-use App\Http\Controllers\WalletController;
+use App\Http\Controllers\API\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -71,7 +71,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Wallet
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
     Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
-    Route::post('my-wallet/transfer', [WalletController::class, 'verifyBvn']);
+    Route::post('my-wallet/deposit-with-saved-card', [WalletController::class, 'depositWithSavedCard']);
 
     //Card
     Route::post('cards/add', [AuthorizedCardController::class, 'add']);

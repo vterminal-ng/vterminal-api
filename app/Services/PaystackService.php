@@ -72,9 +72,6 @@ class PaystackService
                 'authorization_code' => $authorizationCode,
                 'reference' => $reference,
             ],
-            [
-                "Content-Type" => "application/json",
-            ]
         );
         // dd($response);
 

@@ -25,13 +25,14 @@ class WalletController extends Controller
     public function withdraw(Request $request)
     {
         $request->validate([
-            "amount" => ['required', 'integer'],
-            "recipient_cdoe" => ['required', 'integer']
+            // "amount" => ['required'],
+            "recipient_cdoe" => ['required', 'string']
         ]);
 
         // get user object of auth user
         $user = User::find(auth()->id());
 
+        // TODO: Middle ware to avoid people who haveadd a payout account to perfor this request
         // initialize transfer paystack request
         $response = $this->paystackService->initiateTransfer($request->amount, $user->bankDetail->recipient_code);
 
@@ -77,7 +78,6 @@ class WalletController extends Controller
     public function depositWithSavedCard(Request $request)
     {
         $request->validate([
-            "email" => ['required', 'email'],
             "authCode" => ['required', "string"],
             "amount" => ['required', 'integer']
         ]);
@@ -86,7 +86,7 @@ class WalletController extends Controller
         $user = User::find(auth()->id());
 
         // charge the card with paystacks Charge Authorization endpoint
-        $response = $this->paystackService->chargeAuthorization($request->email, $request->amount, $request->authCode, $this->generateReference());
+        $response = $this->paystackService->chargeAuthorization($user->email, $request->amount, $request->authCode, $this->generateReference());
 
         // if transaction fialed, return falure
         if ($response->data->status == "failed") {
