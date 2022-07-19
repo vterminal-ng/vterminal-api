@@ -9,6 +9,7 @@ use App\Traits\ApiResponder;
 use App\Traits\Generators;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class WalletController extends Controller
 {
@@ -55,16 +56,22 @@ class WalletController extends Controller
         ]);
 
         // get user object of auth user
+        $user = User::find(auth()->id());
 
         // call paystack verify transction API
+        $response = $this->paystackService->verifyTransaction($request->reference);
 
         // if transaction fialed, return falure
+        if ($response->data->status == "failed") {
+            return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
+        }
 
         // if transation was successful,get amount from the verification and deposit into wallet.
-
-        // if AuthorizedCode not stored, store it in the Authorized_code table
+        $amountToDeposit = $response->data->amount / 100;
+        $user->deposit($amountToDeposit);
 
         // return Success
+        return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
     }
 
     public function depositWithSavedCard(Request $request)
@@ -76,8 +83,7 @@ class WalletController extends Controller
         ]);
 
         // get user object of auth user
-
-        // get authorized code for the authenticated user on the Authorized_code table
+        $user = User::find(auth()->id());
 
         // check the authorization with paystack's Check Authorization endpoint for sufficient funds
 
