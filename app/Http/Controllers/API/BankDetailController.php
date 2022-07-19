@@ -43,10 +43,10 @@ class BankDetailController extends Controller
 
         // Create transfer receipient
         $response = $this->paystackService->createTranferRecipient($request->account_name, $request->account_number, $request->bank_code);
-        
+
         // Get recipient code from response
         $recipientcode = $response->data->recipient_code;
-        
+
         //dd($recipientcode);
 
         $bankDetails = BankDetail::create([
@@ -57,7 +57,7 @@ class BankDetailController extends Controller
             'bank_code' => $request->bank_code,
             'recipient_code' => $recipientcode
         ]);
-        
+
         return $this->successResponse(
             "Bank Details Added Successfully",
             [new BankDetailResource($bankDetails), $response->message],
@@ -65,9 +65,10 @@ class BankDetailController extends Controller
         );
     }
 
-    public function getBankDetail() {
+    public function getBankDetail()
+    {
         $user = auth()->user();
-        if(!$user->bankDetail) {
+        if (!$user->bankDetail) {
             return $this->failureResponse(
                 "No Bank Details Found",
                 Response::HTTP_NOT_FOUND
@@ -82,63 +83,70 @@ class BankDetailController extends Controller
         );
     }
 
-    public function updateBankDetail(Request $request, BankDetail $bankDetail)
-    {
-        
-        $request->validate([
-            'account_number' => ['required', 'string', 'min:3'],
-            'account_name' => ['required', 'min:3'],
-            'bank_name' => ['required', 'string', 'min:3'],
-        ]);
+    // public function updateBankDetail(Request $request, BankDetail $bankDetail)
+    // {
+
+    //     $request->validate([
+    //         'account_number' => ['required', 'string', 'min:3'],
+    //         'account_name' => ['required', 'min:3'],
+    //         'bank_name' => ['required', 'string', 'min:3'],
+    //     ]);
 
 
-        $this->authorize('update', $bankDetail);
+    //     $this->authorize('update', $bankDetail);
 
-        //Check if user already added the same bank details
-        $detail = BankDetail::where('user_id', auth()->id())
-            ->where('account_number', '=', $request->account_number)
-            ->where('bank_name', '=', $request->bank_name)
-            ->first();
+    //     //Check if user already added the same bank details
+    //     $detail = BankDetail::where('user_id', auth()->id())
+    //         ->where('account_number', '=', $request->account_number)
+    //         ->where('bank_name', '=', $request->bank_name)
+    //         ->first();
 
-        if ($detail) {
-            return $this->failureResponse(
-                "You added this Bank Detail already",
-                Response::HTTP_NOT_ACCEPTABLE
-            );
-        }
+    //     if ($detail) {
+    //         return $this->failureResponse(
+    //             "You added this Bank Detail already",
+    //             Response::HTTP_NOT_ACCEPTABLE
+    //         );
+    //     }
 
-        $bankDetail->update(
-                [
-                    'account_number' => $request->account_number,
-                    'account_name' => $request->account_name,
-                    'bank_name' => $request->bank_name,
-                ]
-            );
+    //     $bankDetail->update(
+    //         [
+    //             'account_number' => $request->account_number,
+    //             'account_name' => $request->account_name,
+    //             'bank_name' => $request->bank_name,
+    //         ]
+    //     );
 
-        $bankDetail->save();
+    //     $bankDetail->save();
 
-        return $this->successResponse(
-            "Bank Detail Updated",
-            [
-                'bankDetail' => new BankDetailResource($bankDetail)
-            ]
-        );
-    }
+    //     return $this->successResponse(
+    //         "Bank Detail Updated",
+    //         [
+    //             'bankDetail' => new BankDetailResource($bankDetail)
+    //         ]
+    //     );
+    // }
 
     public function deleteBankDetail(User $user, BankDetail $bankDetail)
     {
         $user = auth()->user();
 
         $bankDetail = $user->bankDetail;
-        
+
+        if (!$bankDetail) {
+            return $this->failureResponse(
+                "No Bank Details Found",
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
         $rcode = $bankDetail->recipient_code;
-        
+
         $this->authorize('delete', $bankDetail);
-        
+
         $response = $this->paystackService->deleteTranferRecipient($rcode);
 
         //dd($response);
-        
+
         $bankDetail->delete();
 
         return $this->successResponse(
@@ -147,6 +155,4 @@ class BankDetailController extends Controller
             Response::HTTP_NO_CONTENT
         );
     }
-
-
 }

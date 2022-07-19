@@ -63,7 +63,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
-    Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
+    // Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
     Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
 
     Route::post('users/verify-identity', [VerificationController::class, 'verifyBvn']);
