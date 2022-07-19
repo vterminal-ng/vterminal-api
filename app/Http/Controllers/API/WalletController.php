@@ -13,7 +13,7 @@ use Illuminate\Http\Response;
 
 class WalletController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, Generators;
 
     protected $paystackService;
 
@@ -85,12 +85,19 @@ class WalletController extends Controller
         // get user object of auth user
         $user = User::find(auth()->id());
 
-        // check the authorization with paystack's Check Authorization endpoint for sufficient funds
-
         // charge the card with paystacks Charge Authorization endpoint
+        $response = $this->paystackService->chargeAuthorization($request->email, $request->amount, $request->authCode, $this->generateReference());
 
-        // if successful, deposit into wallet.
+        // if transaction fialed, return falure
+        if ($response->data->status == "failed") {
+            return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
+        }
+
+        // if transation was successful,get amount from the verification and deposit into wallet.
+        $amountToDeposit = $response->data->amount / 100;
+        $user->deposit($amountToDeposit);
 
         // return success
+        return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
     }
 }

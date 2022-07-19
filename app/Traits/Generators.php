@@ -6,7 +6,13 @@ use Illuminate\Http\Response;
 
 trait Generators
 {
-    public function generateReference()
+
+    /**
+     * Generates a 16 character long alphanumeric reference string
+     *
+     * @return string
+     */
+    public function generateReference(): string
     {
         $noOfCharacters = 16;
         $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
