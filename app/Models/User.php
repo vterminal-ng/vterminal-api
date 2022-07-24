@@ -89,7 +89,6 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(Verification::class);
     }
 
-
     public function isMerchant()
     {
         return $this->role() === 'merchant';
@@ -98,5 +97,10 @@ class User extends Authenticatable implements Wallet
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPassword($token));
+    }
+
+    public function isProfileVerified()
+    {
+        return (bool)($this->hasVerifiedEmail() && $this->hasVerifiedPhone() && $this->userDetail && $this->bankDetail);
     }
 }
