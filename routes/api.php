@@ -36,24 +36,12 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
-    Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
+    // routes that need your email to be verified first
+    Route::group(['middleware' => ['verified.email']], function () {
+    });
 
-    Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
-    Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
-
-    //Update password
-    Route::post('users/password-update', [ProfileController::class, 'changePassword']);
-    //Update Email
-    Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
-    //Routes to User details CRUD functions
-    Route::post('users/user-details', [UserDetailController::class, 'create']);
-    Route::get('users/user-details', [UserDetailController::class, 'read']);
-    Route::patch('users/user-details', [UserDetailController::class, 'update']);
-    Route::put('users/user-details', [UserDetailController::class, 'update']);
-
+    // routes that needs user to be merchant
     Route::group(['middleware' => ['merchant.user']], function () {
         // CRUD functions routes for Merchant Details
         Route::post('users/merchant-details', [MerchantDetailController::class, 'create']);
@@ -61,6 +49,26 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
         Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
     });
+
+    Route::post('logout', [AuthController::class, 'logout']);
+
+    Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
+    Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
+
+    // Add or Update Email
+    Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
+
+    Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
+    Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
+
+    //Update password
+    Route::post('users/password-update', [ProfileController::class, 'changePassword']);
+
+    //Routes to User details CRUD functions
+    Route::post('users/user-details', [UserDetailController::class, 'create']);
+    Route::get('users/user-details', [UserDetailController::class, 'read']);
+    Route::patch('users/user-details', [UserDetailController::class, 'update']);
+    Route::put('users/user-details', [UserDetailController::class, 'update']);
 
     Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
