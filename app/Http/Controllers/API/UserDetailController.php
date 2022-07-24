@@ -17,7 +17,6 @@ class UserDetailController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'user_id' => ['required', 'integer', 'unique:user_details'],
             'first_name' => ['required', 'string', 'min:3'],
             'last_name' => ['required', 'string', 'min:3'],
             'other_names' => ['string', 'min:3'],
@@ -27,21 +26,10 @@ class UserDetailController extends Controller
             'referrer' => ['string']
         ]);
 
-        $user = User::findOrFail($request->user_id);
+        // get authenticated user instance
+        $user = auth()->user();
 
-        // Check if auth()->id is same as user_id
-        // Then return failure response if not the same
-        if(!(auth()->id() === $user->id)) {
-            return $this->failureResponse(
-                "You are not authorized to access this resource",
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-        // make sure that the user_id provided in the request belongs to the currently authenticated user 
-        //$this->authorize('create', $request->user_id);
-
-        $userDetails = UserDetail::create([
-            'user_id' => $request->user_id,
+        $userDetails = $user->userDetail()->create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'other_names' => $request->other_names,
@@ -99,27 +87,17 @@ class UserDetailController extends Controller
             'gender' => ['in:male,female']
         ]);
 
-        // $userId = auth()->id();
-
-        // $details = UserDetail::where('user_id','=', $userId)->get();
-
-        // if(!$details) {
-        //     return $this->failureResponse(
-        //         "User Details Not Found",
-        //         Response::HTTP_NOT_FOUND
-        //     );
-        // }
-
-        // $details->update([
-        //     'first_name' => $request->firstName,
-        //     'last_name' => $request->lastName,
-        //     'other_names' => $request->otherNames,
-        //     'date_of_birth' => $request->dateOfBirth,
-        //     'gender' => $request->gender
-        // ]);
-
         // get authenticated user instance
         $user = auth()->user();
+
+        // dd($user->userDetail);
+        if (!$user->userDetail) {
+            return $this->failureResponse(
+                "User Details Not Found",
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
         // dd($user);
 
         // using the relationship function between User and userDetail model to update the user details
