@@ -18,6 +18,7 @@ class BankDetailResource extends JsonResource
             "accountName" => $this->account_name,
             "accountNumber" => $this->account_number,
             "bankName" => $this->bank_name,
+            "bankCode" => $this->bank_code,
             "isVerified" => $this->is_verified,
             "user" => new UserResource($this->whenLoaded('user')),
         ];
