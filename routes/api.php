@@ -9,8 +9,10 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\PinController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
+use App\Models\Pin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -86,4 +88,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('cards/add', [AuthorizedCardController::class, 'add']);
     Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
     Route::get('cards/my-card', [AuthorizedCardController::class, 'getCard']);
+
+    // Create Transaction Pin
+    Route::post('users/create-pin', [PinController::class, 'create']);
+    Route::patch('users/update-transaction-pin', [PinController::class, 'update']);
 });

@@ -103,4 +103,8 @@ class User extends Authenticatable implements Wallet
     {
         return (bool)($this->hasVerifiedEmail() && $this->hasVerifiedPhone() && $this->userDetail && $this->bankDetail);
     }
+
+    public function userTransactionPin() {
+        return $this->hasOne(Pin::class);
+    }
 }

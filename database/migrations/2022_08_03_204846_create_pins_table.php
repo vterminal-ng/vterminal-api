@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('pins', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->unique();
+            $table->string('pin');
+            $table->enum('status', ['active', 'inactive']);
             $table->timestamps();
         });
     }
