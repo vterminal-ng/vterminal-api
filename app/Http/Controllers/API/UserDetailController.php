@@ -22,12 +22,14 @@ class UserDetailController extends Controller
             'other_names' => ['string', 'min:3'],
             'date_of_birth' => ['required'],
             'gender' => ['required', 'in:male,female'],
-            'referral_code' => ['string'],
+            //'referral_code' => ['string'],
             'referrer' => ['string']
         ]);
 
         // get authenticated user instance
         $user = auth()->user();
+
+        $refCode = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyz"), 0, 6);
 
         $userDetails = $user->userDetail()->create([
             'first_name' => $request->first_name,
@@ -35,7 +37,7 @@ class UserDetailController extends Controller
             'other_names' => $request->other_names,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
-            'referral_code' => $request->referral_code,
+            'referral_code' => $refCode,
             'referrer' => $request->referrer,
         ]);
 
