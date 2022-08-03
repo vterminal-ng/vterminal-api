@@ -95,7 +95,7 @@ class PinController extends Controller
      * @param  \App\Models\Pin  $pin
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pin $pin)
+    public function update(Request $request)
     {
         $request->validate([
             'new_pin' => ['string', 'size:6'],
@@ -112,15 +112,21 @@ class PinController extends Controller
             );
         }
 
-        $userPin = $user
-            ->userTransactionPin
-            ->fill($request->only(
-                [
-                    'pin',
-                ]
-            ));
+        $userPin = Pin::all();
+        $userPin->update([
+            'pin' => $request->new_pin
+        ]);
+        // $userPin = $user
+        //     ->userTransactionPin
+        //     ->fill($request->only(
+        //         [
+        //             'new_pin',
+        //         ]
+        //     ));
 
-        if ($userPin->isClean()) return $this->failureResponse('Please enter a transaction pin', Response::HTTP_NOT_ACCEPTABLE);
+        // if ($userPin->isClean()) {
+        //     return $this->failureResponse('Please enter a transaction pin', Response::HTTP_NOT_ACCEPTABLE);
+        // }
 
         $userPin->save();
 
