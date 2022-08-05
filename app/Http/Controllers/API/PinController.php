@@ -13,17 +13,7 @@ class PinController extends Controller
 
     use ApiResponder;
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
+     * For creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
@@ -37,7 +27,7 @@ class PinController extends Controller
         // get authenticated user instance
         $user = auth()->user();
 
-        if($user->userTransactionPin) {
+        if ($user->userTransactionPin) {
             return $this->failureResponse(
                 "Pin Created Already!",
                 Response::HTTP_NOT_ACCEPTABLE
@@ -50,42 +40,10 @@ class PinController extends Controller
         ]);
 
         return $this->successResponse(
-            "Transaction Pin Created Successfully", NULL,
+            "Transaction Pin Created Successfully",
+            NULL,
             Response::HTTP_CREATED
         );
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Pin  $pin
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Pin $pin)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Pin  $pin
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Pin $pin)
-    {
-        //
     }
 
     /**
@@ -131,19 +89,8 @@ class PinController extends Controller
         $userPin->save();
 
         return $this->successResponse(
-            "Transaction Pin Updated", NULL
+            "Transaction Pin Updated",
+            NULL
         );
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Pin  $pin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Pin $pin)
-    {
-        //
     }
 }
