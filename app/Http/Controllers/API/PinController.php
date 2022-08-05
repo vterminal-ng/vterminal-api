@@ -33,8 +33,7 @@ class PinController extends Controller
                 Response::HTTP_NOT_ACCEPTABLE
             );
         }
-        Pin::create([
-            'user_id' => $user->id,
+        $user->pin()->create([
             'pin' => $request->transaction_pin,
             'status' => 'active',
         ]);
