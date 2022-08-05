@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('pin');
             $table->enum('status', ['active', 'inactive']);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
