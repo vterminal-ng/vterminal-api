@@ -27,7 +27,7 @@ class PinController extends Controller
         // get authenticated user instance
         $user = auth()->user();
 
-        if ($user->userTransactionPin) {
+        if ($user->pin) {
             return $this->failureResponse(
                 "Pin Created Already!",
                 Response::HTTP_NOT_ACCEPTABLE
@@ -40,8 +40,7 @@ class PinController extends Controller
 
         return $this->successResponse(
             "Transaction Pin Created Successfully",
-            NULL,
-            Response::HTTP_CREATED
+            code: Response::HTTP_CREATED
         );
     }
 
