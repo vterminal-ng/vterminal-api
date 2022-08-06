@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             "hasVerifiedPhone" => $this->hasVerifiedPhone(),
             "hasVerifiedEmail" => $this->hasVerifiedEmail(),
             "isProfileVerifed" => $this->isProfileVerified(),
+            "hasSetPin" => $this->hasSetPin(),
             "userDetails" => new UserDetailResource($this->userDetail),
             "bankDetails" => new BankDetailResource($this->bankDetail),
             "walletBalance" => $this->balance,
