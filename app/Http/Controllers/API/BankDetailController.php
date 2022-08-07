@@ -76,10 +76,7 @@ class BankDetailController extends Controller
         }
         return $this->successResponse(
             "Bank Details Found",
-            [
-                "bank_details" => new BankDetailResource($user->bankDetails)
-            ],
-            Response::HTTP_FOUND
+            new BankDetailResource($user->bankDetail)
         );
     }
 
