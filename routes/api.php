@@ -91,5 +91,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Create Transaction Pin
     Route::post('users/create-pin', [PinController::class, 'create']);
-    Route::patch('users/update-transaction-pin', [PinController::class, 'update']);
+    Route::post('users/update-transaction-pin', [PinController::class, 'update']);
 });
