@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pin;
+use App\Rules\CheckCurrentAndNewPin;
+use App\Rules\CheckCurrentPin;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 
 class PinController extends Controller
 {
@@ -20,8 +23,7 @@ class PinController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'transaction_pin' => ['string', 'size:6'],
-            'status' => ['in:active,inactive'],
+            'pin' => ['required', 'string', 'size:4', 'confirmed'],
         ]);
 
         // get authenticated user instance
@@ -29,12 +31,12 @@ class PinController extends Controller
 
         if ($user->pin) {
             return $this->failureResponse(
-                "Pin Created Already!",
+                "Pin already created! Try updating pin",
                 Response::HTTP_NOT_ACCEPTABLE
             );
         }
         $user->pin()->create([
-            'pin' => $request->transaction_pin,
+            'pin' => Hash::make($request->pin),
             'status' => 'active',
         ]);
 
@@ -54,41 +56,16 @@ class PinController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'new_pin' => ['string', 'size:6'],
+            'current_pin' => ['required', new CheckCurrentPin()],
+            'new_pin' => ['required', 'size:4', new CheckCurrentAndNewPin(), 'confirmed'],
         ]);
 
-        // get authenticated user instance
         $user = auth()->user();
 
-        // dd($user->userDetail);
-        if (!$user->userTransactionPin) {
-            return $this->failureResponse(
-                "No Transaction Pin Set. Please create a new one",
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        $userPin = Pin::all();
-        $userPin->update([
-            'pin' => $request->new_pin
+        $user->pin()->update([
+            'pin' => Hash::make($request->new_pin)
         ]);
-        // $userPin = $user
-        //     ->userTransactionPin
-        //     ->fill($request->only(
-        //         [
-        //             'new_pin',
-        //         ]
-        //     ));
 
-        // if ($userPin->isClean()) {
-        //     return $this->failureResponse('Please enter a transaction pin', Response::HTTP_NOT_ACCEPTABLE);
-        // }
-
-        $userPin->save();
-
-        return $this->successResponse(
-            "Transaction Pin Updated",
-            NULL
-        );
+        return $this->successResponse("Transaction Pin Updated");
     }
 }
