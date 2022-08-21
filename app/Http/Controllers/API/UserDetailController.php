@@ -157,15 +157,19 @@ class UserDetailController extends Controller
             $user->userDetail()->update([
                 'profile_picture' => $avatar
             ]);
+
+            return $this->successResponse(
+                "Profile Picture Updated",
+                [
+                    "image_path" => 'storage/'.$avatar
+                ],
+                Response::HTTP_OK
+            );
+        } else {
+            return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return $this->successResponse(
-            "Profile Picture Updated",
-            [
-                "image_path" => 'storage/'.$avatar
-            ],
-            Response::HTTP_OK
-        );
+        
 
     }
 
