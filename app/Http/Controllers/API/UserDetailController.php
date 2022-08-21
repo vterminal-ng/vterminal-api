@@ -9,6 +9,8 @@ use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
+use Image;
 
 class UserDetailController extends Controller
 {
@@ -127,4 +129,44 @@ class UserDetailController extends Controller
             ]
         );
     }
+
+    public function uploadAvatar(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user->userDetail) {
+            return $this->failureResponse(
+                "No user details. Please update user details first.",
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $request->validate([
+            'image' => ['mimes:png,jpg,jpeg', 'max:2048']
+        ]);
+
+        if ($request->hasFile('image')) {
+
+            $destination = 'storage/' . $user->userDetail->profile_picture;
+
+            if (File::exists($destination)) {
+                File::delete($destination);
+            }
+
+            $avatar = $request->file('image')->store('avatars', 'public');
+
+            $user->userDetail()->update([
+                'profile_picture' => $avatar
+            ]);
+        }
+
+        return $this->successResponse(
+            "Profile Picture Updated",
+            [
+                "image_path" => 'storage/'.$avatar
+            ],
+            Response::HTTP_OK
+        );
+
+    }
+
 }

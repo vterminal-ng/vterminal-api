@@ -72,6 +72,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('users/user-details', [UserDetailController::class, 'update']);
     Route::put('users/user-details', [UserDetailController::class, 'update']);
 
+    Route::post('users/avatar', [UserDetailController::class, 'uploadAvatar']);
+
     Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
     // Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
