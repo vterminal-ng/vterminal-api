@@ -18,4 +18,9 @@ trait Generators
         $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
         return substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
     }
+
+    public function generateTransCode(): string
+    {
+        return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 6)), 0, 6);
+    }
 }
