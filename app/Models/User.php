@@ -68,11 +68,6 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(AuthorizedCard::class);
     }
 
-    public function role()
-    {
-        return $this->role;
-    }
-
     public function hasVerifiedPhone()
     {
         return (bool)$this->phone_number_verified_at;
@@ -92,7 +87,7 @@ class User extends Authenticatable implements Wallet
 
     public function isMerchant()
     {
-        return $this->role() === 'merchant';
+        return $this->role === 'merchant';
     }
 
     public function sendPasswordResetNotification($token)
