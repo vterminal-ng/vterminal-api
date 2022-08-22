@@ -12,6 +12,7 @@ use App\Http\Controllers\API\BankDetailController;
 use App\Http\Controllers\API\PinController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
+use App\Http\Controllers\API\SupportTicketController;
 use App\Models\Pin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -94,4 +95,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Create Transaction Pin
     Route::post('users/create-pin', [PinController::class, 'create']);
     Route::post('users/update-transaction-pin', [PinController::class, 'update']);
+
+    // Dispute Transaction, Create Support Ticket
+    Route::post('users/dispute/transaction/{transaction}', [SupportTicketController::class, 'dispute']);
 });
