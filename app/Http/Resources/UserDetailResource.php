@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserDetailResource extends JsonResource
 {
@@ -24,6 +25,7 @@ class UserDetailResource extends JsonResource
             "gender" => $this->gender,
             "referralCode" => $this->referral_code,
             "referrer" => $this->referrer,
+            "profilePicture" => Storage::disk('public')->url($this->profile_picture),
             "user" => new UserResource($this->whenLoaded('user')),
 
         ];
