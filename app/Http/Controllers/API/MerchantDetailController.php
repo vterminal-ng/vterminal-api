@@ -14,11 +14,12 @@ class MerchantDetailController extends Controller
 {
     use ApiResponder;
 
-    public function create(Request $request) {
+    public function create(Request $request)
+    {
         $request->validate([
             'user_id' => ['required', 'integer'],
             'business_name' => ['required', 'string', 'min:3', 'unique:merchant_details,business_name'],
-            'business_state' => ['required', 'alpha', 'min:1'],
+            'business_state' => ['required', 'string', 'min:1'],
             'business_address' => ['required', 'string', 'min:5'],
             'has_physical_location' => ['required']
         ]);
@@ -27,7 +28,7 @@ class MerchantDetailController extends Controller
 
         // Check if auth()->id is same as user_id
         // Then return failure response if not the same
-        if(!(auth()->id() === $user->id)) {
+        if (!(auth()->id() === $user->id)) {
             return $this->failureResponse(
                 "You are not authorized to access this resource",
                 Response::HTTP_UNAUTHORIZED
@@ -53,13 +54,14 @@ class MerchantDetailController extends Controller
         );
     }
 
-    public function read() {
+    public function read()
+    {
         // $userId = auth()->id();
 
         // $merchant_details = MerchantDetail::where('user_id','=', $userId)->first();
 
         $user = auth()->user();
-        if(!$user->MerchantDetail) {
+        if (!$user->MerchantDetail) {
             return $this->failureResponse(
                 "No Merchant Details",
                 Response::HTTP_NOT_FOUND
@@ -72,7 +74,6 @@ class MerchantDetailController extends Controller
             ],
             Response::HTTP_FOUND
         );
-
     }
 
     public function update(Request $request)
