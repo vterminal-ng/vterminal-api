@@ -76,7 +76,7 @@ class OtpController extends Controller
         }
 
         // The sms message
-        $message = "Your Vterminal OTP is $otp. If you did not request a OTP, no further action is required.";
+        $message = "Your Vterminal OTP is $otp. It expires in 60 minutes. If you did not request a OTP, no further action is required.";
 
         // Send SMS
         $response = $this->termiiService->sendSms($request->phone_number, $message);

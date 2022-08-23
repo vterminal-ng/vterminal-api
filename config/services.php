@@ -56,7 +56,7 @@ return [
         /**
          * Represents a sender ID which can be alphanumeric or numeric. Alphanumeric sender ID length should be between 3 and 11 characters (Example:CompanyName)
          */
-        "from" => "VTerminal",
+        "from" => env('TERMII_SENDER_ID', 'VTerminal'),
 
         /**
          * This is the route through which the message is sent. It is either dnd, WhatsApp, or generic
