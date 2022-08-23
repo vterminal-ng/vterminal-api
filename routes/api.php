@@ -39,11 +39,11 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
-
+    
     // routes that need your email to be verified first
     Route::group(['middleware' => ['verified.email']], function () {
     });
-
+    
     // routes that needs user to be merchant
     Route::group(['middleware' => ['merchant.user']], function () {
         // CRUD functions routes for Merchant Details
@@ -52,21 +52,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
         Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
     });
-
+    
     Route::post('logout', [AuthController::class, 'logout']);
-
+    
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
     Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
-
+    
     // Add or Update Email
     Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
-
+    
     Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
     Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
-
+    
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
-
+    
     //Routes to User details CRUD functions
     Route::post('users/user-details', [UserDetailController::class, 'create']);
     Route::get('users/user-details', [UserDetailController::class, 'read']);
@@ -74,19 +74,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('users/user-details', [UserDetailController::class, 'update']);
 
     Route::post('users/avatar', [UserDetailController::class, 'uploadAvatar']);
-
+    
     Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
     Route::post('users/bank-details', [BankDetailController::class, 'create']);
     // Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
     Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
-
+    
     Route::post('users/verify-identity', [VerificationController::class, 'verifyBvn']);
-
+    
     // Wallet
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
     Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
     Route::post('my-wallet/deposit-with-saved-card', [WalletController::class, 'depositWithSavedCard']);
-
+    
     //Card
     Route::post('cards/add', [AuthorizedCardController::class, 'add']);
     Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
@@ -95,7 +95,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Create Transaction Pin
     Route::post('users/create-pin', [PinController::class, 'create']);
     Route::post('users/update-transaction-pin', [PinController::class, 'update']);
-
     // Dispute Transaction, Create Support Ticket
-    Route::post('users/dispute/transaction/{transaction}', [SupportTicketController::class, 'dispute']);
+    Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
+
 });
