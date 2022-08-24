@@ -68,6 +68,19 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(AuthorizedCard::class);
     }
 
+
+    public function verification()
+    {
+        return $this->hasOne(Verification::class);
+    }
+
+    public function pin()
+    {
+        return $this->hasOne(Pin::class);
+    }
+
+    ############################################################
+
     public function role()
     {
         return $this->role;
@@ -85,11 +98,6 @@ class User extends Authenticatable implements Wallet
         ])->save();
     }
 
-    public function verification()
-    {
-        return $this->hasOne(Verification::class);
-    }
-
     public function isMerchant()
     {
         return $this->role() === 'merchant';
@@ -102,11 +110,6 @@ class User extends Authenticatable implements Wallet
 
     public function isProfileVerified()
     {
-        return (bool)($this->hasVerifiedEmail() && $this->hasVerifiedPhone() && $this->userDetail && $this->bankDetail);
-    }
-
-    public function pin()
-    {
-        return $this->hasOne(Pin::class);
+        return (bool)($this->hasVerifiedEmail() && $this->hasVerifiedPhone() && $this->userDetail && $this->bankDetail && $this->pin);
     }
 }
