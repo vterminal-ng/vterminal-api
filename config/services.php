@@ -111,6 +111,9 @@ return [
         'secret' => env('PAYSTACK_SECRET_KEY', 'sk_test_570f4a5e56689f1a14aae854dec4de39913c03c6'),
         'base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co'),
     ],
-
+    'nuban' => [
+        'api_key' => env('NUBAN_API_KEY'),
+        'base_url' => env('NUBAN_BASE_URL'),
+    ],
 
 ];

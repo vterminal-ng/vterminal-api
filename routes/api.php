@@ -13,6 +13,7 @@ use App\Http\Controllers\API\PinController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
 use App\Http\Controllers\API\SupportTicketController;
+use App\Models\BankDetail;
 use App\Models\Pin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -98,4 +99,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Dispute Transaction, Create Support Ticket
     Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
 
+    // NUBAN Endpoints
+    Route::get('/bank-codes', [BankDetailController::class, 'get_bank_codes']);
+    Route::get('users/nuban-details/', [BankDetailController::class, 'getNubanDetails']);
 });

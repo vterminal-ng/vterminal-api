@@ -7,6 +7,7 @@ use App\Http\Resources\BankDetailResource;
 use App\Models\BankDetail;
 use App\Models\User;
 use App\Services\PaystackService;
+use App\Services\NubanService;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,10 +18,12 @@ class BankDetailController extends Controller
 
     protected $paystackService;
 
-    public function __construct(PaystackService $paystackService)
+    public function __construct(PaystackService $paystackService, NubanService $nubanService)
     {
         $this->paystackService = $paystackService;
+        $this->nubanService = $nubanService;
     }
+
 
     public function create(Request $request)
     {
@@ -151,5 +154,24 @@ class BankDetailController extends Controller
             NULL,
             Response::HTTP_NO_CONTENT
         );
+    }
+
+    public function get_bank_codes() {
+        $codes = $this->nubanService->getBankCodes();
+
+        return $codes->data;
+
+    }
+
+    public function getNubanDetails(Request $request) {
+        //dd($request->all());
+        $request->validate([
+            'acc_no' => ['required', 'string', 'size:10'],
+        ]);
+
+        $codes = $this->nubanService->getBankDetails($request->acc_no);
+
+        return $codes;
+
     }
 }
