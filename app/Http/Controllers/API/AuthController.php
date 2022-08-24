@@ -72,10 +72,7 @@ class AuthController extends Controller
         $user = User::where('phone_number', $request->phone_number)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Incorrect login credentials'
-            ]);
+            return $this->failureResponse('Incorrect login credentials', Response::HTTP_UNAUTHORIZED);
         }
 
         // delete any existing token for the user
@@ -88,12 +85,12 @@ class AuthController extends Controller
             "Login Successful",
             [
                 "token" => $token,
-            ],
-            Response::HTTP_OK
+            ]
         );
     }
 
-    function emailLogin(Request $request) {
+    function emailLogin(Request $request)
+    {
         // logging in with email and password
 
         $request->validate([
@@ -105,10 +102,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Incorrect login credentials'
-            ]);
+            return $this->failureResponse('Incorrect login credentials', Response::HTTP_UNAUTHORIZED);
         }
 
         // delete any existing token for the user
@@ -121,18 +115,15 @@ class AuthController extends Controller
             "Login Successful",
             [
                 "token" => $token,
-            ],
-            Response::HTTP_OK
+            ]
         );
     }
-    
+
     function logout()
     {
         // delete token for the logged in user
         auth("sanctum")->user()->tokens()->delete();
 
-        return $this->successResponse(
-            "Logout Successful", NULL, Response::HTTP_OK
-        );
+        return $this->successResponse("Logout Successful");
     }
 }
