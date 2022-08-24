@@ -10,6 +10,7 @@ use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
 use App\Http\Controllers\API\PinController;
+use App\Http\Controllers\API\StateController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
 use App\Models\Pin;
@@ -32,6 +33,7 @@ Route::get('me', [MeController::class, 'getMe']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('login/email', [AuthController::class, 'emailLogin']);
+Route::get('states', [StateController::class, 'getStates']);
 
 Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
