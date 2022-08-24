@@ -122,6 +122,11 @@ class Handler extends ExceptionHandler
             return $this->failureResponse("You are not logged in", Response::HTTP_UNAUTHORIZED);
         }
 
+        if ($exception instanceof InvalidTransactionPin) {
+
+            return $this->failureResponse('Invalid Transaction Pin', Response::HTTP_UNAUTHORIZED);
+        }
+
         if ($exception instanceof ValidationException) {
             $errors = $exception->validator->errors()->getMessages();
 
