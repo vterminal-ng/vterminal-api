@@ -111,6 +111,11 @@ class Handler extends ExceptionHandler
             return $this->failureResponse("You are not authorized to access this resource", Response::HTTP_FORBIDDEN);
         }
 
+        if ($exception instanceof IncorrectOrExpiredOtp) {
+
+            return $this->failureResponse("Incorrect or expired otp", Response::HTTP_UNAUTHORIZED);
+        }
+
         if ($exception instanceof ModelNotFoundException) {
             $model = strtolower(class_basename($exception->getModel()));
 

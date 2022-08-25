@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Exceptions\IncorrectOrExpiredOtp;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -31,9 +32,12 @@ trait OtpCheck
 
     public function checkOtpValidity(Request $request, $otpRecord)
     {
+        // dd(Hash::check($request->otp, $otpRecord->otp));
         if (!Hash::check($request->otp, $otpRecord->otp) || $this->isOtpExpired($otpRecord->created_at)) {
-            return $this->failureResponse("Incorrect or expired otp", Response::HTTP_UNAUTHORIZED);
+            // dd("I AM SUPPOSED FAIL");
+            throw new IncorrectOrExpiredOtp();
         }
+        // dd("I DID FAIL OOOOO");
     }
 
     public function checkIfUserCanVerifyThisOtp(User $user)
