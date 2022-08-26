@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Exceptions\InvalidTransactionPin;
 use Illuminate\Support\Facades\Hash;
 
 trait HasPin
@@ -11,8 +12,10 @@ trait HasPin
         return !is_null($this->pin);
     }
 
-    public function validatePin($pin): bool
+    public function validatePin($pin)
     {
-        return Hash::check($pin, $this->pin->pin);
+        if (!Hash::check($pin, $this->pin->pin)) {
+            throw new InvalidTransactionPin;
+        }
     }
 }
