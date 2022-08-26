@@ -24,13 +24,13 @@ class AuthorizedCardController extends Controller
     public function add(Request $request)
     {
         $request->validate([
-            'reference' => ['required', 'string']
+            'paystack_reference' => ['required', 'string']
         ]);
 
         $user = User::find(auth()->id());
 
         // validate transaction ref
-        $paystackResponse = $this->paystackService->verifyTransaction($request->reference);
+        $paystackResponse = $this->paystackService->verifyTransaction($request->paystack_reference);
 
         // dd($paystackResponse);
 
@@ -50,11 +50,13 @@ class AuthorizedCardController extends Controller
             "bank" => $paystackResponse->data->authorization->bank,
             "signature" => $paystackResponse->data->authorization->signature,
             "account_name" => $paystackResponse->data->authorization->account_name,
-            "reference" => $request->reference,
+            "reference" => $request->paystack_reference,
         ]);
 
         // refund transaction
-        $this->paystackService->refundTransaction($request->reference);
+        if ($paystackResponse->data->status == "success") {
+            $this->paystackService->refundTransaction($request->paystack_reference);
+        }
 
         // return success
         return $this->successResponse("Card saved successfully!", new AuthorizedCardResource($authorizedCard), Response::HTTP_CREATED);
