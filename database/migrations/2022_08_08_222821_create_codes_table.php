@@ -18,11 +18,13 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('merchant_id')->nullable();
             $table->string('code')->unique();
-            $table->string('transaction_type');
-            $table->enum('status', ['pending', 'active', 'complete', 'cancelled'])->default('pending');
-            $table->integer('amount');
+            $table->enum('transaction_type', ['withdrawal', 'deposit']);
+            $table->enum('status', ['pending', 'active', 'complete', 'cancelled', 'expired'])->default('pending');
+            $table->integer('subtotal_amount');
+            $table->integer('total_amount');
             $table->integer('charge_amount');
-            $table->boolean('charge_on_card');
+            $table->string('reference');
+            $table->enum('charge_from', ['cash', 'card']);
             $table->string('vterminal_charge')->nullable();
             $table->string('merchant_charge')->nullable();
 

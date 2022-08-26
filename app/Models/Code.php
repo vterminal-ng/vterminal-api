@@ -15,9 +15,11 @@ class Code extends Model
         'code',
         'transaction_type',
         'status',
-        'amount',
+        'subtotal_amount',
+        'total_amount',
         'charge_amount',
-        'charge_on_card',
+        'charge_from',
+        'reference',
         'vterminal_charge',
         'merchant_charge',
     ];

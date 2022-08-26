@@ -9,6 +9,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\CodeController;
 use App\Http\Controllers\API\PinController;
 use App\Http\Controllers\API\StateController;
 use App\Http\Controllers\API\VerificationController;
@@ -94,4 +95,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Create Transaction Pin
     Route::post('users/create-pin', [PinController::class, 'create']);
     Route::post('users/update-transaction-pin', [PinController::class, 'update']);
+
+    Route::get('cdoe/generate', [CodeController::class, 'generateCode']);
+    Route::post('cdoe/transaction/summary', [CodeController::class, 'transactionSummary']);
+    Route::post('cdoe/transaction/activate', [CodeController::class, 'activateCode']);
+    Route::post('cdoe/transaction/cancel', [CodeController::class, 'cancelCode']);
 });

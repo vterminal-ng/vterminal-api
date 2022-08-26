@@ -2,10 +2,11 @@
 
 namespace App\Constants;
 
-class Status
+class CodeStatus
 {
     public const PENDING = "pending";
     public const ACTIVE = "active";
     public const COMPLETE = "complete";
     public const CANCELLED = "cancelled";
+    public const EXPIRED = "expired";
 }
