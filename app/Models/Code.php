@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Code extends Model
 {
@@ -33,5 +34,16 @@ class Code extends Model
     public function merchant()
     {
         return $this->belongsTo(User::class, 'merchant_id');
+    }
+
+    public function isCodeExpired()
+    {
+        $now = Carbon::now()->timestamp;
+
+        $timeDifference = $now - strtotime($this->created_at);
+
+        $minutes = round($timeDifference / 60);
+
+        return $minutes > 60;
     }
 }

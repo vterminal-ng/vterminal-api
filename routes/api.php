@@ -100,10 +100,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/create-pin', [PinController::class, 'create']);
     Route::post('users/update-transaction-pin', [PinController::class, 'update']);
 
-    Route::get('cdoe/generate', [CodeController::class, 'generateCode']);
-    Route::post('cdoe/transaction/summary', [CodeController::class, 'transactionSummary']);
-    Route::post('cdoe/transaction/activate', [CodeController::class, 'activateCode']);
-    Route::post('cdoe/transaction/cancel', [CodeController::class, 'cancelCode']);
+    Route::get('code/generate', [CodeController::class, 'generateCode']);
+    Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
+    Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
+    Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+
     // Dispute Transaction, Create Support Ticket
     Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
 

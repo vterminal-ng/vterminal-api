@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Code;
 use App\Models\MerchantDetail;
 use App\Models\UserDetail;
+use App\Policies\CodePolicy;
 use App\Policies\MerchantDetailPolicy;
 use App\Policies\UserDetailPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         UserDetail::class => UserDetailPolicy::class,
         MerchantDetail::class => MerchantDetailPolicy::class,
+        Code::class => CodePolicy::class,
     ];
 
     /**

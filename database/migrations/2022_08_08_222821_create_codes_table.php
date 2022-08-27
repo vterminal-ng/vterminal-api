@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('merchant_id')->nullable();
             $table->string('code')->unique();
             $table->enum('transaction_type', ['withdrawal', 'deposit']);
-            $table->enum('status', ['pending', 'active', 'complete', 'cancelled', 'expired'])->default('pending');
+            $table->enum('status', ['pending', 'active', 'completed', 'cancelled'])->default('pending');
             $table->integer('subtotal_amount');
             $table->integer('total_amount');
             $table->integer('charge_amount');

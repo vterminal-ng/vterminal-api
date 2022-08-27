@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Constants\CodeStatus;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CodeResource;
 use App\Models\Code;
 use App\Models\User;
 use App\Services\PaystackService;
@@ -44,7 +45,10 @@ class CodeController extends Controller
         $subtotal = $request->amount;
 
         // total
-        $total = $request->amount + $charge;
+        if ($request->charge_from == 'card')
+            $total = $request->amount + $charge;
+        else
+            $total = $subtotal;
 
         // is card charged
 
@@ -61,7 +65,6 @@ class CodeController extends Controller
     public function generateCode(Request $request)
     {
         $request->validate([
-            'customer' => ['email', 'exists:user,email'],
             "transaction_type" => ['required', 'in:withdrawal,deposit'],
             "subtotal_amount" => ['required', 'integer'],
             "charge_amount" => ['required', 'integer'],
@@ -70,18 +73,10 @@ class CodeController extends Controller
             'pin' => ['required'],
         ]);
 
+
         $user = auth()->user();
 
-        // A merchant can creat code on behalf of a customer by providing the customers email, 
-        // the customer will, in turn, type in his/her pin
-        if ($request->exists('customer')) {
-            $user = User::where('email', $request->customer);
-
-            // check if the user the merchant is helping to generate code has a verified profile
-            if (!$user->isProfileVerified()) {
-                return $this->failureResponse("This user has not verified their profile. Kindly verify profile before you proceed", Response::HTTP_BAD_REQUEST);
-            }
-        }
+        //TODO: Check if user has pending code already
 
         // check if pin is valid, if it isnt, it throw the InvalidTransactionPin Exception
         $user->validatePin($request->pin);
@@ -89,6 +84,8 @@ class CodeController extends Controller
 
         // gen 6 digit random code
         $transactionCode = $this->generateTransCode();
+
+        //TODO: check if code already exists, if it does, send failure response
 
         // gen 16 digit transaction reference
         $reference = $this->generateReference();
@@ -105,7 +102,7 @@ class CodeController extends Controller
             'reference' => $reference,
         ]);
 
-        return $this->successResponse("Generated code successfully", $code);
+        return $this->successResponse("Generated code successfully", new CodeResource($code));
     }
 
     public function activateCode(Request $request)
@@ -129,10 +126,9 @@ class CodeController extends Controller
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
         if ($code->status != CodeStatus::PENDING) {
-            $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
-
             // refund payment
             $this->paystackService->refundTransaction($request->paystack_reference);
+            return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
         }
 
         // activate code
@@ -142,5 +138,44 @@ class CodeController extends Controller
 
         // return 
         return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
+    }
+
+    public function cancelCode(Request $request)
+    {
+        $request->validate([
+            'code' => ['required', 'exists:codes,code'],
+            'pin' => ['required'],
+        ]);
+
+        $code = Code::where('code', $request->code);
+
+        $this->authorize('cancel', $code->customer_id);
+
+        $code->customer()->validatePin($request->pin);
+
+        if ($code->status != CodeStatus::PENDING || $code->status != CodeStatus::ACTIVE) {
+            return $this->failureResponse('This code is already canclled or completed', Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($code->status == CodeStatus::ACTIVE) {
+            // deposit user wallet
+            $code->customer()->deposit($code->total_amount);
+
+            // cancel code
+            $code->forceFill([
+                'status' => CodeStatus::CANCELLED
+            ])->save();
+
+            // return
+            return $this->successResponse('Code cancelled successfully and wallet has been credited');
+        }
+
+        // cancel code
+        $code->forceFill([
+            'status' => CodeStatus::CANCELLED
+        ])->save();
+
+        // return
+        return $this->successResponse('Code cancelled successfully');
     }
 }
