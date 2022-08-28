@@ -140,16 +140,57 @@ class CodeController extends Controller
         return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
     }
 
+    public function activateCodeWithSavedCard(Request $request)
+    {
+        // validate pystack ref
+        $request->validate([
+            'paystack_auth_code' => ['required'],
+            'transaction_code' => ['required', 'exists:codes,code']
+        ]);
+
+        $code = Code::where('code', $request->transaction_code);
+
+        // if transaction code status is \anything other than PENDING, then it is invalid,
+        // we can't activate code that isn't pending
+        if ($code->status != CodeStatus::PENDING) {
+            // refund payment
+            return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
+        }
+
+        // authorize authcode
+        $this->authorize('activateWithSavedCard', $code);
+
+        $response = $this->paystackService->chargeAuthorization(
+            $code->customer->email,
+            $code->total_amount,
+            $code->customer->authorizedCard->authorization_code,
+            $this->generateReference()
+        );
+
+        // if transaction fialed, return falure
+        if ($response->data->status == "failed") {
+            return $this->failureResponse("Activation failed! reason: $response->data->status", Response::HTTP_OK);
+        }
+
+        // activate code
+        $code->forceFill([
+            'status' => CodeStatus::ACTIVE
+        ])->save();
+
+        // return 
+        return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
+    }
+
     public function cancelCode(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'exists:codes,code'],
+            'transaction_code' => ['required', 'exists:codes,code'],
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->code);
+        $code = Code::where('code', $request->transaction_code);
 
-        $this->authorize('cancel', $code->customer_id);
+        $this->authorize('cancel', $code);
 
         $code->customer()->validatePin($request->pin);
 
