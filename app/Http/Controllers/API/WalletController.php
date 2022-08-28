@@ -86,7 +86,8 @@ class WalletController extends Controller
         $user = User::find(auth()->id());
 
         // charge the card with paystacks Charge Authorization endpoint
-        $response = $this->paystackService->chargeAuthorization($user->email, $request->amount, $request->authCode, $this->generateReference());
+        $amountInKobo = $request->amount * 100;
+        $response = $this->paystackService->chargeAuthorization($user->email, $amountInKobo, $request->authCode, $this->generateReference());
 
         // if transaction fialed, return falure
         if ($response->data->status == "failed") {

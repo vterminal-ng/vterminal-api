@@ -55,9 +55,9 @@ class CodeController extends Controller
         //return
         return $this->successResponse("Transaction summary retrieved", [
             'transactionType' => $request->transaction_type,
-            'subtotal' => $request->amount,
-            'charge' => $charge,
-            'total' => $total,
+            'subtotal' => (int)$request->amount,
+            'charge' => (int)$charge,
+            'total' => (int)$total,
             'chargeFrom' => $request->charge_from
         ]);
     }
@@ -160,9 +160,10 @@ class CodeController extends Controller
         // authorize authcode
         $this->authorize('activateWithSavedCard', $code);
 
+        $totalAmountInKobo = $code->total_amount * 100;
         $response = $this->paystackService->chargeAuthorization(
             $code->customer->email,
-            $code->total_amount,
+            $totalAmountInKobo,
             $code->customer->authorizedCard->authorization_code,
             $this->generateReference()
         );
