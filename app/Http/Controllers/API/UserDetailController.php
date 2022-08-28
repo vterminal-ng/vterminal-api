@@ -27,9 +27,10 @@ class UserDetailController extends Controller
             //'referral_code' => ['string'],
             'referrer',
         ]);
-        // dd($request->has('referrer'));
+
         //check if the referrer code exists
-        if ($request->has('referrer') && !UserDetail::where('referrer', $request->referrer)->get()) {
+        $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
+        if ($request->has('referrer') && !$userDetail) {
             return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
