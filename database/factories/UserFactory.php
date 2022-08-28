@@ -18,7 +18,7 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'phone_number' => $this->faker->unique()->phoneNumber(),
+            'phone_number' => '234' . $this->faker->randomElement(['81', '91', '80', '90', '70']) . $this->faker->numerify('########'),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'phone_number_verified_at' => now(),
