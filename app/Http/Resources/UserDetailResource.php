@@ -25,7 +25,7 @@ class UserDetailResource extends JsonResource
             "gender" => $this->gender,
             "referralCode" => $this->referral_code,
             "referrer" => $this->referrer,
-            "profilePicture" => Storage::disk('public')->url($this->profile_picture),
+            "profilePicture" => is_null($this->profile_picture) ? null : Storage::disk('public')->url($this->profile_picture),
             "user" => new UserResource($this->whenLoaded('user')),
 
         ];
