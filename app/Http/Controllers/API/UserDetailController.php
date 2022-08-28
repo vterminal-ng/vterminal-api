@@ -25,11 +25,18 @@ class UserDetailController extends Controller
             'date_of_birth' => ['required'],
             'gender' => ['required', 'in:male,female'],
             //'referral_code' => ['string'],
-            'referrer' => ['string']
+            'referrer',
         ]);
+
+        //check if the referrer code exists
+        if ($request->has('referrer') && !UserDetail::where('referrer', $request->referrer)->first()) {
+            return $this->failureResponse(['referrer' => ['Invalid referral code']], 422);
+        }
 
         // get authenticated user instance
         $user = auth()->user();
+
+
 
         $refCode = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyz"), 0, 6);
 
@@ -161,16 +168,12 @@ class UserDetailController extends Controller
             return $this->successResponse(
                 "Profile Picture Updated",
                 [
-                    "image_path" => 'storage/'.$avatar
+                    "image_path" => 'storage/' . $avatar
                 ],
                 Response::HTTP_OK
             );
         } else {
             return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        
-
     }
-
 }
