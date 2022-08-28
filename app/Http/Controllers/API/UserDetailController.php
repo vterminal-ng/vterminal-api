@@ -21,20 +21,24 @@ class UserDetailController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'min:3'],
             'last_name' => ['required', 'string', 'min:3'],
-            'other_names' => ['string', 'min:3'],
+            'other_names',
             'date_of_birth' => ['required'],
             'gender' => ['required', 'in:male,female'],
             //'referral_code' => ['string'],
             'referrer',
         ]);
-
+        // dd($request->has('referrer'));
         //check if the referrer code exists
-        if ($request->has('referrer') && !UserDetail::where('referrer', $request->referrer)->first()) {
-            return $this->failureResponse(['referrer' => ['Invalid referral code']], 422);
+        if ($request->has('referrer') && !UserDetail::where('referrer', $request->referrer)->get()) {
+            return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         // get authenticated user instance
         $user = auth()->user();
+
+        if ($user->userDetail) {
+            return $this->failureResponse("This user already have details, Use update route instead", Response::HTTP_BAD_REQUEST);
+        }
 
 
 
