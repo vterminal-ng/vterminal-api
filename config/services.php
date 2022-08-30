@@ -115,5 +115,11 @@ return [
         'api_key' => env('NUBAN_API_KEY'),
         'base_url' => env('NUBAN_BASE_URL'),
     ],
+    'verify_me' => [
+        'base_url' => env('VERIFYME_BASE_URL'),
+        'public_key' => env('VERIFYME_PUBLIC_KEY'),
+        'test_secret_key' => env('VERIFYME_TEST_SECRET_KEY'),
+        'secret_key' => env('VERIFYME_SECRET_KEY'),
+    ]
 
 ];

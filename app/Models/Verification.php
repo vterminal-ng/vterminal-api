@@ -12,6 +12,7 @@ class Verification extends Model
     protected $fillable = [
         'user_id',
         'identity_type',
+        'identity_number',
         'id_base64_string',
         'passport_base64_string',
         'first_name',

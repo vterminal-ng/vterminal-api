@@ -16,18 +16,18 @@ return new class extends Migration
         Schema::create('verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license']);
+            $table->enum('identity_type', ['bvn', 'voters_card', 'nin', 'drivers_license', 'passport']);
             $table->string('identity_number')->unique();
-            $table->string('id_base64_string');
-            $table->string('passport_base64_string');
+            $table->string('id_base64_string')->nullable();
+            $table->string('passport_base64_string')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('middle_name');
             $table->string('date_of_birth');
-            $table->string('reference');
-            $table->string('payload');
+            $table->string('reference')->nullable();
+            $table->json('payload');
             $table->string('phone_number')->unique();
-            $table->enum('gender', ['male', 'female']);
+            $table->enum('gender', ['m', 'male', 'f', 'female']);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
