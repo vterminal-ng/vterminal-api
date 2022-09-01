@@ -33,33 +33,71 @@ class CodeController extends Controller
             'amount' => ['required', 'integer'],
             "transaction_type" => ['required', 'in:withdrawal,deposit'],
             'charge_from' => ['required', 'in:cash,card'],
+            'use_saved_bank' => ['required_if:transaction_type,deposit', 'boolean'],
         ]);
 
-        // calculate charge
-        $charge = 100;
-        if ($request->amount > 10000) {
-            $charge = ceil($request->amount / 10000) * 100;
-        }
+        $summary = [];
 
+        // calculate charge
+        switch ($request->transaction_type) {
+            case TransactionType::VWITHDRAWAL:
+                $charge = 100;
+                if ($request->amount > 10000) {
+                    $charge = ceil($request->amount / 10000) * 100;
+                }
+                break;
+            case TransactionType::VDEPOSIT:
+                $charge = 50;
+                if ($request->amount > 10000) {
+                    $charge = ceil($request->amount / 10000) * 50;
+                }
+        }
         // subtotal
         $subtotal = $request->amount;
 
         // total
-        if ($request->charge_from == 'card')
+        if ($request->charge_from == 'card' || $request->transaction_type == TransactionType::VDEPOSIT)
             $total = $request->amount + $charge;
         else
             $total = $subtotal;
 
-        // is card charged
+        $summary['transactionType'] = $request->transaction_type;
+        $summary['subtotal'] = (int)$subtotal;
+        $summary['charge'] = (int)$charge;
+        $summary['total'] = (int)$total;
+        $summary['chargeFrom'] = $request->charge_from;
+
+        // Adding deposit specific fields
+        if ($request->transaction_type == TransactionType::VDEPOSIT) {
+            $user = auth()->user();
+            $summary['accountName'] = $user->bankDetail->account_name;
+            $summary['accountNumber'] = $user->bankDetail->account_number;
+            $summary['bankName'] = $user->bankDetail->bank_name;
+            $summary['transferRecipientCode'] = $user->bankDetail->recipient_code;
+
+            // if we are not using the bank details saved in our profile, then we generate new transfer recipient code
+            if ($request->use_saved_bank == false) {
+                $request->validate([
+                    'bank_name' => ['required'],
+                    'account_name' => ['required'],
+                    'account_number' => ['required'],
+                    'bank_code' => ['required'],
+                ]);
+                $response = $this->paystackService->createTranferRecipient(
+                    $request->account_name,
+                    $request->account_number,
+                    $request->bank_code
+                );
+
+                $summary['transferRecipientCode'] = $response->data->recipient_code;
+                $summary['accountName'] = $request->account_name;
+                $summary['accountNumber'] = $request->account_number;
+                $summary['bankName'] = $request->bank_name;
+            }
+        }
 
         //return
-        return $this->successResponse("Transaction summary retrieved", [
-            'transactionType' => $request->transaction_type,
-            'subtotal' => (int)$request->amount,
-            'charge' => (int)$charge,
-            'total' => (int)$total,
-            'chargeFrom' => $request->charge_from
-        ]);
+        return $this->successResponse("Transaction summary retrieved", $summary);
     }
 
     public function generateCode(Request $request)

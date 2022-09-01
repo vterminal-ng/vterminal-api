@@ -4,6 +4,6 @@ namespace App\Constants;
 
 class TransactionType
 {
-    public const VWITHDRAWAL = "vtermianl withdrawal";
-    public const VDEPOSIT = "vtermianl deposit";
+    public const VWITHDRAWAL = "withdrawal";
+    public const VDEPOSIT = "deposit";
 }
