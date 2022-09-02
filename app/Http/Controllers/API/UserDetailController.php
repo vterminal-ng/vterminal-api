@@ -28,7 +28,7 @@ class UserDetailController extends Controller
             'referrer' => ['nullable', 'string'],
         ]);
 
-        if ($request->referrer != '' || is_null($request->referrer)) {
+        if ($request->referrer != '' || !is_null($request->referrer)) {
             //check if the referrer code exists
             $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
             if (!$userDetail) {
