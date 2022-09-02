@@ -7,6 +7,7 @@ use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\Code;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
@@ -29,6 +30,14 @@ class WebhookController extends Controller
         // Do something — that will not take long — with $event
         $event = json_decode($input);
         Log::info("Recieved $event->event event from paystack with $event->data->status status");
+        /**
+         * Expected fields in metadata
+         * transaction => [
+         *  type 
+         *  
+         *  code
+         * ]
+         */
         $transaction = $event->data->metadata->transaction;
 
         if ($event->event  == 'charge.success') {
@@ -36,10 +45,10 @@ class WebhookController extends Controller
                 case TransactionType::VDEPOSIT:
                     if ($event->data->status == "failed") {
                         Log::info("Deposit failed. Reason: $event->data->gateway_response");
-
                         exit();
                     }
-                    $code = Code::where('code', $request->transaction_code)->first();
+
+                    $code = Code::where('code', $transaction->code)->first();
 
                     // if transaction code status is \anything other than PENDING, then it is invalid,
                     // we can't activate code that isn't pending

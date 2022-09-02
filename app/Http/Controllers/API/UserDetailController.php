@@ -21,16 +21,16 @@ class UserDetailController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'min:3'],
             'last_name' => ['required', 'string', 'min:3'],
-            'other_names',
+            'other_names' => ['nullable', 'string'],
             'date_of_birth' => ['required'],
             'gender' => ['required', 'in:male,female'],
             //'referral_code' => ['string'],
-            'referrer',
+            'referrer' => ['nullable', 'string'],
         ]);
 
         //check if the referrer code exists
         $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
-        if ($request->has('referrer') && !$userDetail) {
+        if (!$userDetail) {
             return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
