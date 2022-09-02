@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\ChargeFrom;
 use App\Constants\CodeStatus;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Services\PaystackService;
 use App\Traits\ApiResponder;
 use App\Traits\Generators;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -31,8 +33,8 @@ class CodeController extends Controller
         // validate amount and is_card_charged
         $request->validate([
             'amount' => ['required', 'integer'],
-            "transaction_type" => ['required', 'in:withdrawal,deposit'],
-            'charge_from' => ['required', 'in:cash,card'],
+            'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
+            'charge_from' => ['required', 'in:' . ChargeFrom::CASH . ',' . ChargeFrom::CARD],
             'use_saved_bank' => ['required_if:transaction_type,deposit', 'boolean'],
         ]);
 
@@ -56,7 +58,7 @@ class CodeController extends Controller
         $subtotal = $request->amount;
 
         // total
-        if ($request->charge_from == 'card' || $request->transaction_type == TransactionType::VDEPOSIT)
+        if ($request->charge_from == ChargeFrom::CARD || $request->transaction_type == TransactionType::VDEPOSIT)
             $total = $request->amount + $charge;
         else
             $total = $subtotal;
@@ -74,6 +76,7 @@ class CodeController extends Controller
             $summary['accountNumber'] = $user->bankDetail->account_number;
             $summary['bankName'] = $user->bankDetail->bank_name;
             $summary['transferRecipientCode'] = $user->bankDetail->recipient_code;
+            $summary['chargeFrom'] = ChargeFrom::CASH;
 
             // if we are not using the bank details saved in our profile, then we generate new transfer recipient code
             if ($request->use_saved_bank == false) {
@@ -86,7 +89,10 @@ class CodeController extends Controller
                 $response = $this->paystackService->createTranferRecipient(
                     $request->account_name,
                     $request->account_number,
-                    $request->bank_code
+                    $request->bank_code,
+                    metadata: [
+                        'user_id' => auth()->id(),
+                    ]
                 );
 
                 $summary['transferRecipientCode'] = $response->data->recipient_code;
@@ -103,14 +109,13 @@ class CodeController extends Controller
     public function generateCode(Request $request)
     {
         $request->validate([
-            "transaction_type" => ['required', 'in:withdrawal,deposit'],
+            'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
             "subtotal_amount" => ['required', 'integer'],
             "charge_amount" => ['required', 'integer'],
             "total_amount" => ['required', 'integer'],
-            'charge_from' => ['required', 'in:cash,card'],
+            'charge_from' => ['required', 'in:' . ChargeFrom::CASH . ',' . ChargeFrom::CARD],
             'pin' => ['required'],
         ]);
-
 
         $user = auth()->user();
 
@@ -119,6 +124,12 @@ class CodeController extends Controller
         // check if pin is valid, if it isnt, it throw the InvalidTransactionPin Exception
         $user->validatePin($request->pin);
 
+        // return failure if user has 1 active or pending code
+        if ($user->customerCode()->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->count()) {
+            return $this->failureResponse("You have an unused transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
+        }
+
+        $params = [];
 
         // gen 6 digit random code
         $transactionCode = $this->generateTransCode();
@@ -127,20 +138,44 @@ class CodeController extends Controller
 
         // gen 16 digit transaction reference
         $reference = $this->generateReference();
+
+        $params['customer_id'] = $user->id;
+        $params['code'] = $transactionCode;
+        $params['transaction_type'] = $request->transaction_type;
+        $params['subtotal_amount'] = $request->subtotal_amount;
+        $params['total_amount'] = $request->total_amount;
+        $params['charge_amount'] = $request->charge_amount;
+        $params['charge_from'] = $request->charge_from;
+        $params['reference'] = $reference;
+
+        if ($request->transaction_type == TransactionType::VDEPOSIT) {
+            $request->validate([
+                'transfer_recipient_code' => ['required'],
+                'bank_name' => ['required'],
+                'account_name' => ['required'],
+                'account_number' => ['required'],
+                'bank_code' => ['required'],
+            ]);
+
+            // check if recipient code exists
+            $response = $this->paystackService->fetchTranferRecipient($request->transfer_recipient_code);
+
+            if (!$response->status || $response->data->metadata->user_id != auth()->id()) {
+                return $this->failureResponse("Invalid transfer recipient code", Response::HTTP_BAD_REQUEST);
+            }
+
+            $params['paystack_transfer_recipient_code'] = $request->transfer_recipient_code;
+            $params['account_name'] = $request->account_name;
+            $params['account_number'] = $request->account_number;
+            $params['bank_name'] = $request->bank_name;
+            $params['bank_code'] = $request->bank_code;
+        }
         //save code
 
-        $code = Code::create([
-            'customer_id' => $user->id,
-            'code' => $transactionCode,
-            'transaction_type' => $request->transaction_type,
-            'subtotal_amount' => $request->subtotal_amount,
-            'total_amount' => $request->total_amount,
-            'charge_amount' => $request->charge_amount,
-            'charge_from' => $request->charge_from,
-            'reference' => $reference,
-        ]);
+        $code = Code::create($params);
 
-        return $this->successResponse("Generated code successfully", new CodeResource($code));
+
+        return $this->successResponse("Generated code successfully", new CodeResource($code->fresh()));
     }
 
     public function activateCode(Request $request)
@@ -227,19 +262,20 @@ class CodeController extends Controller
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code);
+        $code = Code::where('code', $request->transaction_code)->first();
 
-        $this->authorize('cancel', $code);
+        if (auth()->id() !== $code->customer_id)
+            throw new AuthorizationException();
 
-        $code->customer()->validatePin($request->pin);
+        $code->customer->validatePin($request->pin);
 
-        if ($code->status != CodeStatus::PENDING || $code->status != CodeStatus::ACTIVE) {
+        if ($code->status != CodeStatus::PENDING && "$code->status" != CodeStatus::ACTIVE) {
             return $this->failureResponse('This code is already canclled or completed', Response::HTTP_BAD_REQUEST);
         }
 
-        if ($code->status == CodeStatus::ACTIVE) {
+        if ($code->status == CodeStatus::ACTIVE && $code->transaction_type == TransactionType::VWITHDRAWAL) {
             // deposit user wallet
-            $code->customer()->deposit($code->total_amount);
+            $code->customer->deposit($code->total_amount);
 
             // cancel code
             $code->forceFill([

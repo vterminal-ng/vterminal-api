@@ -23,6 +23,11 @@ class Code extends Model
         'reference',
         'vterminal_charge',
         'merchant_charge',
+        'bank_name',
+        'bank_code',
+        'account_name',
+        'account_number',
+        'paystack_transfer_recipient_code',
     ];
 
 

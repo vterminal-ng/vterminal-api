@@ -79,12 +79,17 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(Pin::class);
     }
 
-    ############################################################
-
-    public function role()
+    public function customerCode()
     {
-        return $this->role;
+        return $this->hasMany(Code::class, 'customer_id');
     }
+
+    public function merchantCode()
+    {
+        return $this->hasMany(Code::class, 'merchant_id');
+    }
+
+    ############################################################
 
     public function hasVerifiedPhone()
     {
@@ -100,7 +105,7 @@ class User extends Authenticatable implements Wallet
 
     public function isMerchant()
     {
-        return $this->role() === 'merchant';
+        return (bool)$this->role === 'merchant';
     }
 
     public function sendPasswordResetNotification($token)

@@ -45,7 +45,14 @@ class BankDetailController extends Controller
         }
 
         // Create transfer receipient
-        $response = $this->paystackService->createTranferRecipient($request->account_name, $request->account_number, $request->bank_code);
+        $response = $this->paystackService->createTranferRecipient(
+            $request->account_name,
+            $request->account_number,
+            $request->bank_code,
+            metadata: [
+                'user_id' => auth()->id(),
+            ]
+        );
 
         // Get recipient code from response
         $recipientcode = $response->data->recipient_code;
@@ -156,14 +163,15 @@ class BankDetailController extends Controller
         );
     }
 
-    public function get_bank_codes() {
+    public function get_bank_codes()
+    {
         $codes = $this->nubanService->getBankCodes();
 
         return $codes->data;
-
     }
 
-    public function getNubanDetails(Request $request) {
+    public function getNubanDetails(Request $request)
+    {
         //dd($request->all());
         $request->validate([
             'acc_no' => ['required', 'string', 'size:10'],
@@ -172,6 +180,5 @@ class BankDetailController extends Controller
         $codes = $this->nubanService->getBankDetails($request->acc_no);
 
         return $codes;
-
     }
 }

@@ -78,7 +78,7 @@ class PaystackService
         return json_decode((string)$response);
     }
 
-    public function createTranferRecipient($name, $accountNumber, $bankCode)
+    public function createTranferRecipient($name, $accountNumber, $bankCode, $metadata = [])
     {
         $response = $this->performRequest(
             'POST',
@@ -87,8 +87,20 @@ class PaystackService
                 "type" => "nuban",
                 "name" => $name,
                 "account_number" => $accountNumber,
-                "bank_code" => $bankCode
+                "bank_code" => $bankCode,
+                "metadata" => $metadata
             ]
+        );
+        //dd($response);
+
+        return json_decode((string)$response);
+    }
+
+    public function fetchTranferRecipient($transferRecipientCode)
+    {
+        $response = $this->makeRequest(
+            'GET',
+            "/transferrecipient/$transferRecipientCode",
         );
         //dd($response);
 
