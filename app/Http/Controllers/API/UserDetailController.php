@@ -28,10 +28,12 @@ class UserDetailController extends Controller
             'referrer' => ['nullable', 'string'],
         ]);
 
-        //check if the referrer code exists
-        $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
-        if (!$userDetail) {
-            return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($request->referrer != '' || is_null($request->referrer)) {
+            //check if the referrer code exists
+            $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
+            if (!$userDetail) {
+                return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
         }
 
         // get authenticated user instance
