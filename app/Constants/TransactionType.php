@@ -4,8 +4,8 @@ namespace App\Constants;
 
 class TransactionType
 {
-    public const VWITHDRAWAL = "vterminal_withdrawal";
-    public const VDEPOSIT = "vterminal_deposit";
-    public const WALLET_DEPOSIT = "wallet_deposit";
-    public const WALLET_WITHDRAWAL = "wallet_withdrawal";
+    public const VWITHDRAWAL = "withdrawal"; // The main POS withdrawal
+    public const VDEPOSIT = "deposit"; // The main POS deposit into bank
+    public const CREDIT_WALLET = "credit"; // deposit into or credit vterminal wallet
+    public const PAYOUT = "payout"; // withdraw from vterminal wallet to your bank
 }
