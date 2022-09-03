@@ -86,7 +86,7 @@ class VerificationController extends Controller
            $verificationData = Verification::create([
                 'user_id' => $user->id,
                 'identity_type' => $identityType,
-                'identity_number' => Hash::make($idNo),
+                'identity_number' => $idNo,
                 //'passport_base64_string' => $data->photo,
                 'first_name' => $data->firstname ?? $data->firstName,
                 'last_name' => $data->lastname ?? $data->lastName,
