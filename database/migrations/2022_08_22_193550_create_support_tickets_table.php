@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('support_tickets', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->enum('ticket_type', ['general', 'dispute']);
             $table->enum('transaction_type', ['deposit','withdrawal'])->nullable();
             $table->string('transaction_reference')->nullable();
@@ -22,6 +23,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
