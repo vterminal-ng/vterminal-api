@@ -41,6 +41,8 @@ Route::get('states', [StateController::class, 'getStates']);
 Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
+Route::get('/bank-codes', [BankDetailController::class, 'get_bank_codes']);
+Route::get('users/nuban-details/', [BankDetailController::class, 'getNubanDetails']);
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -84,7 +86,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
     Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
 
-    Route::post('users/verify-identity', [VerificationController::class, 'verifyBvn']);
+    Route::post('users/verify-identity', [VerificationController::class, 'verifyDetails']);
 
     // Wallet
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
@@ -110,6 +112,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
 
     // NUBAN Endpoints
-    Route::get('/bank-codes', [BankDetailController::class, 'get_bank_codes']);
-    Route::get('users/nuban-details/', [BankDetailController::class, 'getNubanDetails']);
 });

@@ -112,4 +112,8 @@ class User extends Authenticatable implements Wallet
     {
         return (bool)($this->hasVerifiedEmail() && $this->hasVerifiedPhone() && $this->userDetail && $this->bankDetail && $this->pin);
     }
+
+    public function supportTickets() {
+        return $this->hasMany(SupportTicket::class);
+    }
 }
