@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\AuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', fn() => redirect()->route('admin.login'));
+
+Route::prefix('admin')->group(function() {
+    Route::get('/login', [AuthController::class, 'getLogin'])->name('admin.login');
+    Route::post('/login', [AuthController::class, 'postLogin'])->name('admin.postlogin');
+});
+
+Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
+    Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
 });
