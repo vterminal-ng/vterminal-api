@@ -239,10 +239,13 @@ class CodeController extends Controller
         // validate pystack ref
         $request->validate([
             'paystack_auth_code' => ['required'],
-            'transaction_code' => ['required', 'exists:codes,code']
+            'transaction_code' => ['required', 'exists:codes,code'],
+            'pin' => ['required'],
         ]);
 
         $code = Code::where('code', $request->transaction_code);
+
+        $code->customer->validatePin($request->pin);
 
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
