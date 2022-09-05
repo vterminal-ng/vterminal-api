@@ -20,6 +20,25 @@ class PaystackService
         $this->secret = config('services.paystack.secret');
     }
 
+    public function initializeTransaction($email, $amountInKobo, $reference, $transactionType, $metadata = [])
+    {
+        $metadata['transaction_type'] = $transactionType;
+
+        $response = $this->performRequest(
+            'POST',
+            "/transaction/initialize",
+            [
+                "email" => $email,
+                "amount" => $amountInKobo,
+                "reference" => $reference,
+                "metadata" => $metadata
+            ]
+        );
+        // dd($response);
+
+        return json_decode((string)$response);
+    }
+
     public function verifyTransaction($reference)
     {
         $response = $this->performRequest('GET', "/transaction/verify/$reference");
