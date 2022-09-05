@@ -15,6 +15,7 @@ use App\Http\Controllers\API\StateController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
 use App\Http\Controllers\API\SupportTicketController;
+use App\Http\Controllers\Paystack\WebhookController;
 use App\Models\BankDetail;
 use App\Models\Pin;
 use Illuminate\Http\Request;
@@ -40,6 +41,8 @@ Route::get('states', [StateController::class, 'getStates']);
 
 Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
+
+Route::post('webhook', [WebhookController::class, 'webhook']);
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -100,6 +103,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/create-pin', [PinController::class, 'create']);
     Route::post('users/update-transaction-pin', [PinController::class, 'update']);
 
+    Route::get('codes', [CodeController::class, 'transactionCodes']);
     Route::post('code/generate', [CodeController::class, 'generateCode']);
     Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
     Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);

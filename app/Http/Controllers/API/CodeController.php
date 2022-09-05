@@ -28,6 +28,27 @@ class CodeController extends Controller
         $this->paystackService = $paystackService;
     }
 
+    public function transactionCodes(Request $request)
+    {
+        $query = (new Code)->query();
+
+        if (isset($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        if (isset($request->type)) {
+            $query->where('transaction_type', $request->transaction_type);
+        }
+
+        $codes = $query->where('customer_id', auth()->id())->get();
+
+        return $this->successResponse("Retrived your codes", CodeResource::collection($codes));
+    }
+
+    public function myTransactionCode()
+    {
+    }
+
     public function transactionSummary(Request $request)
     {
         // validate amount and is_card_charged
@@ -126,7 +147,7 @@ class CodeController extends Controller
 
         // return failure if user has 1 active or pending code
         if ($user->customerCode()->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->count()) {
-            return $this->failureResponse("You have an unused transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
+            return $this->failureResponse("You have an unused or pending transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
         }
 
         $params = [];
@@ -169,6 +190,7 @@ class CodeController extends Controller
             $params['account_number'] = $request->account_number;
             $params['bank_name'] = $request->bank_name;
             $params['bank_code'] = $request->bank_code;
+            $params['status'] = CodeStatus::ACTIVE; // Activating the deposit transaction code
         }
         //save code
 
@@ -182,19 +204,15 @@ class CodeController extends Controller
     {
         // validate pystack ref
         $request->validate([
-            'paystack_reference' => ['required'],
-            'transaction_code' => ['required', 'exists:codes,code']
+            'transaction_code' => ['required', 'exists:codes,code'],
+            'pin' => ['required'],
         ]);
 
-        // verify paystack transaction
-        $paystackResponse = $this->paystackService->verifyTransaction($request->paystack_reference);
-
-        // if payment failed, return
-        if ($paystackResponse->data->status == "failed") {
-            return $this->failureResponse("Payment failed, kindly retry.", Response::HTTP_BAD_REQUEST);
-        }
-
         $code = Code::where('code', $request->transaction_code)->first();
+
+        // dd($code->customer->email);
+
+        $code->customer->validatePin($request->pin);
 
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
@@ -204,13 +222,16 @@ class CodeController extends Controller
             return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
         }
 
-        // activate code
-        $code->forceFill([
-            'status' => CodeStatus::ACTIVE
-        ])->save();
+        $metadata = [
+            'transaction_code' => $request->transaction_code
+        ];
+
+        $totalAmountInKobo = $code->total_amount * 100;
+
+        $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type, $metadata);
 
         // return 
-        return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
+        return $this->successResponse("Payment page URL generated for trancastion code $request->transaction_code", $response->data);
     }
 
     public function activateCodeWithSavedCard(Request $request)
