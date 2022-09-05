@@ -14,7 +14,7 @@ trait HasPin
 
     public function validatePin($pin)
     {
-        if (!Hash::check($pin, $this->pin->pin)) {
+        if (!Hash::check($pin, $this->pin->pin ?? 000)) {
             throw new InvalidTransactionPin;
         }
     }
