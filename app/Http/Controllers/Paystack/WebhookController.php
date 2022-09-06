@@ -111,7 +111,7 @@ class WebhookController extends Controller
                     // if transation was successful,get amount from the verification and deposit into wallet.
                     $amountToDeposit = $event->data->amount / 100;
 
-                    Log::info("Crediting the user's wallet");
+                    Log::info("Crediting the user's wallet with $amountToDeposit");
                     Log::info("User's previous wallet balance: $user->balance");
                     $user->deposit($amountToDeposit);
                     Log::info("Done Crediting user's wallet!");
