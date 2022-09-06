@@ -65,23 +65,18 @@ class WebhookController extends Controller
                     Log::info("Finding transaction code $transactionCode in database.");
                     $code = Code::with(['customer'])->where('code', $transactionCode)->first();
 
-                    if (!$code) {
-                        Log::error("Could not find code $transactionCode");
+                    Log::info("Checking if code status is valid for activation");
+                    // if transaction code status is \anything other than PENDING, then it is invalid,
+                    // we can't activate code that isn't pending
+                    if (!$code || $code->status != CodeStatus::PENDING) {
+                        // refund payment
+                        $this->paystackService->refundTransaction($event->data->reference);
+                        // $code->customer->deposit($code->total_amount);
+                        Log::error("Invalid transaction code. Reason: Code status is not pending");
                         exit();
                     }
                     Log::info("Found the code $transactionCode");
                     Log::info("The Code details ", ["code" => new CodeResource($code)]);
-
-
-                    Log::info("Checking if code status is valid for activation");
-                    // if transaction code status is \anything other than PENDING, then it is invalid,
-                    // we can't activate code that isn't pending
-                    if ($code->status != CodeStatus::PENDING) {
-                        // refund payment
-                        $this->paystackService->refundTransaction($event->data->reference);
-                        Log::error("Invalid transaction code. Reason: Code status is not pending");
-                        exit();
-                    }
                     Log::info("Code status is valid for activation");
 
                     Log::info("Activating Code");

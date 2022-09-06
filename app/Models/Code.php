@@ -14,6 +14,7 @@ class Code extends Model
         'customer_id',
         'merchant_id',
         'code',
+        'transaction_source',
         'transaction_type',
         'status',
         'subtotal_amount',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Constants\ChargeFrom;
 use App\Constants\CodeStatus;
+use App\Constants\TransactionSource;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
@@ -54,9 +55,10 @@ class CodeController extends Controller
         // validate amount and is_card_charged
         $request->validate([
             'amount' => ['required', 'integer'],
-            'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
+            'transaction_source' => ['nullable', 'string', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
+            'transaction_source' => ['nullable', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
             'charge_from' => ['required', 'in:' . ChargeFrom::CASH . ',' . ChargeFrom::CARD],
-            'use_saved_bank' => ['required_if:transaction_type,deposit', 'boolean'],
+            'use_saved_bank' => ['required_if:transaction_type,' . TransactionType::VDEPOSIT, 'boolean'],
         ]);
 
         $summary = [];
@@ -85,6 +87,7 @@ class CodeController extends Controller
             $total = $subtotal;
 
         $summary['transactionType'] = $request->transaction_type;
+        $summary['transactionSource'] = $request->transaction_source ?? null;
         $summary['subtotal'] = (int)$subtotal;
         $summary['charge'] = (int)$charge;
         $summary['total'] = (int)$total;
@@ -131,6 +134,7 @@ class CodeController extends Controller
     {
         $request->validate([
             'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
+            'transaction_source' => ['nullable', 'string', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
             "subtotal_amount" => ['required', 'integer'],
             "charge_amount" => ['required', 'integer'],
             "total_amount" => ['required', 'integer'],
@@ -168,6 +172,7 @@ class CodeController extends Controller
         $params['charge_amount'] = $request->charge_amount;
         $params['charge_from'] = $request->charge_from;
         $params['reference'] = $reference;
+        $params['transaction_source'] = $request->transaction_source ?? null;
 
         if ($request->transaction_type == TransactionType::VDEPOSIT) {
             $request->validate([
@@ -220,6 +225,19 @@ class CodeController extends Controller
             // refund payment
             $this->paystackService->refundTransaction($request->paystack_reference);
             return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
+        }
+
+        // if source is wallet then we take out money from the users wallet to activate the code
+        if (isset($code->transaction_source) && $code->transaction_source == TransactionSource::WALLET) {
+
+            $withdrawResponse = $code->customer->withdraw($code->total_amount);
+
+            // activate code
+            $code->forceFill([
+                'status' => CodeStatus::ACTIVE
+            ])->save();
+
+            return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", $withdrawResponse);
         }
 
         $metadata = [

@@ -19,6 +19,7 @@ class CodeResource extends JsonResource
             'merchant' => new UserResource($this->whenLoaded('merchant')),
             'code' => $this->code,
             'transactionType' => $this->transaction_type,
+            'transactionSource' => $this->transaction_source,
             'status' => $this->status,
             'subtotalAmount' => $this->subtotal_amount,
             'totalAmount' => $this->total_amount,

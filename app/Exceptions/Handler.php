@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use App\Traits\ApiResponder;
+use Bavix\Wallet\Exceptions\BalanceIsEmpty;
 use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
@@ -96,8 +97,8 @@ class Handler extends ExceptionHandler
         //     return $this->failureResponse($message, $code);
         // }
 
-        if ($exception instanceof InsufficientFunds) {
-            return $this->failureResponse("You Currently do not have sufficient funds for this request", Response::HTTP_BAD_REQUEST);
+        if ($exception instanceof InsufficientFunds || $exception instanceof BalanceIsEmpty) {
+            return $this->failureResponse("You Currently do not have sufficient funds for this request. Topup and try again", Response::HTTP_BAD_REQUEST);
         }
 
         if ($exception instanceof HttpException) {
