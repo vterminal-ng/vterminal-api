@@ -52,9 +52,9 @@ class WebhookController extends Controller
                 case TransactionType::VWITHDRAWAL:
                     Log::info("ACTIVATING VTERMINAL WITHDRAWAL TRANSACTION CODE");
 
-                    Log::info("Checking status of the paystack transaction. The status is \"$event->data->status\"");
+                    Log::info("Checking status of the paystack transaction. The status is \"{$event->data->status}\"");
                     if ($event->data->status == "failed") {
-                        Log::info(" Code activation payment failed. Reason: $event->data->gateway_response",);
+                        Log::info(" Code activation payment failed. Reason: {$event->data->gateway_response}",);
                         exit();
                     }
 
@@ -90,10 +90,10 @@ class WebhookController extends Controller
                     break;
                 case TransactionType::CREDIT_WALLET:
                     Log::info("CREDITING VTERMINAL USER WALLET");
-                    Log::info("Checking status of the paystack transaction. The status is \"$event->data->status\"");
+                    Log::info("Checking status of the paystack transaction. The status is \"{$event->data->status}\"");
                     // if transaction fialed, return falure
                     if ($event->data->status == "failed") {
-                        Log::info("Wallet deposit payment failed. Reason: $event->data->gateway_response");
+                        Log::info("Wallet deposit payment failed. Reason: {$event->data->gateway_response}");
                         exit();
                     }
                     // get user object of auth user
@@ -107,7 +107,7 @@ class WebhookController extends Controller
                     Log::info("Found the user with email: {$event->data->customer->email}");
                     Log::info("The User ", ["user" => new UserResource($user)]);
 
-                    Log::info("Converting the paystack amount \"$event->data->amount\" from kobo to naira");
+                    Log::info("Converting the paystack amount \"{$event->data->amount}\" from kobo to naira");
                     // if transation was successful,get amount from the verification and deposit into wallet.
                     $amountToDeposit = $event->data->amount / 100;
 
