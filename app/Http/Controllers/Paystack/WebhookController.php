@@ -41,7 +41,6 @@ class WebhookController extends Controller
          * ]
          */
         $transactionType = $event->data->metadata->transaction_type ?? null;
-        $transactionCode = $event->data->metadata->transaction_code ?? null;
 
         if ($event->event  == 'charge.success') {
             if (is_null($transactionType)) {
@@ -62,8 +61,8 @@ class WebhookController extends Controller
                         exit();
                     }
 
-                    Log::info("Finding transaction code $transactionCode in database.");
-                    $code = Code::with(['customer'])->where('code', $transactionCode)->first();
+                    Log::info("Finding transaction code with reference {$event->data->reference} in database.");
+                    $code = Code::with(['customer'])->where('reference', $event->data->reference)->first();
 
                     Log::info("Checking if code status is valid for activation");
                     // if transaction code status is \anything other than PENDING, then it is invalid,
@@ -75,7 +74,7 @@ class WebhookController extends Controller
                         Log::error("Invalid transaction code. Reason: Code status is not pending");
                         exit();
                     }
-                    Log::info("Found the code $transactionCode");
+                    Log::info("Found the code $code->code");
                     Log::info("The Code details ", ["code" => new CodeResource($code)]);
                     Log::info("Code status is valid for activation");
 

@@ -209,11 +209,11 @@ class CodeController extends Controller
     {
         // validate pystack ref
         $request->validate([
-            'transaction_code' => ['required', 'exists:codes,code'],
+            'reference' => ['required', 'exists:codes,reference'],
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code)->first();
+        $code = Code::where('reference', $request->reference)->first();
 
         // dd($code->customer->email);
 
@@ -257,11 +257,11 @@ class CodeController extends Controller
         // validate pystack ref
         $request->validate([
             'paystack_auth_code' => ['required'],
-            'transaction_code' => ['required', 'exists:codes,code'],
+            'reference' => ['required', 'exists:codes,reference'],
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code);
+        $code = Code::where('reference', $request->reference)->first();
 
         $code->customer->validatePin($request->pin);
 
@@ -300,11 +300,11 @@ class CodeController extends Controller
     public function cancelCode(Request $request)
     {
         $request->validate([
-            'transaction_code' => ['required', 'exists:codes,code'],
+            'reference' => ['required', 'exists:codes,reference'],
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code)->first();
+        $code = Code::where('reference', $request->reference)->first();
 
         if (auth()->id() !== $code->customer_id)
             throw new AuthorizationException();
