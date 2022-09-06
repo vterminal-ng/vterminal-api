@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Paystack;
 use App\Constants\CodeStatus;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CodeResource;
+use App\Http\Resources\UserResource;
 use App\Models\Code;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -38,61 +40,87 @@ class WebhookController extends Controller
          *  code
          * ]
          */
-        $transaction_type = $event->data->metadata->transaction_type ?? null;
-        $transaction_code = $event->data->metadata->transaction_code ?? null;
+        $transactionType = $event->data->metadata->transaction_type ?? null;
+        $transactionCode = $event->data->metadata->transaction_code ?? null;
 
         if ($event->event  == 'charge.success') {
-            if (is_null($transaction_type)) {
+            if (is_null($transactionType)) {
                 Log::info("Transaction type is null");
                 exit();
             }
-            switch ($transaction_type) {
+            switch ($transactionType) {
                 case TransactionType::VWITHDRAWAL:
+                    Log::info("ACTIVATING VTERMINAL WITHDRAWAL TRANSACTION CODE");
+
+                    Log::info("Checking status of the paystack transaction. The status is \"$event->data->status\"");
                     if ($event->data->status == "failed") {
-                        Log::info(" Code Activation ayment failed. Reason: $event->data->gateway_response",);
+                        Log::info(" Code activation payment failed. Reason: $event->data->gateway_response",);
                         exit();
                     }
 
-                    $code = Code::where('code', $transaction_code)->first();
+                    Log::info("Finding transaction code $transactionCode in database.");
+                    $code = Code::with(['customer'])->where('code', $transactionCode)->first();
 
+                    if (!$code) {
+                        Log::error("Could not find code $transactionCode");
+                        exit();
+                    }
+                    Log::info("Found the code $transactionCode");
+                    Log::info("The Code details ", ["code" => new CodeResource($code)]);
+
+
+                    Log::info("Checking if code status is valid for activation");
                     // if transaction code status is \anything other than PENDING, then it is invalid,
                     // we can't activate code that isn't pending
                     if ($code->status != CodeStatus::PENDING) {
                         // refund payment
                         $this->paystackService->refundTransaction($event->data->reference);
-                        Log::info("Invalid transaction code. Reason: Code status is not pending");
+                        Log::error("Invalid transaction code. Reason: Code status is not pending");
                         exit();
                     }
+                    Log::info("Code status is valid for activation");
 
+                    Log::info("Activating Code");
                     // activate code
                     $code->forceFill([
                         'status' => CodeStatus::ACTIVE
                     ])->save();
+                    Log::info("Code activated successfully");
 
                     break;
                 case TransactionType::CREDIT_WALLET:
-                    // get user object of auth user
-                    $user = User::where('email', $event->data->customer->email)->first();
-
-                    if (!$user) {
-                        Log::info("Could not find user with email {$event->data->customer->email}");
-                        exit();
-                    }
-
+                    Log::info("CREDITING VTERMINAL USER WALLET");
+                    Log::info("Checking status of the paystack transaction. The status is \"$event->data->status\"");
                     // if transaction fialed, return falure
                     if ($event->data->status == "failed") {
                         Log::info("Wallet deposit payment failed. Reason: $event->data->gateway_response");
                         exit();
                     }
+                    // get user object of auth user
+                    Log::info("Finding user with email: {$event->data->customer->email}");
+                    $user = User::where('email', $event->data->customer->email)->first();
 
+                    if (!$user) {
+                        Log::error("Could not find user with email: {$event->data->customer->email}");
+                        exit();
+                    }
+                    Log::info("Found the user with email: {$event->data->customer->email}");
+                    Log::info("The User ", ["user" => new UserResource($user)]);
+
+                    Log::info("Converting the paystack amount \"$event->data->amount\" from kobo to naira");
                     // if transation was successful,get amount from the verification and deposit into wallet.
                     $amountToDeposit = $event->data->amount / 100;
 
+                    Log::info("Crediting the user's wallet");
+                    Log::info("User's previous wallet balance: $user->balance");
                     $user->deposit($amountToDeposit);
+                    Log::info("Done Crediting user's wallet!");
+                    Log::info("User's wallet balance after crediting: $user->balance");
+
 
                     break;
                 default:
-                    Log::info("Error: $transaction_type is not a valid transaction type");
+                    Log::error("Error: $transactionType is not a valid transaction type");
                     exit();
             }
             // check transaction type

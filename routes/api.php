@@ -45,7 +45,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 Route::get('/bank-codes', [BankDetailController::class, 'get_bank_codes']);
 Route::get('users/nuban-details/', [BankDetailController::class, 'getNubanDetails']);
 
-Route::post('webhook', [WebhookController::class, 'webhook']);
+Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.context');
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
