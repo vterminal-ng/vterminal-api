@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\PaystackService;
@@ -53,26 +54,19 @@ class WalletController extends Controller
     public function deposit(Request $request)
     {
         $request->validate([
-            "reference" => ['required', 'string'],
+            "amount" => ['required', 'min:500', 'integer'],
         ]);
 
         // get user object of auth user
-        $user = User::find(auth()->id());
-
-        // call paystack verify transction API
-        $response = $this->paystackService->verifyTransaction($request->reference);
-
-        // if transaction fialed, return falure
-        if ($response->data->status == "failed") {
-            return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
-        }
+        $user = auth()->user();
 
         // if transation was successful,get amount from the verification and deposit into wallet.
-        $amountToDeposit = $response->data->amount / 100;
-        $user->deposit($amountToDeposit);
+        $amountInKobo = $request->amount * 100;
+
+        $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference(), TransactionType::CREDIT_WALLET);
 
         // return Success
-        return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
+        return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
     }
 
     public function depositWithSavedCard(Request $request)
