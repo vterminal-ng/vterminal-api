@@ -273,7 +273,8 @@ class CodeController extends Controller
         }
 
         // authorize authcode
-        $this->authorize('activateWithSavedCard', $code);
+        if (auth()->id() !== $code->customer_id)
+            throw new AuthorizationException();
 
         $totalAmountInKobo = $code->total_amount * 100;
         $response = $this->paystackService->chargeAuthorization(
