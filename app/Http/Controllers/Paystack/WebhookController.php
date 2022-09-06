@@ -50,7 +50,11 @@ class WebhookController extends Controller
             }
             switch ($transactionType) {
                 case TransactionType::VWITHDRAWAL:
+                    Log::info("");
+                    Log::info("===================================================");
                     Log::info("ACTIVATING VTERMINAL WITHDRAWAL TRANSACTION CODE");
+                    Log::info("===================================================");
+                    Log::info("");
 
                     Log::info("Checking status of the paystack transaction. The status is \"{$event->data->status}\"");
                     if ($event->data->status == "failed") {
@@ -89,7 +93,11 @@ class WebhookController extends Controller
 
                     break;
                 case TransactionType::CREDIT_WALLET:
+                    Log::info("");
+                    Log::info("===================================================");
                     Log::info("CREDITING VTERMINAL USER WALLET");
+                    Log::info("===================================================");
+                    Log::info("");
                     Log::info("Checking status of the paystack transaction. The status is \"{$event->data->status}\"");
                     // if transaction fialed, return falure
                     if ($event->data->status == "failed") {
