@@ -9,12 +9,19 @@ use App\Http\Resources\CodeResource;
 use App\Http\Resources\UserResource;
 use App\Models\Code;
 use App\Models\User;
+use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
+    protected $paystackService;
+
+    public function __construct(PaystackService $paystackService)
+    {
+        $this->paystackService = $paystackService;
+    }
     public function webhook(Request $request)
     {
         if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER)) {
@@ -121,6 +128,47 @@ class WebhookController extends Controller
 
 
                     break;
+                case TransactionType::ADD_CARD:
+                    Log::info("");
+                    Log::info("===================================================");
+                    Log::info("SAVING CARD DETAILS");
+                    Log::info("===================================================");
+                    Log::info("");
+
+                    Log::info("Finding user with email: {$event->data->customer->email}");
+                    $user = User::where('email', $event->data->customer->email)->first();
+                    if (!$user) {
+                        Log::error("Could not find user with email: {$event->data->customer->email}");
+                        exit();
+                    }
+                    Log::info("Found the user with email: {$event->data->customer->email}");
+
+                    Log::info("Checking if authorization code is reusable");
+                    if (!$event->data->authorization->reusable) {
+                        Log::info("Authorization code is not reusable");
+                        exit();
+                    }
+                    Log::info("Authorization code is reusable");
+
+                    Log::info("Saving authorization object to the database");
+                    $user->authorizedCard()->create([
+                        "authorization_code" => $event->data->authorization->authorization_code,
+                        "card_type" => $event->data->authorization->card_type,
+                        "last4" => $event->data->authorization->last4,
+                        "exp_month" => $event->data->authorization->exp_month,
+                        "exp_year" => $event->data->authorization->exp_year,
+                        "bin" => $event->data->authorization->bin,
+                        "bank" => $event->data->authorization->bank,
+                        "signature" => $event->data->authorization->signature,
+                        "account_name" => $event->data->authorization->account_name,
+                        "reference" => $event->data->reference,
+                    ]);
+                    Log::info("Saving authorization object complete");
+
+                    Log::info("Start processing refund");
+                    $this->paystackService->refundTransaction($event->data->reference);
+
+
                 default:
                     Log::error("Error: $transactionType is not a valid transaction type");
                     exit();

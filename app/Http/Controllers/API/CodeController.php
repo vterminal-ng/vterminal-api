@@ -240,13 +240,9 @@ class CodeController extends Controller
             return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", $withdrawResponse);
         }
 
-        $metadata = [
-            'transaction_code' => $request->transaction_code
-        ];
-
         $totalAmountInKobo = $code->total_amount * 100;
 
-        $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type, $metadata);
+        $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type);
 
         // return 
         return $this->successResponse("Payment page URL generated for trancastion code $request->transaction_code", $response->data);

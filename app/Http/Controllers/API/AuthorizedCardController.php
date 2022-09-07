@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AuthorizedCardResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\PaystackService;
 use App\Traits\ApiResponder;
+use App\Traits\Generators;
 use Illuminate\Http\Response;
 
 class AuthorizedCardController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, Generators;
 
     protected $paystackService;
 
@@ -23,43 +25,19 @@ class AuthorizedCardController extends Controller
 
     public function add(Request $request)
     {
-        $request->validate([
-            'paystack_reference' => ['required', 'string']
-        ]);
 
-        $user = User::find(auth()->id());
-
-        // validate transaction ref
-        $paystackResponse = $this->paystackService->verifyTransaction($request->paystack_reference);
-
-        // dd($paystackResponse);
-
+        $user = auth()->user();
 
         if ($user->authorizedCard) {
-            return $this->failureResponse("User already has a saved card", Response::HTTP_NOT_ACCEPTABLE);
+            return $this->failureResponse("User already has a saved card", Response::HTTP_BAD_REQUEST);
         }
 
-        // save card details
-        $authorizedCard = $user->authorizedCard()->create([
-            "authorization_code" => $paystackResponse->data->authorization->authorization_code,
-            "card_type" => $paystackResponse->data->authorization->card_type,
-            "last4" => $paystackResponse->data->authorization->last4,
-            "exp_month" => $paystackResponse->data->authorization->exp_month,
-            "exp_year" => $paystackResponse->data->authorization->exp_year,
-            "bin" => $paystackResponse->data->authorization->bin,
-            "bank" => $paystackResponse->data->authorization->bank,
-            "signature" => $paystackResponse->data->authorization->signature,
-            "account_name" => $paystackResponse->data->authorization->account_name,
-            "reference" => $request->paystack_reference,
-        ]);
+        $chargeAmountInKobo = 5000; // 50 NGN
 
-        // refund transaction
-        if ($paystackResponse->data->status == "success") {
-            $this->paystackService->refundTransaction($request->paystack_reference);
-        }
+        $response = $this->paystackService->initializeTransaction($user->email, $chargeAmountInKobo, $this->generateReference(), TransactionType::ADD_CARD);
 
-        // return success
-        return $this->successResponse("Card saved successfully!", new AuthorizedCardResource($authorizedCard), Response::HTTP_CREATED);
+        // return 
+        return $this->successResponse("Payment page URL generated", $response->data);
     }
 
     public function getCard()
