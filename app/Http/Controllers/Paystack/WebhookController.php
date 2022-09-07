@@ -168,7 +168,7 @@ class WebhookController extends Controller
                     Log::info("Start processing refund");
                     $this->paystackService->refundTransaction($event->data->reference);
 
-
+                    break;
                 default:
                     Log::error("Error: $transactionType is not a valid transaction type");
                     exit();
