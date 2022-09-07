@@ -252,7 +252,6 @@ class CodeController extends Controller
     {
         // validate pystack ref
         $request->validate([
-            'paystack_auth_code' => ['required'],
             'reference' => ['required', 'exists:codes,reference'],
             'pin' => ['required'],
         ]);
