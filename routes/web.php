@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,5 +23,5 @@ Route::prefix('admin')->group(function() {
 
 Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
     Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
-    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'displayDashboard'])->name('admin.dashboard');
 });

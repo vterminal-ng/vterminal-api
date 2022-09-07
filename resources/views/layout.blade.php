@@ -104,7 +104,7 @@
                                          class="rounded-circle"
                                          alt="avatar">
                                 </figure>
-                                <span class="ml-2 d-sm-inline d-none">Bony Gidden</span>
+                                <span class="ml-2 d-sm-inline d-none">{{ auth()->user()->userDetail->getFullNameAttribute() ?? '' }}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                 <div class="text-center py-4">
@@ -112,8 +112,8 @@
                                         <img src="../../assets/media/image/user/man_avatar3.jpg"
                                              class="rounded-circle" alt="image">
                                     </figure>
-                                    <h5 class="text-center">Bony Gidden</h5>
-                                    <div class="mb-3 small text-center text-muted">@bonygidden</div>
+                                    <h5 class="text-center">{{ auth()->user()->userDetail->getFullNameAttribute() ?? '' }}</h5>
+                                    <div class="mb-3 small text-center text-muted">{{ auth()->user()->email ?? '' }}</div>
                                     <!-- <a href="#" class="btn btn-outline-light btn-rounded">Manage Your Account</a> -->
                                 </div>
                                 <div class="list-group">
