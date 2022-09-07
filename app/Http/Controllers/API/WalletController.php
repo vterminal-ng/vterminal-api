@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\PaymentMethod;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -33,7 +34,7 @@ class WalletController extends Controller
         // get user object of auth user
         $user = User::find(auth()->id());
 
-        // TODO: Middle ware to avoid people who haveadd a payout account to perfor this request
+        // TODO: Middle ware to avoid people who haven't added a payout account to perform this request
         // initialize transfer paystack request
         $response = $this->paystackService->initiateTransfer($request->amount, $user->bankDetail->recipient_code);
 
@@ -55,25 +56,9 @@ class WalletController extends Controller
     {
         $request->validate([
             "amount" => ['required', 'min:500', 'integer'],
-        ]);
-
-        // get user object of auth user
-        $user = auth()->user();
-
-        // if transation was successful,get amount from the verification and deposit into wallet.
-        $amountInKobo = $request->amount * 100;
-
-        $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference(TransactionType::CREDIT_WALLET), TransactionType::CREDIT_WALLET);
-
-        // return Success
-        return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
-    }
-
-    public function depositWithSavedCard(Request $request)
-    {
-        $request->validate([
-            "amount" => ['required', 'integer'],
+            'payment_method' => ['required', "in:" . PaymentMethod::NEW_CARD . ',' . PaymentMethod::SAVED_CARD],
             'pin' => ['required'],
+
         ]);
 
         // get user object of auth user
@@ -81,29 +66,49 @@ class WalletController extends Controller
 
         $user->validatePin($request->pin);
 
-        if (!$user->authorizedCard) {
-            return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
-        }
+        $type = TransactionType::CREDIT_WALLET;
 
-        // charge the card with paystacks Charge Authorization endpoint
         $amountInKobo = $request->amount * 100;
-        $response = $this->paystackService->chargeAuthorization(
-            $user->email,
-            $amountInKobo,
-            $user->authorizedCard->authorization_code,
-            $this->generateReference(TransactionType::CREDIT_WALLET)
-        );
 
-        // if transaction fialed, return falure
-        if ($response->data->status == "failed") {
-            return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
+
+        switch ($request->payment_method) {
+            case PaymentMethod::NEW_CARD:
+                $amountInKobo = $request->amount * 100;
+
+                $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
+
+                // return 
+                return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
+                break;
+            case PaymentMethod::SAVED_CARD:
+                if (!$user->authorizedCard) {
+                    return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
+                }
+
+                $response = $this->paystackService->chargeAuthorization(
+                    $user->email,
+                    $amountInKobo,
+                    $user->authorizedCard->authorization_code,
+                    $this->generateReference($type)
+                );
+
+                // if transaction fialed, return falure
+                if ($response->data->status == "failed") {
+                    return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
+                }
+
+                // if transation was successful,get amount from the verification and deposit into wallet.
+                $amountToDeposit = $response->data->amount / 100;
+                $user->deposit($amountToDeposit);
+
+                // return success
+                return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
+                break;
+
+            default:
+                return $this->failureResponse("The payment method \"$request->payment_method\" is invalid", Response::HTTP_UNPROCESSABLE_ENTITY);
+
+                break;
         }
-
-        // if transation was successful,get amount from the verification and deposit into wallet.
-        $amountToDeposit = $response->data->amount / 100;
-        $user->deposit($amountToDeposit);
-
-        // return success
-        return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
     }
 }
