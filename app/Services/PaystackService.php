@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
-
+use Illuminate\Validation\Rules\In;
 
 class PaystackService
 {
@@ -18,6 +18,25 @@ class PaystackService
     {
         $this->baseUri = config('services.paystack.base_url');
         $this->secret = config('services.paystack.secret');
+    }
+
+    public function initializeTransaction($email, $amountInKobo, $reference, $transactionType, $metadata = [])
+    {
+        $metadata['transaction_type'] = $transactionType;
+
+        $response = $this->performRequest(
+            'POST',
+            "/transaction/initialize",
+            [
+                "email" => $email,
+                "amount" => $amountInKobo,
+                "reference" => $reference,
+                "metadata" => $metadata
+            ]
+        );
+        // dd($response);
+
+        return json_decode((string)$response);
     }
 
     public function verifyTransaction($reference)
@@ -190,5 +209,24 @@ class PaystackService
         // dd($response);
 
         return json_decode((string)$response);
+    }
+
+    public function calculateApplicableFee(int $amount): int
+    {
+        $decimalFee = 1.5 / 100;
+        $flatFee = 100;
+        $feeCap = 2000;
+
+        $applicableFee = round((($decimalFee * $amount) + $flatFee), 2);
+
+        if ($amount < 2500) {
+            $applicableFee = round(($decimalFee * $amount), 2);
+        }
+
+        if ($applicableFee > $feeCap) {
+            $applicableFee = $feeCap;
+        }
+
+        return $applicableFee;
     }
 }

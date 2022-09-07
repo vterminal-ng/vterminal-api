@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Constants\ChargeFrom;
 use App\Constants\CodeStatus;
+use App\Constants\TransactionSource;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
@@ -28,14 +29,36 @@ class CodeController extends Controller
         $this->paystackService = $paystackService;
     }
 
+    public function transactionCodes(Request $request)
+    {
+        $query = (new Code)->query();
+
+        if (isset($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        if (isset($request->type)) {
+            $query->where('transaction_type', $request->transaction_type);
+        }
+
+        $codes = $query->where('customer_id', auth()->id())->get();
+
+        return $this->successResponse("Retrived your codes", CodeResource::collection($codes));
+    }
+
+    public function myTransactionCode()
+    {
+    }
+
     public function transactionSummary(Request $request)
     {
         // validate amount and is_card_charged
         $request->validate([
             'amount' => ['required', 'integer'],
-            'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
+            'transaction_source' => ['nullable', 'string', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
+            'transaction_source' => ['nullable', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
             'charge_from' => ['required', 'in:' . ChargeFrom::CASH . ',' . ChargeFrom::CARD],
-            'use_saved_bank' => ['required_if:transaction_type,deposit', 'boolean'],
+            'use_saved_bank' => ['required_if:transaction_type,' . TransactionType::VDEPOSIT, 'boolean'],
         ]);
 
         $summary = [];
@@ -64,6 +87,7 @@ class CodeController extends Controller
             $total = $subtotal;
 
         $summary['transactionType'] = $request->transaction_type;
+        $summary['transactionSource'] = $request->transaction_source ?? null;
         $summary['subtotal'] = (int)$subtotal;
         $summary['charge'] = (int)$charge;
         $summary['total'] = (int)$total;
@@ -110,6 +134,7 @@ class CodeController extends Controller
     {
         $request->validate([
             'transaction_type' => ['required', 'in:' . TransactionType::VDEPOSIT . ',' . TransactionType::VWITHDRAWAL],
+            'transaction_source' => ['nullable', 'string', 'required_if:transaction_type,' . TransactionType::VWITHDRAWAL, 'in:' . TransactionSource::WALLET . ',' . TransactionSource::BANK],
             "subtotal_amount" => ['required', 'integer'],
             "charge_amount" => ['required', 'integer'],
             "total_amount" => ['required', 'integer'],
@@ -126,7 +151,7 @@ class CodeController extends Controller
 
         // return failure if user has 1 active or pending code
         if ($user->customerCode()->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->count()) {
-            return $this->failureResponse("You have an unused transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
+            return $this->failureResponse("You have an unused or pending transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
         }
 
         $params = [];
@@ -147,6 +172,7 @@ class CodeController extends Controller
         $params['charge_amount'] = $request->charge_amount;
         $params['charge_from'] = $request->charge_from;
         $params['reference'] = $reference;
+        $params['transaction_source'] = $request->transaction_source ?? null;
 
         if ($request->transaction_type == TransactionType::VDEPOSIT) {
             $request->validate([
@@ -169,6 +195,7 @@ class CodeController extends Controller
             $params['account_number'] = $request->account_number;
             $params['bank_name'] = $request->bank_name;
             $params['bank_code'] = $request->bank_code;
+            $params['status'] = CodeStatus::ACTIVE; // Activating the deposit transaction code
         }
         //save code
 
@@ -182,19 +209,15 @@ class CodeController extends Controller
     {
         // validate pystack ref
         $request->validate([
-            'paystack_reference' => ['required'],
-            'transaction_code' => ['required', 'exists:codes,code']
+            'reference' => ['required', 'exists:codes,reference'],
+            'pin' => ['required'],
         ]);
 
-        // verify paystack transaction
-        $paystackResponse = $this->paystackService->verifyTransaction($request->paystack_reference);
+        $code = Code::where('reference', $request->reference)->first();
 
-        // if payment failed, return
-        if ($paystackResponse->data->status == "failed") {
-            return $this->failureResponse("Payment failed, kindly retry.", Response::HTTP_BAD_REQUEST);
-        }
+        // dd($code->customer->email);
 
-        $code = Code::where('code', $request->transaction_code)->first();
+        $code->customer->validatePin($request->pin);
 
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
@@ -204,25 +227,42 @@ class CodeController extends Controller
             return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
         }
 
-        // activate code
-        $code->forceFill([
-            'status' => CodeStatus::ACTIVE
-        ])->save();
+        // if source is wallet then we take out money from the users wallet to activate the code
+        if (isset($code->transaction_source) && $code->transaction_source == TransactionSource::WALLET) {
+
+            $withdrawResponse = $code->customer->withdraw($code->total_amount);
+
+            // activate code
+            $code->forceFill([
+                'status' => CodeStatus::ACTIVE
+            ])->save();
+
+            return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", $withdrawResponse);
+        }
+
+        $totalAmountInKobo = $code->total_amount * 100;
+
+        $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type);
 
         // return 
-        return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
+        return $this->successResponse("Payment page URL generated for trancastion code $request->transaction_code", $response->data);
     }
 
     public function activateCodeWithSavedCard(Request $request)
     {
         // validate pystack ref
         $request->validate([
-            'paystack_auth_code' => ['required'],
-            'transaction_code' => ['required', 'exists:codes,code']
+            'reference' => ['required', 'exists:codes,reference'],
+            'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code);
+        $code = Code::where('reference', $request->reference)->first();
 
+        $code->customer->validatePin($request->pin);
+
+        if (!$code->customer->authorizedCard) {
+            return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
+        }
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
         if ($code->status != CodeStatus::PENDING) {
@@ -231,7 +271,8 @@ class CodeController extends Controller
         }
 
         // authorize authcode
-        $this->authorize('activateWithSavedCard', $code);
+        if (auth()->id() !== $code->customer_id)
+            throw new AuthorizationException();
 
         $totalAmountInKobo = $code->total_amount * 100;
         $response = $this->paystackService->chargeAuthorization(
@@ -258,11 +299,11 @@ class CodeController extends Controller
     public function cancelCode(Request $request)
     {
         $request->validate([
-            'transaction_code' => ['required', 'exists:codes,code'],
+            'reference' => ['required', 'exists:codes,reference'],
             'pin' => ['required'],
         ]);
 
-        $code = Code::where('code', $request->transaction_code)->first();
+        $code = Code::where('reference', $request->reference)->first();
 
         if (auth()->id() !== $code->customer_id)
             throw new AuthorizationException();

@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'verified.phone' => \App\Http\Middleware\VerifiedPhone::class,
         'verified.email' => \App\Http\Middleware\VerifiedEmail::class,
         'verified.profile' => \App\Http\Middleware\VerifiedProfile::class,
+        'log.context' => \App\Http\Middleware\LogContextMiddleware::class,
     ];
 }
