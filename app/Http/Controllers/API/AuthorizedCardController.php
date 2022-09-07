@@ -34,7 +34,7 @@ class AuthorizedCardController extends Controller
 
         $chargeAmountInKobo = 5000; // 50 NGN
 
-        $response = $this->paystackService->initializeTransaction($user->email, $chargeAmountInKobo, $this->generateReference(), TransactionType::ADD_CARD);
+        $response = $this->paystackService->initializeTransaction($user->email, $chargeAmountInKobo, $this->generateReference(TransactionType::ADD_CARD), TransactionType::ADD_CARD);
 
         // return 
         return $this->successResponse("Payment page URL generated", $response->data);

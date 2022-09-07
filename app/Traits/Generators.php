@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Constants\TransactionType;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 
 trait Generators
@@ -12,11 +14,32 @@ trait Generators
      *
      * @return string
      */
-    public function generateReference(): string
+    public function generateReference($type): string
     {
-        $noOfCharacters = 16;
+        $typeAbbr = "";
+        switch ($type) {
+            case TransactionType::ADD_CARD:
+                $typeAbbr = 'ADDC';
+                break;
+            case TransactionType::CREDIT_WALLET:
+                $typeAbbr = 'CWAL';
+                break;
+            case TransactionType::PAYOUT:
+                $typeAbbr = 'PAYO';
+                break;
+            case TransactionType::VDEPOSIT:
+                $typeAbbr = 'VDEP';
+                break;
+            case TransactionType::VWITHDRAWAL:
+                $typeAbbr = 'VWIT';
+                break;
+            default:
+                $typeAbbr = 'NOTA';
+                break;
+        }
+        $noOfCharacters = 6;
         $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
-        return substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
+        return $typeAbbr . Carbon::now()->format('ymd') . substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
     }
 
     public function generateTransCode(): string

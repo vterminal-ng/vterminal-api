@@ -63,7 +63,7 @@ class WalletController extends Controller
         // if transation was successful,get amount from the verification and deposit into wallet.
         $amountInKobo = $request->amount * 100;
 
-        $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference(), TransactionType::CREDIT_WALLET);
+        $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference(TransactionType::CREDIT_WALLET), TransactionType::CREDIT_WALLET);
 
         // return Success
         return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
@@ -91,7 +91,7 @@ class WalletController extends Controller
             $user->email,
             $amountInKobo,
             $user->authorizedCard->authorization_code,
-            $this->generateReference()
+            $this->generateReference(TransactionType::CREDIT_WALLET)
         );
 
         // if transaction fialed, return falure
