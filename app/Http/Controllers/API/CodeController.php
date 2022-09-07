@@ -260,6 +260,9 @@ class CodeController extends Controller
 
         $code->customer->validatePin($request->pin);
 
+        if (!$code->customer->authorizedCard) {
+            return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
+        }
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
         if ($code->status != CodeStatus::PENDING) {

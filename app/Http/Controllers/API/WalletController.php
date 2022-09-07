@@ -72,16 +72,27 @@ class WalletController extends Controller
     public function depositWithSavedCard(Request $request)
     {
         $request->validate([
-            "authCode" => ['required', "string"],
-            "amount" => ['required', 'integer']
+            "amount" => ['required', 'integer'],
+            'pin' => ['required'],
         ]);
 
         // get user object of auth user
         $user = User::find(auth()->id());
 
+        $user->validatePin($request->pin);
+
+        if (!$user->authorizedCard) {
+            return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
+        }
+
         // charge the card with paystacks Charge Authorization endpoint
         $amountInKobo = $request->amount * 100;
-        $response = $this->paystackService->chargeAuthorization($user->email, $amountInKobo, $request->authCode, $this->generateReference());
+        $response = $this->paystackService->chargeAuthorization(
+            $user->email,
+            $amountInKobo,
+            $user->authorizedCard->authorization_code,
+            $this->generateReference()
+        );
 
         // if transaction fialed, return falure
         if ($response->data->status == "failed") {
