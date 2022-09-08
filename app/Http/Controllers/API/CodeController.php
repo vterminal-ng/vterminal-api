@@ -30,7 +30,7 @@ class CodeController extends Controller
         $this->paystackService = $paystackService;
     }
 
-    public function transactionCodes(Request $request)
+    public function customerTransactionCodes(Request $request)
     {
         $query = (new Code)->query()->latest();
 
@@ -47,7 +47,7 @@ class CodeController extends Controller
         return $this->successResponse("Retrived your codes", CodeResource::collection($codes));
     }
 
-    public function transactionCode($codeReference)
+    public function customerTransactionCode($codeReference)
     {
         $code = Code::where('reference', $codeReference)->firstOrFail();
 
@@ -324,4 +324,8 @@ class CodeController extends Controller
         // return
         return $this->successResponse('Code cancelled successfully');
     }
+
+    ##########################################################
+    # Merchants side of the story begins
+    ##########################################################
 }
