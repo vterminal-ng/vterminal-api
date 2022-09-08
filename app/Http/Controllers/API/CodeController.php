@@ -32,7 +32,7 @@ class CodeController extends Controller
 
     public function transactionCodes(Request $request)
     {
-        $query = (new Code)->query();
+        $query = (new Code)->query()->latest();
 
         if (isset($request->status)) {
             $query->where('status', $request->status);
@@ -47,8 +47,11 @@ class CodeController extends Controller
         return $this->successResponse("Retrived your codes", CodeResource::collection($codes));
     }
 
-    public function myTransactionCode()
+    public function transactionCode($codeReference)
     {
+        $code = Code::where('reference', $codeReference)->firstOrFail();
+
+        return $this->successResponse("Retrived your code details", new CodeResource($code));
     }
 
     public function transactionSummary(Request $request)

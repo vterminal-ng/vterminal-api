@@ -15,6 +15,7 @@ class CodeResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'customer' => new UserResource($this->whenLoaded('customer')),
             'merchant' => new UserResource($this->whenLoaded('merchant')),
             'code' => $this->code,
