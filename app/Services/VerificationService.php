@@ -18,19 +18,20 @@ class VerificationService
     public function __construct()
     {
         $this->baseUri = config('services.verify_me.base_url');
-        $this->secret = config('services.verify_me.test_secret_key');
-        $this->key = config('services.verify_me.public_key');
+        $this->secret = config('services.verify_me.secret_key');
     }
 
-    public function verifyBvn($bvn, $params) {
+    public function verifyBvn($bvn, $params)
+    {
         $reponse = $this->performRequest('POST', "/v1/verifications/identities/bvn/$bvn", $params);
-        
+
         $response = json_decode((string)$reponse);
-       
+
         return $response;
     }
 
-    public function verifyVin($vin, $dob, $params) {
+    public function verifyVin($vin, $dob, $params)
+    {
         $reponse = $this->performRequest('POST', "/v1/verifications/identities/vin/$vin", [
             'dob' => $dob,
             'firstname' => $params['firstname'],
@@ -41,26 +42,29 @@ class VerificationService
         return $response;
     }
 
-    public function verifyLicense($license, $params) {
+    public function verifyLicense($license, $params)
+    {
         $reponse = $this->performRequest('POST', "/v1/verifications/identities/drivers_license/$license", $params);
-        
+
         $response = json_decode((string)$reponse);
-        
+
         return $response;
     }
 
-    public function verifyPassport($passport, $params) {
+    public function verifyPassport($passport, $params)
+    {
         $reponse = $this->performRequest('POST', "/v1/verifications/identities/drivers_license/$passport", $params);
-        
+
         $response = json_decode((string)$reponse);
         return $response;
     }
 
-    public function verifyNin($nin, $params) {
+    public function verifyNin($nin, $params)
+    {
         $reponse = $this->performRequest('POST', "/v1/verifications/identities/nin/$nin", $params);
-        
+
         $response = json_decode((string)$reponse);
-        
+
         return $response;
     }
 }

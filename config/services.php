@@ -118,8 +118,7 @@ return [
     'verify_me' => [
         'base_url' => env('VERIFYME_BASE_URL'),
         'public_key' => env('VERIFYME_PUBLIC_KEY'),
-        'test_secret_key' => env('VERIFYME_TEST_SECRET_KEY'),
-        'secret_key' => env('VERIFYME_SECRET_KEY'),
+        'secret_key' => env('VERIFYME_SECRET_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2MDU4MSwiZW52IjoidGVzdCIsImlhdCI6MTY2MDczNDM1MH0.l9wXrnV5ocTX7H1SQAm7IS4OgIWP3oR9niR-4O6NO5c'),
     ]
 
 ];
