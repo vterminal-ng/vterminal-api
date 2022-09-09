@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Models\UserDetail;
+use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Response;
@@ -15,6 +16,13 @@ use Image;
 class UserDetailController extends Controller
 {
     use ApiResponder;
+
+    protected $paystackService;
+
+    public function __construct(PaystackService $paystackService, NubanService $nubanService)
+    {
+        $this->paystackService = $paystackService;
+    }
 
     public function create(Request $request)
     {
@@ -37,13 +45,11 @@ class UserDetailController extends Controller
         }
 
         // get authenticated user instance
-        $user = auth()->user();
+        $user = User::find(auth()->id());
 
         if ($user->userDetail) {
             return $this->failureResponse("This user already have details, Use update route instead", Response::HTTP_BAD_REQUEST);
         }
-
-
 
         $refCode = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyz"), 0, 6);
 
@@ -57,28 +63,16 @@ class UserDetailController extends Controller
             'referrer' => $request->referrer,
         ]);
 
+
         return $this->successResponse(
             "User Details Added Successfully",
-            [
-                "userDetails" => new UserDetailResource($userDetails)
-            ],
+            new UserDetailResource($userDetails),
             Response::HTTP_CREATED
         );
     }
 
     public function read()
     {
-        // $userId = auth()->id();
-
-        // $userDetails = UserDetail::where('user_id', '=', $userId)->first();
-
-        // if (!$userDetails) {
-        //     return $this->failureResponse(
-        //         "User Not Found",
-        //         Response::HTTP_NOT_FOUND
-        //     );
-        // }
-
         $user = auth()->user();
         if (!$user->userDetail) {
             return $this->failureResponse(

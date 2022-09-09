@@ -328,4 +328,9 @@ class CodeController extends Controller
     ##########################################################
     # Merchants side of the story begins
     ##########################################################
+
+    public function codeSummary()
+    {
+        # code...
+    }
 }

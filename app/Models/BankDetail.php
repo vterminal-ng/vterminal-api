@@ -16,7 +16,8 @@ class BankDetail extends Model
         'bank_name',
         'bank_code',
         'is_verified',
-        'recipient_code'
+        'recipient_code',
+        'paystack_customer_code'
     ];
 
     public function user()

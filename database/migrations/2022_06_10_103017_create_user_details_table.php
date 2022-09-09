@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female']);
             $table->string('referral_code')->nullable();
             $table->string('referrer')->nullable();
+            $table->string('paystack_customer_code')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

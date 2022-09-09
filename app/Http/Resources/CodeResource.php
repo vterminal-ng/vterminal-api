@@ -16,8 +16,6 @@ class CodeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'customer' => new UserResource($this->whenLoaded('customer')),
-            'merchant' => new UserResource($this->whenLoaded('merchant')),
             'code' => $this->code,
             'transactionType' => $this->transaction_type,
             'transactionSource' => $this->transaction_source,
@@ -26,7 +24,13 @@ class CodeResource extends JsonResource
             'totalAmount' => $this->total_amount,
             'chargeAmount' => $this->charge_amount,
             'chargeFrom' => $this->charge_from,
+            'bankName' => $this->bank_name,
+            'bank_code' => $this->bank_code,
+            'accountName' => $this->account_number,
+            'paystackTransferRecipientCode' => $this->paystack_transfer_recipient_code,
             'reference' => $this->reference,
+            'customer' => new UserResource($this->whenLoaded('customer')),
+            'merchant' => new UserResource($this->whenLoaded('merchant')),
         ];
     }
 }

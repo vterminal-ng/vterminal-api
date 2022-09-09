@@ -20,13 +20,13 @@ return new class extends Migration
             $table->string('identity_number')->unique();
             $table->string('id_base64_string')->nullable();
             $table->string('passport_base64_string')->nullable();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('middle_name');
-            $table->string('date_of_birth');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('middle_name')->nullable();
+            $table->string('date_of_birth')->nullable();
             $table->string('reference')->nullable();
-            $table->json('payload');
-            $table->string('phone_number')->unique();
+            $table->json('payload')->nullable();
+            $table->string('phone_number')->nullable();
             $table->enum('gender', ['m', 'male', 'f', 'female']);
             $table->timestamps();
 
