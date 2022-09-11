@@ -25,4 +25,6 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
     Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
     Route::get('/dashboard', [DashboardController::class, 'displayDashboard'])->name('admin.dashboard');
     Route::get('/users', [DashboardController::class, 'getUsers'])->name('admin.users');
+    Route::get('/customers', [DashboardController::class, 'getCustomers'])->name('admin.customers');
+    Route::get('/merchants', [DashboardController::class, 'getMerchants'])->name('admin.merchants');
 });

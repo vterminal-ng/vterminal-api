@@ -166,19 +166,19 @@
                         </a>
                     </li>
                     <li>
-                        <a class="{{ request()->route()->getName() == 'admin.merchants'  ? 'active': '' }}" href="{{ route('admin.dashboard') }}">
-                            <span class="nav-link-icon">
-                                <i data-feather="shopping-bag"></i>
-                            </span>
-                            <span>Merchants</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="{{ request()->route()->getName() == 'admin.customers'  ? 'active': '' }}" href="{{ route('admin.dashboard') }}">
+                        <a class="{{ request()->route()->getName() == 'admin.customers'  ? 'active': '' }}" href="{{ route('admin.customers') }}">
                             <span class="nav-link-icon">
                                 <i data-feather="user"></i>
                             </span>
                             <span>Customers</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="{{ request()->route()->getName() == 'admin.merchants'  ? 'active': '' }}" href="{{ route('admin.merchants') }}">
+                            <span class="nav-link-icon">
+                                <i data-feather="shopping-bag"></i>
+                            </span>
+                            <span>Merchants</span>
                         </a>
                     </li>
                 </ul>
