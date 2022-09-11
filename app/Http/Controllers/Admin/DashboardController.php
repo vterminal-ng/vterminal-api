@@ -58,6 +58,54 @@ class DashboardController extends Controller
                 $users = [];
         }
 
-        return view('admin.user', compact('users'));
+        return view('admin.users', compact('users'));
+    }
+
+    public function getCustomers(Request $request)
+    {   
+        // All Customers
+        $users = User::where('role', 'customer')->latest()->with('userDetail')->get();
+
+        if($request->has('status')){
+            $status = $request->query('status');
+
+            if($status === 'active')
+                // Get active customers
+                $users = [];
+
+            if($status === 'inactive')
+                // Get inactive customers
+                $users = [];
+
+            if($status === 'dormant')
+                // Get dormant customers
+                $users = [];
+        }
+
+        return view('admin.customers', compact('users'));
+    }
+
+    public function getMerchants(Request $request)
+    {   
+        // All Merchants
+        $users = User::where('role', 'merchant')->latest()->with('userDetail')->get();
+
+        if($request->has('status')){
+            $status = $request->query('status');
+
+            if($status === 'active')
+                // Get active merchants
+                $users = [];
+
+            if($status === 'inactive')
+                // Get inactive merchants
+                $users = [];
+
+            if($status === 'dormant')
+                // Get dormant merchants
+                $users = [];
+        }
+
+        return view('admin.merchants', compact('users'));
     }
 }
