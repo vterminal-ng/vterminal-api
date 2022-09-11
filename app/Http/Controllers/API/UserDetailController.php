@@ -19,7 +19,7 @@ class UserDetailController extends Controller
 
     protected $paystackService;
 
-    public function __construct(PaystackService $paystackService, NubanService $nubanService)
+    public function __construct(PaystackService $paystackService)
     {
         $this->paystackService = $paystackService;
     }
