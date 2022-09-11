@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-                    <div class="page-header d-md-flex justify-content-between">
+    <div class="page-header d-md-flex justify-content-between">
         <div>
             <h3>Welcome back, {{ auth()->user()->userDetail->first_name ?? '' }}</h3>
             <p class="text-muted">This page shows an overview of the app usage.</p>

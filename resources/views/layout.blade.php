@@ -150,7 +150,7 @@
             <div class="navigation-menu-body">
                 <ul>
                     <li>
-                        <a class="active" href="{{ route('admin.dashboard') }}">
+                        <a class="{{ request()->route()->getName() == 'admin.dashboard'  ? 'active': '' }}" href="{{ route('admin.dashboard') }}">
                             <span class="nav-link-icon">
                                 <i data-feather="pie-chart"></i>
                             </span>
@@ -158,7 +158,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="" href="{{ route('admin.dashboard') }}">
+                        <a class="{{ request()->route()->getName() == 'admin.users'  ? 'active': '' }}" href="{{ route('admin.users') }}">
                             <span class="nav-link-icon">
                                 <i data-feather="users"></i>
                             </span>
@@ -166,7 +166,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="" href="{{ route('admin.dashboard') }}">
+                        <a class="{{ request()->route()->getName() == 'admin.merchants'  ? 'active': '' }}" href="{{ route('admin.dashboard') }}">
                             <span class="nav-link-icon">
                                 <i data-feather="shopping-bag"></i>
                             </span>
@@ -174,7 +174,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="" href="{{ route('admin.dashboard') }}">
+                        <a class="{{ request()->route()->getName() == 'admin.customers'  ? 'active': '' }}" href="{{ route('admin.dashboard') }}">
                             <span class="nav-link-icon">
                                 <i data-feather="user"></i>
                             </span>

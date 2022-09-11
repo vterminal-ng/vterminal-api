@@ -36,4 +36,28 @@ class DashboardController extends Controller
             compact('usersCount', 'customersCount', 'merchantsCount', 'codesCount', 'activeCodesCount', 'pendingCodesCount', 'cancelledCodesCount', 'completedCodesCount', 'totalWalletBalance', 'customerWalletsBalance', 'merchantWalletsBalance')
         );
     }
+
+    public function getUsers(Request $request)
+    {   
+        // All Users
+        $users = User::latest()->with('userDetail')->get();
+
+        if($request->has('status')){
+            $status = $request->query('status');
+
+            if($status === 'active')
+                // Get active users
+                $users = [];
+
+            if($status === 'inactive')
+                // Get inactive users
+                $users = [];
+
+            if($status === 'dormant')
+                // Get dormant users
+                $users = [];
+        }
+
+        return view('admin.user', compact('users'));
+    }
 }
