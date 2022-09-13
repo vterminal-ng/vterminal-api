@@ -13,6 +13,7 @@ class MerchantDetail extends Model
         'user_id',
         'business_name',
         'business_state',
+        'business_city',
         'business_address',
         'business_verified_at',
         'has_physical_location'
