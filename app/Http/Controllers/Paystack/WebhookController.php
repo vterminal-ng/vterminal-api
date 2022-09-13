@@ -122,7 +122,7 @@ class WebhookController extends Controller
 
                     Log::info("Crediting the user's wallet with $amountToDeposit");
                     Log::info("User's previous wallet balance: $user->balance");
-                    $user->deposit($amountToDeposit);
+                    $user->deposit($amountToDeposit, meta: $user->walletMetadata);
                     Log::info("Done Crediting user's wallet!");
                     Log::info("User's wallet balance after crediting: $user->balance");
 
