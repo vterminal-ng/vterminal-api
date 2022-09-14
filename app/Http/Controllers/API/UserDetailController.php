@@ -21,11 +21,7 @@ class UserDetailController extends Controller
 
     protected $paystackService;
 
-<<<<<<< HEAD
-    public function __construct(PaystackService $paystackService)
-=======
     public function __construct(PaystackService $paystackService, VerificationService $verificationService)
->>>>>>> feature
     {
         $this->paystackService = $paystackService;
         $this->verificationService = $verificationService;
@@ -185,7 +181,8 @@ class UserDetailController extends Controller
         }
     }
 
-    public function verifyBvn(Request $request) {
+    public function verifyBvn(Request $request)
+    {
         $request->validate([
             'bvn' => ['required'],
             'account_no' => ['required'],
@@ -201,14 +198,15 @@ class UserDetailController extends Controller
         $bvn = $request->bvn;
 
         $accountInfo = $this->verificationService->getAccountInfo($request->bank_code, $request->account_no);
-       
+
         // Compare nuban bvn and verifyMe bvn
         // We can condition both name and bvn check together but i separated them to 
         // know where the verification failure emanates from
 
-        if($accountInfo->data->bvn !== $bvn) {
+        if ($accountInfo->data->bvn !== $bvn) {
             return $this->failureResponse(
-                "BVN does not match", Response::HTTP_UNPROCESSABLE_ENTITY
+                "BVN does not match",
+                Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
@@ -216,12 +214,13 @@ class UserDetailController extends Controller
         $verifyLastname = strtolower($accountInfo->data->lastname);
 
         //dd($user->userDetail->last_name . " " . strtolower($accountInfo->data->lastname) );
-        if($dbLastname !== $verifyLastname) {
+        if ($dbLastname !== $verifyLastname) {
             return $this->failureResponse(
-                "Last name does not match", Response::HTTP_UNPROCESSABLE_ENTITY
+                "Last name does not match",
+                Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
-      
+
         // create paystack customer code
         $paystackCustomer = $this->paystackService->createCustomer('skads.seidu@gmail.com', $user->userDetail->first_name, $dbLastname, $user->phone, NULL);
         $customerCode = $paystackCustomer->data->customer_code;
