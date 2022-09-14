@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('referral_code')->nullable();
             $table->string('referrer')->nullable();
             $table->string('paystack_customer_code')->nullable();
+            $table->string('dedicated_account_no')->nullable();
+            $table->string('dedicated_bank_name')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

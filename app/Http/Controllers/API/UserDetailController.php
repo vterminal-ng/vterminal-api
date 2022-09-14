@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Models\UserDetail;
+use App\Services\NubanService;
 use App\Services\PaystackService;
+use App\Services\VerificationService;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Response;
@@ -19,9 +21,14 @@ class UserDetailController extends Controller
 
     protected $paystackService;
 
+<<<<<<< HEAD
     public function __construct(PaystackService $paystackService)
+=======
+    public function __construct(PaystackService $paystackService, VerificationService $verificationService)
+>>>>>>> feature
     {
         $this->paystackService = $paystackService;
+        $this->verificationService = $verificationService;
     }
 
     public function create(Request $request)
@@ -176,5 +183,51 @@ class UserDetailController extends Controller
         } else {
             return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function verifyBvn(Request $request) {
+        $request->validate([
+            'bvn' => ['required'],
+            'account_no' => ['required'],
+            'bank_code' => ['required']
+        ]);
+
+        $user = auth()->user();
+
+        if (!$user->userDetail) {
+            return $this->failureResponse("Please complete your profile before you continue", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $bvn = $request->bvn;
+
+        $accountInfo = $this->verificationService->getAccountInfo($request->bank_code, $request->account_no);
+       
+        // Compare nuban bvn and verifyMe bvn
+        // We can condition both name and bvn check together but i separated them to 
+        // know where the verification failure emanates from
+
+        if($accountInfo->data->bvn !== $bvn) {
+            return $this->failureResponse(
+                "BVN does not match", Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        $dbLastname = strtolower($user->userDetail->last_name);
+        $verifyLastname = strtolower($accountInfo->data->lastname);
+
+        //dd($user->userDetail->last_name . " " . strtolower($accountInfo->data->lastname) );
+        if($dbLastname !== $verifyLastname) {
+            return $this->failureResponse(
+                "Last name does not match", Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+      
+        // create paystack customer code
+        $paystackCustomer = $this->paystackService->createCustomer('skads.seidu@gmail.com', $user->userDetail->first_name, $dbLastname, $user->phone, NULL);
+        $customerCode = $paystackCustomer->data->customer_code;
+        //dd($paystackCustomer);
+        // // create dedicated account TODO
+        $virtual = $this->paystackService->createDedicatedVirtualAccount($customerCode);
+        dd($virtual);
     }
 }

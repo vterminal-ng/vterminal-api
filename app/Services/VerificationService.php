@@ -67,4 +67,13 @@ class VerificationService
 
         return $response;
     }
+
+    public function getAccountInfo($bankCode, $accountNo)
+    {
+        $reponse = $this->performRequest('GET', "/v1/banks/$bankCode/accounts/$accountNo");
+
+        $response = json_decode((string)$reponse);
+
+        return $response;
+    }    
 }
