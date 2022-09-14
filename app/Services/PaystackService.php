@@ -185,11 +185,8 @@ class PaystackService
                 "phone" => $phone,
                 "metadata" => $metadata,
             ],
-            [
-                "Content-Type" => "application/json",
-            ]
         );
-        // dd($response);
+        
 
         return json_decode((string)$response);
     }
@@ -202,9 +199,6 @@ class PaystackService
             [
                 "customer" => $customerCode,
             ],
-            [
-                "Content-Type" => "application/json",
-            ]
         );
         // dd($response);
 
