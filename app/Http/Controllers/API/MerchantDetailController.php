@@ -20,6 +20,7 @@ class MerchantDetailController extends Controller
             'user_id' => ['required', 'integer'],
             'business_name' => ['required', 'string', 'min:3', 'unique:merchant_details,business_name'],
             'business_state' => ['required', 'string', 'min:1'],
+            'business_city' => ['required', 'string', 'min:1'],
             'business_address' => ['required', 'string', 'min:5'],
             'has_physical_location' => ['required']
         ]);
@@ -41,6 +42,7 @@ class MerchantDetailController extends Controller
             'user_id' => $request->user_id,
             'business_name' => $request->business_name,
             'business_state' => $request->business_state,
+            'business_city' => $request->business_city,
             'business_address' => $request->business_address,
             'has_physical_location' => $request->has_physical_location
         ]);
