@@ -26,7 +26,7 @@ class UserResource extends JsonResource
             "userDetails" => new UserDetailResource($this->userDetail),
             "bankDetails" => new BankDetailResource($this->bankDetail),
             "walletBalance" => $this->balance,
-            "walletTransactions" => $this->transactions,
+            "walletTransactions" => WalletTransactionResource::collection($this->transactions),
             "card" => new AuthorizedCardResource($this->authorizedCard),
         ];
 
