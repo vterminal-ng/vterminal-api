@@ -222,10 +222,10 @@ class UserDetailController extends Controller
         }
 
         // create paystack customer code
-        $paystackCustomer = $this->paystackService->createCustomer('skads.seidu@gmail.com', $user->userDetail->first_name, $dbLastname, $user->phone, NULL);
+        $paystackCustomer = $this->paystackService->createCustomer($user->email, $user->userDetail->first_name, $dbLastname, $user->phone, NULL);
+        // dd($paystackCustomer);
         $customerCode = $paystackCustomer->data->customer_code;
-        //dd($paystackCustomer);
-        // // create dedicated account TODO
+        // // create dedicated account TODO: REGISTER BUISNESS ACCOUNT
         $virtual = $this->paystackService->createDedicatedVirtualAccount($customerCode);
         dd($virtual);
     }
