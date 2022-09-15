@@ -123,6 +123,17 @@ class User extends Authenticatable implements Wallet
         return $this->hasMany(SupportTicket::class);
     }
 
+    public function walletDeposit($amount)
+    {
+
+        return $this->deposit($amount, meta: $this->walletMetadata());
+    }
+
+    public function walletWithdraw($amount)
+    {
+        return $this->withdraw($amount, meta: $this->walletMetadata());
+    }
+
     public function walletMetadata()
     {
         return [

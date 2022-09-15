@@ -96,7 +96,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Wallet
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
     Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
-    Route::post('my-wallet/deposit-with-saved-card', [WalletController::class, 'depositWithSavedCard']);
 
     //Card
     Route::post('cards/add', [AuthorizedCardController::class, 'add']);

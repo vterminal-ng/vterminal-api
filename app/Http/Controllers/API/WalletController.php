@@ -46,7 +46,7 @@ class WalletController extends Controller
         $response = $this->paystackService->finalizeTransfer($transferCode);
 
         // if transation was successful, withdraw from user wallet,
-        $user->withdraw($request->amount);
+        $user->walletWithdraw($request->amount);
 
         // return Success
         return $this->successResponse("Withdrawal Complete");
@@ -99,7 +99,7 @@ class WalletController extends Controller
 
                 // if transation was successful,get amount from the verification and deposit into wallet.
                 $amountToDeposit = $response->data->amount / 100;
-                $user->deposit($amountToDeposit);
+                $user->walletDeposit($amountToDeposit);
 
                 // return success
                 return $this->successResponse("Successfully deposited $amountToDeposit into wallet");

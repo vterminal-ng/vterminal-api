@@ -118,11 +118,11 @@ class WebhookController extends Controller
 
                     Log::info("Converting the paystack amount \"{$event->data->amount}\" from kobo to naira");
                     // if transation was successful,get amount from the verification and deposit into wallet.
-                    $amountToDeposit = $event->data->amount / 100;
+                    $amountToDeposit = ($event->data->amount - $event->data->fees) / 100;
 
                     Log::info("Crediting the user's wallet with $amountToDeposit");
                     Log::info("User's previous wallet balance: $user->balance");
-                    $user->deposit($amountToDeposit, meta: $user->walletMetadata);
+                    $user->walletDeposit($amountToDeposit);
                     Log::info("Done Crediting user's wallet!");
                     Log::info("User's wallet balance after crediting: $user->balance");
 

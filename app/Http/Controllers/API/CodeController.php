@@ -233,7 +233,7 @@ class CodeController extends Controller
 
         switch ($code->payment_method) {
             case PaymentMethod::WALLET:
-                $withdrawResponse = $code->customer->withdraw($code->total_amount);
+                $withdrawResponse = $code->customer->walletWithdraw($code->total_amount);
 
                 // activate code
                 $code->forceFill([
@@ -305,7 +305,7 @@ class CodeController extends Controller
 
         if ($code->status == CodeStatus::ACTIVE && $code->transaction_type == TransactionType::VWITHDRAWAL) {
             // deposit user wallet
-            $code->customer->deposit($code->total_amount);
+            $code->customer->walletDeposit($code->total_amount);
 
             // cancel code
             $code->forceFill([
