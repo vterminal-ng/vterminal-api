@@ -223,6 +223,7 @@ class CodeController extends Controller
 
         $code->customer->validatePin($request->pin);
 
+
         // if transaction code status is \anything other than PENDING, then it is invalid,
         // we can't activate code that isn't pending
         if ($code->status != CodeStatus::PENDING || $code->transaction_type != TransactionType::VWITHDRAWAL) {
@@ -230,6 +231,8 @@ class CodeController extends Controller
             $this->paystackService->refundTransaction($request->paystack_reference);
             return $this->failureResponse("Invalid transaction code", Response::HTTP_BAD_REQUEST);
         }
+
+        $totalAmountInKobo = ($code->total_amount + $this->paystackService->calculateApplicableFee($code->total_amount)) * 100;
 
         switch ($code->payment_method) {
             case PaymentMethod::WALLET:
@@ -243,7 +246,6 @@ class CodeController extends Controller
                 return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", $withdrawResponse);
                 break;
             case PaymentMethod::NEW_CARD:
-                $totalAmountInKobo = $code->total_amount * 100;
 
                 $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type);
 
@@ -254,8 +256,6 @@ class CodeController extends Controller
                 if (!$code->customer->authorizedCard) {
                     return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
                 }
-
-                $totalAmountInKobo = $code->total_amount * 100;
 
                 $response = $this->paystackService->chargeAuthorization(
                     $code->customer->email,
