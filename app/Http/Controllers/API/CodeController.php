@@ -8,6 +8,7 @@ use App\Constants\PaymentMethod;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
+use App\Http\Resources\WalletTransactionResource;
 use App\Models\Code;
 use App\Models\User;
 use App\Services\PaystackService;
@@ -243,7 +244,7 @@ class CodeController extends Controller
                     'status' => CodeStatus::ACTIVE
                 ])->save();
 
-                return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", $withdrawResponse);
+                return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", new WalletTransactionResource($withdrawResponse));
                 break;
             case PaymentMethod::NEW_CARD:
 
