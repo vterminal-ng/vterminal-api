@@ -18,6 +18,7 @@ class WalletTransactionResource extends JsonResource
             "amount" => $this->amount,
             "type" => $this->type,
             "previousBalance" => $this->meta->previous_balance ?? 'N/A',
+            "meta" => $this->meta,
             "reference" => $this->uuid,
             "createDates" => [
                 'creadtedAtHuman' => $this->created_at->diffForHumans(),
