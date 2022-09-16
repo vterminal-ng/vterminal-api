@@ -24,10 +24,15 @@ class PinController extends Controller
     {
         $request->validate([
             'pin' => ['required', 'string', 'size:4', 'confirmed'],
+            'password' => ['required'],
         ]);
 
         // get authenticated user instance
         $user = auth()->user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return $this->failureResponse('Incorrect Password', Response::HTTP_UNAUTHORIZED);
+        }
 
         if ($user->pin) {
             return $this->failureResponse(
@@ -35,6 +40,7 @@ class PinController extends Controller
                 Response::HTTP_NOT_ACCEPTABLE
             );
         }
+
         $user->pin()->create([
             'pin' => Hash::make($request->pin),
             'status' => 'active',
