@@ -70,9 +70,6 @@ class PaystackService
                 'email' => $email,
                 'amount' => $amount,
                 'authorization_code' => $authorizationCode,
-            ],
-            [
-                "Content-Type" => "application/json",
             ]
         );
         // dd($response);
@@ -139,7 +136,7 @@ class PaystackService
 
     public function initiateTransfer($amount, $recipientCode)
     {
-        $response = $this->performRequest(
+        $response = $this->makeRequest(
             'POST',
             "/transfer",
             [
@@ -147,9 +144,7 @@ class PaystackService
                 "amount" => $amount,
                 "recipient" => $recipientCode,
             ],
-            [
-                "Content-Type" => "application/json",
-            ]
+
         );
         // dd($response);
 
@@ -163,9 +158,6 @@ class PaystackService
             "/transfer/finalize_transfer",
             [
                 "transfer_code" => $transferCode,
-            ],
-            [
-                "Content-Type" => "application/json",
             ]
         );
         // dd($response);
@@ -186,7 +178,7 @@ class PaystackService
                 "metadata" => $metadata,
             ],
         );
-        
+
 
         return json_decode((string)$response);
     }

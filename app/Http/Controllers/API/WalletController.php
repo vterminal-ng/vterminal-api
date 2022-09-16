@@ -33,6 +33,10 @@ class WalletController extends Controller
         // get user object of auth user
         $user = User::find(auth()->id());
 
+        if (!$user->bankDetail) {
+            return $this->failureResponse("Kindly add a bank account for payout", Response::HTTP_BAD_REQUEST);
+        }
+
         // if transation was successful, withdraw from user wallet,
         $user->walletWithdraw($request->amount);
 
@@ -40,6 +44,11 @@ class WalletController extends Controller
         // initialize transfer paystack request
         $response = $this->paystackService->initiateTransfer($request->amount, $user->bankDetail->recipient_code);
 
+        if (!$response->status) {
+            // reversing the transaction because the paystack transfer failed
+            $user->walletDeposit($request->amount);
+            return $this->failureResponse("Withdrawal failed, Reason: $response->message", Response::HTTP_BAD_REQUEST);
+        }
         // get the transfer code from above request
         $transferCode = $response->data->transfer_code;
 
