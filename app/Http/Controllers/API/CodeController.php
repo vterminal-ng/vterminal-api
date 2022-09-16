@@ -214,7 +214,6 @@ class CodeController extends Controller
         // validate pystack ref
         $request->validate([
             'reference' => ['required', 'exists:codes,reference'],
-            'payment_method' => ['required', 'string', 'in:' . PaymentMethod::all()],
             'pin' => ['required'],
         ]);
 
