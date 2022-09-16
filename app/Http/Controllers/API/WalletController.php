@@ -27,8 +27,7 @@ class WalletController extends Controller
     public function withdraw(Request $request)
     {
         $request->validate([
-            // "amount" => ['required'],
-            "recipient_cdoe" => ['required', 'string']
+            "amount" => ['required'],
         ]);
 
         // get user object of auth user
