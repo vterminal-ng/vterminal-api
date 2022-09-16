@@ -140,7 +140,7 @@ class PaystackService
             'POST',
             "/transfer",
             [
-                "source" => "nuban",
+                "source" => "balance",
                 "amount" => $amount,
                 "recipient" => $recipientCode,
             ],
