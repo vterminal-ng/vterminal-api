@@ -19,7 +19,7 @@ class WalletTransactionResource extends JsonResource
             "amount" => $this->amount,
             "type" => $this->type,
             "previousBalance" => $this->meta['previous_balance'] ?? 'N/A',
-            "newBalance" => User::find($this->payable_id)->balance,
+            "newBalance" => $this->meta['previous_balance'] != null ? $this->amount + $this->meta['previous_balance'] : null,
             "reference" => $this->uuid,
             "createDates" => [
                 'creadtedAtHuman' => $this->created_at->diffForHumans(),

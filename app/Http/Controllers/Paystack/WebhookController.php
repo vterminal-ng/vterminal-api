@@ -7,6 +7,7 @@ use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WalletTransactionResource;
 use App\Models\Code;
 use App\Models\User;
 use App\Services\PaystackService;
@@ -122,7 +123,8 @@ class WebhookController extends Controller
 
                     Log::info("Crediting the user's wallet with $amountToDeposit");
                     Log::info("User's previous wallet balance: $user->balance");
-                    $user->walletDeposit($amountToDeposit);
+                    $wallet = $user->walletDeposit($amountToDeposit);
+                    Log::info("Wallet deposit details", ['wallet' => new WalletTransactionResource($wallet)]);
                     Log::info("Done Crediting user's wallet!");
                     Log::info("User's wallet balance after crediting: $user->balance");
 
