@@ -33,6 +33,9 @@ class WalletController extends Controller
         // get user object of auth user
         $user = User::find(auth()->id());
 
+        // if transation was successful, withdraw from user wallet,
+        $user->walletWithdraw($request->amount);
+
         // TODO: Middle ware to avoid people who haven't added a payout account to perform this request
         // initialize transfer paystack request
         $response = $this->paystackService->initiateTransfer($request->amount, $user->bankDetail->recipient_code);
@@ -43,9 +46,6 @@ class WalletController extends Controller
         // finalize transfer paystack request
         // TODO: Disable OTP in the paystack portal
         $response = $this->paystackService->finalizeTransfer($transferCode);
-
-        // if transation was successful, withdraw from user wallet,
-        $user->walletWithdraw($request->amount);
 
         // return Success
         return $this->successResponse("Withdrawal Complete");
