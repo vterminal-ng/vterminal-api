@@ -214,6 +214,7 @@ class CodeController extends Controller
         // validate pystack ref
         $request->validate([
             'reference' => ['required', 'exists:codes,reference'],
+            'payment_method' => ['required', 'string', 'in:' . PaymentMethod::all()],
             'pin' => ['required'],
         ]);
 
@@ -274,13 +275,12 @@ class CodeController extends Controller
                 ])->save();
 
                 // return 
-                return $this->successResponse('Code activated successfully', ['code' => $request->transaction_code]);
+                return $this->successResponse('Code activated successfully', ['code' => new CodeResource($code)]);
 
                 break;
 
             default:
                 return $this->failureResponse("The payment method \"$code->payment_method\" is invalid", Response::HTTP_UNPROCESSABLE_ENTITY);
-
                 break;
         }
     }
