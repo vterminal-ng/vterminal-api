@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WalletTransactionResource extends JsonResource
@@ -18,7 +19,7 @@ class WalletTransactionResource extends JsonResource
             "amount" => $this->amount,
             "type" => $this->type,
             "previousBalance" => $this->meta['previous_balance'] ?? 'N/A',
-            "meta" => $this->meta,
+            "newBalance" => User::find($this->payable_id)->balance,
             "reference" => $this->uuid,
             "createDates" => [
                 'creadtedAtHuman' => $this->created_at->diffForHumans(),
