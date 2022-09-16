@@ -42,7 +42,8 @@ class WalletController extends Controller
 
         // TODO: Middle ware to avoid people who haven't added a payout account to perform this request
         // initialize transfer paystack request
-        $response = $this->paystackService->initiateTransfer($request->amount, $user->bankDetail->recipient_code);
+        $amountInKobo = $request->amount * 100;
+        $response = $this->paystackService->initiateTransfer($amountInKobo, $user->bankDetail->recipient_code);
 
         if (!$response->status) {
             // reversing the transaction because the paystack transfer failed
