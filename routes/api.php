@@ -94,6 +94,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/verify-bvn-with-nuban', [UserDetailController::class, 'verifyBvn']);
 
     // Wallet
+    Route::get('my-wallet/transactions', [WalletController::class, 'getTransactions']);
     Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
     Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
 

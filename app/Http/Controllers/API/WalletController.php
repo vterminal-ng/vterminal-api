@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Constants\PaymentMethod;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\WalletTransactionResource;
 use App\Models\User;
 use App\Services\PaystackService;
 use App\Traits\ApiResponder;
@@ -22,6 +23,13 @@ class WalletController extends Controller
     public function __construct(PaystackService $paystackService)
     {
         $this->paystackService = $paystackService;
+    }
+
+    public function getTransactions(Request $request)
+    {
+        $user = User::find(auth()->id());
+
+        return $this->successResponse("Retrieved wallet transactions", WalletTransactionResource::collection($user->transactions));
     }
 
     public function withdraw(Request $request)
