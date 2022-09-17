@@ -17,7 +17,6 @@ class MerchantDetailController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'user_id' => ['required', 'integer'],
             'business_name' => ['required', 'string', 'min:3', 'unique:merchant_details,business_name'],
             'business_state' => ['required', 'string', 'min:1'],
             'business_city' => ['required', 'string', 'min:1'],
@@ -25,21 +24,12 @@ class MerchantDetailController extends Controller
             'has_physical_location' => ['required']
         ]);
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::find(auth()->id());
 
-        // Check if auth()->id is same as user_id
-        // Then return failure response if not the same
-        if (!(auth()->id() === $user->id)) {
-            return $this->failureResponse(
-                "You are not authorized to access this resource",
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
         // make sure that the user_id provided in the request belongs to the currently authenticated user 
         //$this->authorize('create', $request->user_id);
 
-        $merchantDetails = MerchantDetail::create([
-            'user_id' => $request->user_id,
+        $merchantDetails = $user->merchantDetail()->create([
             'business_name' => $request->business_name,
             'business_state' => $request->business_state,
             'business_city' => $request->business_city,
@@ -49,9 +39,7 @@ class MerchantDetailController extends Controller
 
         return $this->successResponse(
             "Merchant Successfully Created",
-            [
-                "merchantDetails" => new MerchantDetailResource($merchantDetails)
-            ],
+            new MerchantDetailResource($merchantDetails),
             Response::HTTP_CREATED
         );
     }
@@ -71,9 +59,7 @@ class MerchantDetailController extends Controller
         }
         return $this->successResponse(
             "Merchant Found",
-            [
-                "merchant_details" => new MerchantDetailResource($user->MerchantDetail)
-            ],
+            new MerchantDetailResource($user->MerchantDetail),
             Response::HTTP_FOUND
         );
     }
@@ -110,9 +96,7 @@ class MerchantDetailController extends Controller
 
         return $this->successResponse(
             "Merchant Details Updated",
-            [
-                'merchantDetail' => new MerchantDetailResource($merchantDetail)
-            ],
+            new MerchantDetailResource($merchantDetail),
             Response::HTTP_ACCEPTED
         );
     }
