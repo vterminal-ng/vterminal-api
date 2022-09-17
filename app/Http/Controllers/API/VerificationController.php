@@ -6,7 +6,7 @@ use App\Constants\IdentityType;
 use App\Http\Controllers\Controller;
 use App\Models\Verification;
 use App\Traits\ApiResponder;
-use App\Services\VerificationService;
+use App\Services\VerifyMeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -15,9 +15,9 @@ class VerificationController extends Controller
 {
     use ApiResponder;
 
-    public function __construct(VerificationService $verification)
+    public function __construct(VerifyMeService $verifyMeService)
     {
-        $this->verification = $verification;
+        $this->verifyMeService = $verifyMeService;
     }
 
     public function verifyDetails(Request $request)
@@ -52,23 +52,23 @@ class VerificationController extends Controller
 
         switch ($identityType) {
             case IdentityType::DRIVERS_LICENSE:
-                $response = $this->verification->verifyLicense($request->driver_license_no, $params);
+                $response = $this->verifyMeService->verifyLicense($request->driver_license_no, $params);
                 $idNo = $response->data->licenseNo;
                 break;
             case IdentityType::NIN:
-                $response = $this->verification->verifyNin($request->nin, $params);
+                $response = $this->verifyMeService->verifyNin($request->nin, $params);
                 $idNo = $response->data->nin;
                 break;
             case IdentityType::VOTERS_CARD:
-                $response = $this->verification->verifyVin($request->vin, $votersCardDob, $params);
+                $response = $this->verifyMeService->verifyVin($request->vin, $votersCardDob, $params);
                 $idNo = $response->data->vin;
                 break;
             case IdentityType::PASSPORT:
-                $response = $this->verification->verifyPassport($request->passport_no, $params);
+                $response = $this->verifyMeService->verifyPassport($request->passport_no, $params);
                 $idNo = $response->data->passportNo;
                 break;
             default:
-                $response = $this->verification->verifyBvn($request->bvn, $params);
+                $response = $this->verifyMeService->verifyBvn($request->bvn, $params);
                 $idNo = $response->data->bvn;
                 break;
         }
@@ -84,7 +84,7 @@ class VerificationController extends Controller
                 return $this->failureResponse("Verification Failed", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             //dd($user->phone_number);
-            $verificationData = Verification::create([
+            $verifyMeServiceData = Verification::create([
                 'user_id' => $user->id,
                 'identity_type' => $identityType,
                 'identity_number' => $idNo,
@@ -97,10 +97,10 @@ class VerificationController extends Controller
                 'payload' => $data
             ]);
 
-            //dd($verificationData);
+            //dd($verifyMeServiceData);
             return $this->successResponse(
                 "Verification Passed. Thank you.",
-                $verificationData,
+                $verifyMeServiceData,
                 Response::HTTP_OK
             );
         }

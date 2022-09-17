@@ -7,7 +7,7 @@ use App\Traits\ApiResponder;
 use App\Traits\ConsumeExternalService;
 
 
-class VerificationService
+class VerifyMeService
 {
     use ConsumeExternalService, ApiResponder;
 
@@ -75,5 +75,14 @@ class VerificationService
         $response = json_decode((string)$reponse);
 
         return $response;
-    }    
+    }
+
+    // public function getAccountInfo($bankCode, $accountNo)
+    // {
+    //     $reponse = $this->performRequest('GET', "/v1/banks/$bankCode/accounts/$accountNo");
+
+    //     $response = json_decode((string)$reponse);
+
+    //     return $response;
+    // }
 }
