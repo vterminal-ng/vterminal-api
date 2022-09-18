@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\BankListChannel;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BankDetailResource;
 use App\Models\BankDetail;
@@ -19,11 +20,13 @@ class BankDetailController extends Controller
 
     protected $paystackService;
     protected $verifyMeService;
+    protected $nubanService;
 
-    public function __construct(PaystackService $paystackService, VerifyMeService $verifyMeService)
+    public function __construct(PaystackService $paystackService, VerifyMeService $verifyMeService, NubanService $nubanService)
     {
         $this->paystackService = $paystackService;
         $this->verifyMeService = $verifyMeService;
+        $this->nubanService = $nubanService;
     }
 
 
@@ -124,9 +127,19 @@ class BankDetailController extends Controller
 
     public function getBanks()
     {
-        $codes = $this->verifyMeService->getBanks();
+        $codes = null;
+        switch (config('services.bank_list.channel')) {
+            case BankListChannel::NUBAN_API:
+                $codes = $this->nubanService->getBanks();
+                break;
+            case BankListChannel::VERIFY_ME:
+                $codes = $this->verifyMeService->getBanks();
+                break;
+            default:
+                return $this->failureResponse('Bank list channel not available. Contact Admin.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
-        return $this->successResponse("List of Banks and their codes", $codes->data);
+        return $this->successResponse("List of Banks and their codes", $codes->data ?? null);
     }
 
     public function getAccountDetails(Request $request)
@@ -137,8 +150,20 @@ class BankDetailController extends Controller
             'bank_code' => ['required', 'string'],
         ]);
 
-        $accountDetails = $this->verifyMeService->getAccountDetails($request->account_no, $request->bank_code);
+        switch (config('services.bank_list.channel')) {
+            case BankListChannel::NUBAN_API:
+                $accountDetails = $this->nubanService->getAccountDetails($request->account_no, $request->bank_code);
+                break;
+            case BankListChannel::VERIFY_ME:
+                $accountDetails = $this->verifyMeService->getAccountDetails($request->account_no, $request->bank_code);
+                $accountDetails = $accountDetails->data;
+                break;
+            default:
+                return $this->failureResponse('Bank list channel not available. Contact Admin.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
-        return $this->successResponse("Account Details", $accountDetails->data);
+
+        // dd($accountDetails);
+        return $this->successResponse("Account Details", $accountDetails);
     }
 }

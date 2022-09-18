@@ -28,23 +28,25 @@ class NubanService
      *
      * @return object
      */
-    public function getBankCodes() {
+    public function getBanks()
+    {
         $response = $this->performRequest('GET', '/bank_codes.json');
         //dd($response);
         $bankCodes = json_decode((string)$response);
 
+        //get the main data from the API response
         $bankCodes = $bankCodes[2];
 
         return $bankCodes;
     }
 
-    public function getBankDetails($accountNo) {
+    public function getAccountDetails($accountNo, $bankCode)
+    {
         //dd($accountNo);
-        $response = $this->performRequest('GET', "/api/$this->secret?acc_no=$accountNo");
+        $response = $this->performRequest('GET', "/api/$this->secret?acc_no=$accountNo&bank_code=$bankCode");
         // dd($response);
         $details = json_decode((string)$response);
 
         return $details;
     }
-
 }
