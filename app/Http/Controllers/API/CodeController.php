@@ -329,8 +329,17 @@ class CodeController extends Controller
     # Merchants side of the story begins
     ##########################################################
 
-    public function codeSummary()
+    public function codeSummary(Request $request)
     {
-        # code...
+        // validate
+        $request->validate([
+            'code' => ['required', 'exists:codes,code'],
+        ]);
+
+        // get code details
+        $code = Code::where('code', $request->code)->firstOrFail();
+
+        // return details
+        return $this->successResponse("Code Summary", new CodeResource($code));
     }
 }
