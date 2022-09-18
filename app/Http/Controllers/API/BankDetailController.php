@@ -8,6 +8,7 @@ use App\Models\BankDetail;
 use App\Models\User;
 use App\Services\PaystackService;
 use App\Services\NubanService;
+use App\Services\VerifyMeService;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,11 +18,12 @@ class BankDetailController extends Controller
     use ApiResponder;
 
     protected $paystackService;
+    protected $verifyMeService;
 
-    public function __construct(PaystackService $paystackService, NubanService $nubanService)
+    public function __construct(PaystackService $paystackService, VerifyMeService $verifyMeService)
     {
         $this->paystackService = $paystackService;
-        $this->nubanService = $nubanService;
+        $this->verifyMeService = $verifyMeService;
     }
 
 
@@ -90,49 +92,6 @@ class BankDetailController extends Controller
         );
     }
 
-    // public function updateBankDetail(Request $request, BankDetail $bankDetail)
-    // {
-
-    //     $request->validate([
-    //         'account_number' => ['required', 'string', 'min:3'],
-    //         'account_name' => ['required', 'min:3'],
-    //         'bank_name' => ['required', 'string', 'min:3'],
-    //     ]);
-
-
-    //     $this->authorize('update', $bankDetail);
-
-    //     //Check if user already added the same bank details
-    //     $detail = BankDetail::where('user_id', auth()->id())
-    //         ->where('account_number', '=', $request->account_number)
-    //         ->where('bank_name', '=', $request->bank_name)
-    //         ->first();
-
-    //     if ($detail) {
-    //         return $this->failureResponse(
-    //             "You added this Bank Detail already",
-    //             Response::HTTP_NOT_ACCEPTABLE
-    //         );
-    //     }
-
-    //     $bankDetail->update(
-    //         [
-    //             'account_number' => $request->account_number,
-    //             'account_name' => $request->account_name,
-    //             'bank_name' => $request->bank_name,
-    //         ]
-    //     );
-
-    //     $bankDetail->save();
-
-    //     return $this->successResponse(
-    //         "Bank Detail Updated",
-    //         [
-    //             'bankDetail' => new BankDetailResource($bankDetail)
-    //         ]
-    //     );
-    // }
-
     public function deleteBankDetail(User $user, BankDetail $bankDetail)
     {
         $user = auth()->user();
@@ -163,22 +122,23 @@ class BankDetailController extends Controller
         );
     }
 
-    public function get_bank_codes()
+    public function getBanks()
     {
-        $codes = $this->nubanService->getBankCodes();
+        $codes = $this->verifyMeService->getBanks();
 
-        return $codes->data;
+        return $this->successResponse("List of Banks and their codes", $codes->data);
     }
 
-    public function getNubanDetails(Request $request)
+    public function getAccountDetails(Request $request)
     {
         //dd($request->all());
         $request->validate([
-            'acc_no' => ['required', 'string', 'size:10'],
+            'account_no' => ['required', 'string', 'size:10'],
+            'bank_code' => ['required', 'string'],
         ]);
 
-        $codes = $this->nubanService->getBankDetails($request->acc_no);
+        $accountDetails = $this->verifyMeService->getAccountDetails($request->account_no, $request->bank_code);
 
-        return $codes;
+        return $this->successResponse("Account Details", $accountDetails->data);
     }
 }

@@ -68,7 +68,7 @@ class VerifyMeService
         return $response;
     }
 
-    public function getAccountInfo($bankCode, $accountNo)
+    public function getAccountDetails($bankCode, $accountNo)
     {
         $reponse = $this->performRequest('GET', "/v1/banks/$bankCode/accounts/$accountNo");
 
@@ -77,12 +77,12 @@ class VerifyMeService
         return $response;
     }
 
-    // public function getAccountInfo($bankCode, $accountNo)
-    // {
-    //     $reponse = $this->performRequest('GET', "/v1/banks/$bankCode/accounts/$accountNo");
+    public function getBanks()
+    {
+        $reponse = $this->performRequest('GET', "v1/banks");
 
-    //     $response = json_decode((string)$reponse);
+        $response = json_decode((string)$reponse);
 
-    //     return $response;
-    // }
+        return $response;
+    }
 }

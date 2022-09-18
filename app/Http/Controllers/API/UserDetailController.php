@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Models\UserDetail;
-use App\Services\NubanService;
 use App\Services\PaystackService;
-use App\Services\VerificationService;
+use App\Services\VerifyMeService;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Response;
@@ -20,11 +19,12 @@ class UserDetailController extends Controller
     use ApiResponder;
 
     protected $paystackService;
+    protected $verifyMeService;
 
-    public function __construct(PaystackService $paystackService, VerificationService $verificationService)
+    public function __construct(PaystackService $paystackService, VerifyMeService $verifyMeService)
     {
         $this->paystackService = $paystackService;
-        $this->verificationService = $verificationService;
+        $this->verifyMeService = $verifyMeService;
     }
 
     public function create(Request $request)
@@ -143,7 +143,7 @@ class UserDetailController extends Controller
 
     public function uploadAvatar(Request $request)
     {
-        $user = auth()->user();
+        $user = User::find(auth()->id());
         if (!$user->userDetail) {
             return $this->failureResponse(
                 "No user details. Please update user details first.",
@@ -197,7 +197,7 @@ class UserDetailController extends Controller
 
         $bvn = $request->bvn;
 
-        $accountInfo = $this->verificationService->getAccountInfo($request->bank_code, $request->account_no);
+        $accountInfo = $this->verifyMeService->getAccountDetails($request->bank_code, $request->account_no);
 
         // Compare nuban bvn and verifyMe bvn
         // We can condition both name and bvn check together but i separated them to 

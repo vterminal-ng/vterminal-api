@@ -15,6 +15,8 @@ class VerificationController extends Controller
 {
     use ApiResponder;
 
+    protected $verifyMeService;
+
     public function __construct(VerifyMeService $verifyMeService)
     {
         $this->verifyMeService = $verifyMeService;

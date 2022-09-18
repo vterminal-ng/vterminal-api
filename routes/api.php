@@ -42,8 +42,8 @@ Route::get('states', [StateController::class, 'getStates']);
 Route::post('password/email', [ResetPasswordController::class, 'sendResetOtpEmail']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
-Route::get('/bank-codes', [BankDetailController::class, 'get_bank_codes']);
-Route::get('users/nuban-details/', [BankDetailController::class, 'getNubanDetails']);
+Route::get('/bank-codes', [BankDetailController::class, 'getBanks']);
+Route::post('users/nuban-details/', [BankDetailController::class, 'getAccountDetails']);
 
 Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.context');
 
