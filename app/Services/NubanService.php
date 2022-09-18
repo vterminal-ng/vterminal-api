@@ -44,8 +44,9 @@ class NubanService
     {
         //dd($accountNo);
         $response = $this->performRequest('GET', "/api/$this->secret?acc_no=$accountNo&bank_code=$bankCode");
-        // dd($response);
         $details = json_decode((string)$response);
+
+        $details = $details[0];
 
         return $details;
     }
