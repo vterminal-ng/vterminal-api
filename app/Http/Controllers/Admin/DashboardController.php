@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -47,15 +48,15 @@ class DashboardController extends Controller
 
             if($status === 'active')
                 // Get active users
-                $users = [];
+                $users = User::where('updated_at', '>=', Carbon::today()->subMonth())->latest()->with('userDetail')->get();
 
             if($status === 'inactive')
                 // Get inactive users
-                $users = [];
+                $users = User::whereBetween('updated_at', [Carbon::today()->subMonths(3), Carbon::today()->subMonth()->subDay()])->latest()->with('userDetail')->get();
 
             if($status === 'dormant')
                 // Get dormant users
-                $users = [];
+                $users = User::where('updated_at', '<', Carbon::today()->subMonth(3))->latest()->with('userDetail')->get();
         }
 
         return view('admin.users', compact('users'));
