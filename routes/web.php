@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 /*
@@ -15,6 +16,20 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 Route::get('/', fn() => redirect()->route('admin.login'));
+
+Route::get('/test-mail', function(){
+    // Send an email
+    Mail::send(
+        'mail.test',
+        [],
+        function ($m) {
+            $m->from('admin@vterminal.ng');
+
+            $m->to('dayoolapeju@gmail.com', "Jeremiah Ekundayo")
+                ->subject('Testing vTerminal');
+        }
+    );
+});
 
 Route::prefix('admin')->group(function() {
     Route::get('/login', [AuthController::class, 'getLogin'])->name('admin.login');
