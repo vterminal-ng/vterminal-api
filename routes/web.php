@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', fn() => redirect()->route('admin.login'));
+
+Route::prefix('admin')->group(function() {
+    Route::get('/login', [AuthController::class, 'getLogin'])->name('admin.login');
+    Route::post('/login', [AuthController::class, 'postLogin'])->name('admin.postlogin');
+});
+
+Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
+    Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+    Route::get('/dashboard', [DashboardController::class, 'displayDashboard'])->name('admin.dashboard');
+    Route::get('/users', [DashboardController::class, 'getUsers'])->name('admin.users');
+    Route::get('/customers', [DashboardController::class, 'getCustomers'])->name('admin.customers');
+    Route::get('/merchants', [DashboardController::class, 'getMerchants'])->name('admin.merchants');
 });
