@@ -61,7 +61,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
         Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
         Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
+
+        Route::post('code/summary', [CodeController::class, 'codeSummary']);
+        Route::post('code/resolve', [CodeController::class, 'resolveCode']);
     });
+
 
     Route::post('logout', [AuthController::class, 'logout']);
 
@@ -114,6 +118,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
     Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
     Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+
 
     // Dispute Transaction, Create Support Ticket
     Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later

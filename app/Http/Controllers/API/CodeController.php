@@ -333,13 +333,72 @@ class CodeController extends Controller
     {
         // validate
         $request->validate([
-            'code' => ['required', 'exists:codes,code'],
+            'code' => ['required'],
         ]);
 
         // get code details
-        $code = Code::where('code', $request->code)->firstOrFail();
+        $code = Code::where('code', $request->code)->first();
+
+        if (!$code) {
+            return $this->failureResponse('Code not found', Response::HTTP_NOT_FOUND);
+        }
 
         // return details
         return $this->successResponse("Code Summary", new CodeResource($code));
+    }
+
+    public function resolveCode(Request $request)
+    {
+        // validate
+        $request->validate([
+            'code' => ['required'],
+        ]);
+
+        // get code details
+        $code = Code::where('code', $request->code)->first();
+
+        //get merchant
+        $merchant = User::find(auth()->id());
+
+        if (!$code) {
+            return $this->failureResponse('Code not found', Response::HTTP_NOT_FOUND);
+        }
+
+        if ($code->status != CodeStatus::ACTIVE) {
+            return $this->failureResponse('This code is not activated. Kindly let the customer know.', Response::HTTP_BAD_GATEWAY);
+        }
+
+
+
+        switch ($code->transaction_type) {
+            case TransactionType::VWITHDRAWAL:
+                $merchant->walletDeposit($code->total_amount);
+
+                break;
+
+            case TransactionType::VDEPOSIT:
+                // Lowest transfer charge is 10 naira for tansations of 5000 and below 
+                $charge = 10;
+                $amount = $code->total_amount;
+
+                if (($amount > 5000) && ($amount <= 50000)) $charge = 25;
+
+                if ($amount > 50000) $charge = 50;
+
+                $amountAndCharge = $amount + $charge;
+
+                $totalAmountInKobo = $amountAndCharge * 100;
+                // withdraw from merchant wallet
+                $merchant->walletWithdraw($amountAndCharge);
+
+                // transfer to users account
+                $response = $this->paystackService->initiateTransfer($totalAmountInKobo, $code->paystack_transfer_recipient_code);
+        }
+        $code->forceFill([
+            'merchant_id' => $merchant->id,
+            'status' => CodeStatus::COMPLETED
+        ])->save();
+        // return details
+        return $this->successResponse("Trasaction complete", new CodeResource($code));
     }
 }
