@@ -153,10 +153,26 @@ class BankDetailController extends Controller
         switch (config('services.bank_list.channel')) {
             case BankListChannel::NUBAN_API:
                 $accountDetails = $this->nubanService->getAccountDetails($request->account_no, $request->bank_code);
+
+                // "bank_name": "FIDELITY BANK",
+                // "account_name": "GABRIEL TOCHUKWU IBENYE",
+                // "account_number": "6080266119",
+                // "bank_code": "070",
+                // "requests": "unlimited",
+                // "execution_time": "0.66s"
                 break;
             case BankListChannel::VERIFY_ME:
                 $accountDetails = $this->verifyMeService->getAccountDetails($request->account_no, $request->bank_code);
                 $accountDetails = $accountDetails->data;
+                // "accountName": "JOHN DOE",
+                // "accountNumber": "1000000001",
+                // "lastname": "DOE",
+                // "firstname": "JOHN",
+                // "middlename": "",
+                // "accountCurrency": "NGN",
+                // "dob": "1999-09-10",
+                // "mobileNumber": "08000000000",
+                // "bvn": "10000000001"
                 break;
             default:
                 return $this->failureResponse('Bank list channel not available. Contact Admin.', Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -164,6 +180,14 @@ class BankDetailController extends Controller
 
 
         // dd($accountDetails);
-        return $this->successResponse("Account Details", $accountDetails);
+        return $this->successResponse("Account Details", $this->normalizeAccountDetails($accountDetails));
+    }
+
+    protected function normalizeAccountDetails($accountDetails)
+    {
+        return [
+            "accountName" => $accountDetails->accountName ?? $accountDetails->account_name,
+            "accountNumber" => $accountDetails->accountNumber ?? $accountDetails->account_number,
+        ];
     }
 }
