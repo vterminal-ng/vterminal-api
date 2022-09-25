@@ -30,9 +30,9 @@ class UserResource extends JsonResource
             "card" => new AuthorizedCardResource($this->authorizedCard),
         ];
 
-        if ($this->isMerchant()) {
-            $user['merchantDetails'] = new MerchantDetailResource($this->merchantDetail);
-        }
+        // if ($this->isMerchant()) {
+        $user['merchantDetails'] = new MerchantDetailResource($this->merchantDetail);
+        // }
 
         $user['createDates'] = [
             'creadtedAtHuman' => $this->created_at->diffForHumans(),
