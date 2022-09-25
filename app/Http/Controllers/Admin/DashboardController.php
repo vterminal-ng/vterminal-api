@@ -41,22 +41,22 @@ class DashboardController extends Controller
     public function getUsers(Request $request)
     {   
         // All Users
-        $users = User::latest()->with('userDetail')->get();
+        $users = User::with('userDetail')->latest()->get();
 
         if($request->has('status')){
             $status = $request->query('status');
 
             if($status === 'active')
                 // Get active users
-                $users = User::where('updated_at', '>=', Carbon::today()->subMonth())->latest()->with('userDetail')->get();
+                $users = User::where('updated_at', '>=', Carbon::today()->subMonth())->with('userDetail')->latest()->get();
 
             if($status === 'inactive')
                 // Get inactive users
-                $users = User::whereBetween('updated_at', [Carbon::today()->subMonths(3), Carbon::today()->subMonth()->subDay()])->latest()->with('userDetail')->get();
+                $users = User::whereBetween('updated_at', [Carbon::today()->subMonths(3), Carbon::today()->subMonth()])->with('userDetail')->latest()->get();
 
             if($status === 'dormant')
                 // Get dormant users
-                $users = User::where('updated_at', '<', Carbon::today()->subMonth(3))->latest()->with('userDetail')->get();
+                $users = User::where('updated_at', '<', Carbon::today()->subMonths(3))->with('userDetail')->latest()->get();
         }
 
         return view('admin.users', compact('users'));
@@ -65,22 +65,22 @@ class DashboardController extends Controller
     public function getCustomers(Request $request)
     {   
         // All Customers
-        $users = User::where('role', 'customer')->latest()->with('userDetail')->get();
+        $users = User::where('role', 'customer')->with('userDetail')->latest()->get();
 
         if($request->has('status')){
             $status = $request->query('status');
 
             if($status === 'active')
                 // Get active customers
-                $users = [];
+                $users = User::where('role', 'customer')->where('updated_at', '>=', Carbon::today()->subMonth())->with('userDetail')->latest()->get();
 
             if($status === 'inactive')
                 // Get inactive customers
-                $users = [];
+                $users = User::where('role', 'customer')->whereBetween('updated_at', [Carbon::today()->subMonths(3), Carbon::today()->subMonth()])->with('userDetail')->latest()->get();
 
             if($status === 'dormant')
                 // Get dormant customers
-                $users = [];
+                $users = User::where('role', 'customer')->where('updated_at', '<', Carbon::today()->subMonths(3))->with('userDetail')->latest()->get();
         }
 
         return view('admin.customers', compact('users'));
@@ -89,22 +89,22 @@ class DashboardController extends Controller
     public function getMerchants(Request $request)
     {   
         // All Merchants
-        $users = User::where('role', 'merchant')->latest()->with('userDetail')->get();
+        $users = User::where('role', 'merchant')->with('userDetail')->latest()->get();
 
         if($request->has('status')){
             $status = $request->query('status');
 
             if($status === 'active')
                 // Get active merchants
-                $users = [];
+                $users = User::where('role', 'merchant')->where('updated_at', '>=', Carbon::today()->subMonth())->with('userDetail')->latest()->get();
 
             if($status === 'inactive')
                 // Get inactive merchants
-                $users = [];
+                $users = User::where('role', 'merchant')->whereBetween('updated_at', [Carbon::today()->subMonths(3), Carbon::today()->subMonth()])->with('userDetail')->latest()->get();
 
             if($status === 'dormant')
                 // Get dormant merchants
-                $users = [];
+                $users = User::where('role', 'merchant')->where('updated_at', '<', Carbon::today()->subMonths(3))->with('userDetail')->latest()->get();
         }
 
         return view('admin.merchants', compact('users'));

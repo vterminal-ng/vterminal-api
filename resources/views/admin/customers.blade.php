@@ -56,7 +56,7 @@
                                 <th>Phone Number</th>
                                 <th>Role</th>
                                 <th>Status</th>
-                                <th>Created At</th>
+                                <th>Updated At</th>
                                 <th class="text-right">Action</th>
                             </tr>
                             </thead>
@@ -80,7 +80,7 @@
                                 <td>
                                     <span class="badge bg-danger-bright text-danger">Blocked</span>
                                 </td>
-                                <td>{{ $user->created_at->diffForHumans() }}</td>
+                                <td>{{ $user->updated_at->diffForHumans() }}</td>
                                 <td class="text-right">
                                     <div class="dropdown">
                                         <a href="#" data-toggle="dropdown"
