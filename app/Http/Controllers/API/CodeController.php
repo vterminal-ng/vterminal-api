@@ -104,7 +104,7 @@ class CodeController extends Controller
             $summary['accountName'] = $user->bankDetail->account_name;
             $summary['accountNumber'] = $user->bankDetail->account_number;
             $summary['bankName'] = $user->bankDetail->bank_name;
-            $summary['bankName'] = $user->bankDetail->bank_code;
+            $summary['bankCode'] = $user->bankDetail->bank_code;
             $summary['transferRecipientCode'] = $user->bankDetail->recipient_code;
             $summary['chargeFrom'] = ChargeFrom::CASH;
 
