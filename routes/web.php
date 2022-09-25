@@ -39,7 +39,15 @@ Route::prefix('admin')->group(function() {
 Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
     Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
     Route::get('/dashboard', [DashboardController::class, 'displayDashboard'])->name('admin.dashboard');
+
+    // Users
     Route::get('/users', [DashboardController::class, 'getUsers'])->name('admin.users');
+    Route::get('/users/{user}', [DashboardController::class, 'getUserDetails'])->name('admin.userdetails');
+    // Route::get('/users/{user}/status', [DashboardController::class, 'changeUserStatus'])->name('admin.userstatus');
+
+    // Customers
     Route::get('/customers', [DashboardController::class, 'getCustomers'])->name('admin.customers');
+
+    // Merchants
     Route::get('/merchants', [DashboardController::class, 'getMerchants'])->name('admin.merchants');
 });

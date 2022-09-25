@@ -28,9 +28,9 @@ class DashboardController extends Controller
         // Total amount of code transactions
         $totalWalletBalance = DB::table('wallets')->sum('balance');
         // Total Amount in wallets (Customer)
-        $customerWalletsBalance = 0;
+        $customerWalletsBalance = DB::table('wallets')->where('holder_type', 'customer')->sum('balance');
         // Total Amount in wallets (Merchant)
-        $merchantWalletsBalance = 0;
+        $merchantWalletsBalance = DB::table('wallets')->where('holder_type', 'merchant')->sum('balance');
 
         return view(
             'admin.dashboard', 
@@ -60,6 +60,20 @@ class DashboardController extends Controller
         }
 
         return view('admin.users', compact('users'));
+    }
+
+    public function getUserDetails(User $user)
+    {
+        return view('admin.user_details', compact('user'));
+    }
+
+    public function changeUserStatus(User $user)
+    {   
+        return true;
+        // $status = $user->is_active;
+		// $user->update(['active' => !$status]);
+
+        // return back()->with('success', 'User status updated succesfully!');
     }
 
     public function getCustomers(Request $request)

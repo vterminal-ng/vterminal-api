@@ -89,7 +89,7 @@
                                             <i class="ti-more-alt"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
-                                            <a href="#" class="dropdown-item">View Profile</a>
+                                            <a href="{{ route('admin.userdetails', $user->id) }}" class="dropdown-item">View Profile</a>
                                             <a href="#" class="dropdown-item">Edit</a>
                                             <a href="#" class="dropdown-item text-danger">Delete</a>
                                         </div>
