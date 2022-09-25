@@ -81,6 +81,9 @@ class AuthController extends Controller
         // create a new token for the user
         $token = $user->createToken("login")->plainTextToken;
 
+        // update the updated_at column
+        $user->touch();
+
         return $this->successResponse(
             "Login Successful",
             [
@@ -111,6 +114,9 @@ class AuthController extends Controller
 
         // create a new token for the user
         $token = $user->createToken("login")->plainTextToken;
+
+        // update the updated_at column
+        $user->touch();
 
         return $this->successResponse(
             "Login Successful",
