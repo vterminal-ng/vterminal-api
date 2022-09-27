@@ -41,7 +41,7 @@ class DashboardController extends Controller
     public function getUsers(Request $request)
     {   
         // All Users
-        $users = User::with('userDetail')->latest()->get();
+        $users = User::with('userDetail', 'merchantDetail')->latest()->get();
 
         if($request->has('status')){
             $status = $request->query('status');
@@ -63,7 +63,8 @@ class DashboardController extends Controller
     }
 
     public function getUserDetails(User $user)
-    {
+    {   
+        $user->load('userDetail', 'merchantDetail', 'customerCode.customer', 'merchantCode.merchant');
         return view('admin.user_details', compact('user'));
     }
 
