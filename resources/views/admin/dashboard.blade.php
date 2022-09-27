@@ -28,7 +28,7 @@
                         <!-- <p>This chart shows total sales. You can use the button below for details of this
                             month's sales.</p> -->
                         <div class="mt-4">
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">View Detail</a>
+                            <a href="{{ route('admin.users') }}" class="btn btn-primary">View Detail</a>
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                         <!-- <p>This chart shows total sales. You can use the button below for details of this
                             month's sales.</p> -->
                         <div class="mt-4">
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">View Detail</a>
+                            <a href="{{ route('admin.customers') }}" class="btn btn-primary">View Detail</a>
                         </div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <!-- <p>This chart shows total sales. You can use the button below for details of this
                             month's sales.</p> -->
                         <div class="mt-4">
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">View Detail</a>
+                            <a href="{{ route('admin.merchants') }}" class="btn btn-primary">View Detail</a>
                         </div>
                     </div>
                 </div>
