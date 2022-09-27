@@ -26,11 +26,22 @@ class DashboardController extends Controller
         $completedCodesCount = Code::where('status', 'completed')->count();
 
         // Total amount of code transactions
-        $totalWalletBalance = DB::table('wallets')->sum('balance');
+        $totalWalletBalance = 0;
+        foreach(User::all() as $user){
+            $totalWalletBalance += $user->balance;
+        }
+
         // Total Amount in wallets (Customer)
-        $customerWalletsBalance = DB::table('wallets')->where('holder_type', 'customer')->sum('balance');
+        $customerWalletsBalance = 0;
+        foreach(User::where('role', 'customer')->get() as $user){
+            $customerWalletsBalance += $user->balance;
+        }
+
         // Total Amount in wallets (Merchant)
-        $merchantWalletsBalance = DB::table('wallets')->where('holder_type', 'merchant')->sum('balance');
+        $merchantWalletsBalance = 0;
+        foreach(User::where('role', 'merchant')->get() as $user){
+            $merchantWalletsBalance += $user->balance;
+        }
 
         return view(
             'admin.dashboard', 
