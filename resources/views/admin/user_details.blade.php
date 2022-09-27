@@ -477,7 +477,6 @@
 
         <!-- Sidebar -->
         <div class="col-lg-8 col-md-12" style="overflow-x:scroll">
-            <h4 class="lead">Transactions</h4>
             @if($user->role == 'customer')
                 <table id="myTable" class="table table-striped table-bordered">
                     <thead>

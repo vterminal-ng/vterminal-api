@@ -15,21 +15,13 @@
         </div>
         <div class="mt-2 mt-md-0">
             <div class="dropdown">
-                <a href="#" class="btn btn-success dropdown-toggle" title="Filter" data-toggle="dropdown">Filters</a>
-                <div class="dropdown-menu dropdown-menu-big p-4 dropdown-menu-right">
-                    <form method="GET" action="{{ route('admin.users') }}">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select name="status" class="form-control">
-                                <option value="">Select</option>
-                                <option value="active" {{ request()->get('status') == 'active' ? 'selected': ''}}>Active</option>
-                                <option value="inactive" {{ request()->get('status') == 'inactive' ? 'selected': ''}}>Inactive</option>
-                                <option value="dormant"  {{ request()->get('status') == 'dormant' ? 'selected': ''}}>Dormant</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Get Results</button>
-                        <!-- <button class="btn btn-link ml-2">Save Results</button> -->
-                    </form>
+                <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <i class="ti-filter mr-2"></i> Filter
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{{ url()->current() }}?status=active">Active</a>
+                    <a class="dropdown-item" href="{{ url()->current() }}?status=inactive">Inactive</a>
+                    <a class="dropdown-item" href="{{ url()->current() }}?status=dormant">Dormant</a>
                 </div>
             </div>
         </div>
