@@ -26,7 +26,7 @@ class UserResource extends JsonResource
             "userDetails" => new UserDetailResource($this->userDetail),
             "bankDetails" => new BankDetailResource($this->bankDetail),
             "walletBalance" => $this->balance,
-            "walletTransactions" => WalletTransactionResource::collection($this->transactions),
+            "walletTransactions" => WalletTransactionResource::collection($this->transactions)->sortByDesc('created_at')->values()->all(),
             "card" => new AuthorizedCardResource($this->authorizedCard),
         ];
 
