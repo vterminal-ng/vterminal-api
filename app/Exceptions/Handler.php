@@ -80,7 +80,7 @@ class Handler extends ExceptionHandler
                     $message = $errorJson->message;
                     break;
                 case Response::HTTP_UNPROCESSABLE_ENTITY:
-                    $message = $errorJson->errors;
+                    $message = $errorJson->errors ?? $errorJson->message;
                     break;
 
                 default:
