@@ -135,6 +135,9 @@ class BankDetailController extends Controller
             case BankListChannel::VERIFY_ME:
                 $codes = $this->verifyMeService->getBanks();
                 break;
+            case BankListChannel::PAYSTACK:
+                $codes = $this->paystackService->listBanks();
+                break;
             default:
                 return $this->failureResponse('Bank list channel not available. Contact Admin.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -173,6 +176,12 @@ class BankDetailController extends Controller
                 // "dob": "1999-09-10",
                 // "mobileNumber": "08000000000",
                 // "bvn": "10000000001"
+                break;
+            case BankListChannel::PAYSTACK:
+                $accountDetails = $this->paystackService->resolveAccountNumber($request->account_no, $request->bank_code);
+                $accountDetails = $accountDetails->data;
+                // "account_name": "GABRIEL TOCHUKWU IBENYE",
+                // "account_number": "6080266119"
                 break;
             default:
                 return $this->failureResponse('Bank list channel not available. Contact Admin.', Response::HTTP_INTERNAL_SERVER_ERROR);

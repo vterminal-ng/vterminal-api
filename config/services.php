@@ -122,7 +122,7 @@ return [
     ],
 
     'bank_list' => [
-        'channel' =>  env('BANK_LIST_CHANNEL', 'nuban_api'),
+        'channel' =>  env('BANK_LIST_CHANNEL', 'paystack'),
     ],
 
 ];

@@ -197,6 +197,28 @@ class PaystackService
         return json_decode((string)$response);
     }
 
+    public function listBanks()
+    {
+        $response = $this->performRequest(
+            'GET',
+            "/bank",
+        );
+        // dd($response);
+
+        return json_decode((string)$response);
+    }
+
+    public function resolveAccountNumber($accountNumber, $bankCode)
+    {
+        $response = $this->performRequest(
+            'GET',
+            "/bank/resolve?account_number=$accountNumber&bank_code=$bankCode"
+        );
+        // dd($response);
+
+        return json_decode((string)$response);
+    }
+
     public function calculateApplicableFee(int $amount): int
     {
         $decimalFee = 1.5 / 100;
