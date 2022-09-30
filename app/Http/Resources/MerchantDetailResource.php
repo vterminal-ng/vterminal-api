@@ -15,7 +15,7 @@ class MerchantDetailResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "buisnessName" => $this->business_name,
+            "businessName" => $this->business_name,
             "state" => $this->business_state,
             "address" => $this->business_adddress,
             "verifiedDate" => $this->business_verified,
