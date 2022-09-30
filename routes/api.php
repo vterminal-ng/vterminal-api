@@ -119,7 +119,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
 
             // Routes that require entire profile to be verified before usage
-            Route::group(['middleware' => ['profile.verified']], function () {
+            Route::group(['middleware' => ['verified.profile']], function () {
                 // Code
                 Route::post('code/generate', [CodeController::class, 'generateCode']);
                 Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
