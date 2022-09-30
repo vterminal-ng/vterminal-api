@@ -50,78 +50,95 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    // routes that need your email to be verified first
-    Route::group(['middleware' => ['verified.email']], function () {
-    });
-
-    // routes that needs user to be merchant
-    Route::group(['middleware' => ['merchant.user']], function () {
-        // CRUD functions routes for Merchant Details
-        Route::post('users/merchant-details', [MerchantDetailController::class, 'create']);
-        Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
-        Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
-        Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
-
-        Route::post('code/summary', [CodeController::class, 'codeSummary']);
-        Route::post('code/resolve', [CodeController::class, 'resolveCode']);
-    });
-
-
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
     Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
 
-    // Add or Update Email
-    Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
-
-    Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
-    Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
-
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
 
-    //Routes to User details CRUD functions
-    Route::post('users/user-details', [UserDetailController::class, 'create']);
-    Route::get('users/user-details', [UserDetailController::class, 'read']);
-    Route::patch('users/user-details', [UserDetailController::class, 'update']);
-    Route::put('users/user-details', [UserDetailController::class, 'update']);
+    Route::group(['middleware' => ['verified.phone']], function () {
 
-    Route::post('users/avatar', [UserDetailController::class, 'uploadAvatar']);
+        // routes that needs user to be merchant
+        Route::group(['middleware' => ['merchant.user']], function () {
+            // CRUD functions routes for Merchant Details
+            Route::post('users/merchant-details', [MerchantDetailController::class, 'create']);
+            Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
+            Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
+            Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
+        });
 
-    Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
-    Route::post('users/bank-details', [BankDetailController::class, 'create']);
-    // Route::patch('users/bank-details/{bankDetail}', [BankDetailController::class, 'updateBankDetail']);
-    Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
-
-    Route::post('users/verify-identity', [VerificationController::class, 'verifyDetails']);
-    Route::post('users/verify-bvn-with-nuban', [UserDetailController::class, 'verifyBvn']);
-
-    // Wallet
-    Route::get('my-wallet/transactions', [WalletController::class, 'getTransactions']);
-    Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
-    Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
-
-    //Card
-    Route::post('cards/add', [AuthorizedCardController::class, 'add']);
-    Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
-    Route::get('cards/my-card', [AuthorizedCardController::class, 'getCard']);
-
-    // Create Transaction Pin
-    Route::post('users/create-pin', [PinController::class, 'create']);
-    Route::post('users/update-transaction-pin', [PinController::class, 'update']);
-
-    Route::get('code', [CodeController::class, 'customerTransactionCodes']);
-    Route::get('code/{codeReference}', [CodeController::class, 'customerTransactionCode']);
-    Route::post('code/generate', [CodeController::class, 'generateCode']);
-    Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
-    Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
-    Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
-    Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+        // Add or Update Email
+        Route::patch('users/email/update', [ProfileController::class, 'updateEmail']);
+        Route::post('email/otp/send', [OtpController::class, 'sendEmailOtp']);
+        Route::post('email/otp/verify', [OtpController::class, 'verifyEmailOtp']);
 
 
-    // Dispute Transaction, Create Support Ticket
-    Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
 
-    // NUBAN Endpoints
+        //Routes to User details CRUD functions
+        Route::post('users/user-details', [UserDetailController::class, 'create']);
+        Route::get('users/user-details', [UserDetailController::class, 'read']);
+        Route::patch('users/user-details', [UserDetailController::class, 'update']);
+        Route::put('users/user-details', [UserDetailController::class, 'update']);
+
+        Route::post('users/avatar', [UserDetailController::class, 'uploadAvatar']);
+
+        // Wallet
+        Route::get('my-wallet/transactions', [WalletController::class, 'getTransactions']);
+
+        // Card
+        Route::get('cards/my-card', [AuthorizedCardController::class, 'getCard']);
+
+        // Codes
+        Route::get('code', [CodeController::class, 'customerTransactionCodes']);
+        Route::get('code/{codeReference}', [CodeController::class, 'customerTransactionCode']);
+
+        // Bank Details
+        Route::get('users/bank-details', [BankDetailController::class, 'getBankDetail']);
+
+        // routes that need your email to be verified first
+        Route::group(['middleware' => ['verified.email']], function () {
+            // Create Transaction Pin
+            Route::post('users/create-pin', [PinController::class, 'create']);
+            Route::post('users/update-transaction-pin', [PinController::class, 'update']);
+
+            // Bank Details
+            Route::post('users/bank-details', [BankDetailController::class, 'create']);
+            Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
+
+            Route::post('users/verify-identity', [VerificationController::class, 'verifyDetails']);
+            Route::post('users/verify-bvn-with-nuban', [UserDetailController::class, 'verifyBvn']);
+
+            // Wallet
+            Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
+            Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
+
+            //Card
+            Route::post('cards/add', [AuthorizedCardController::class, 'add']);
+            Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
+
+            // Routes that require entire profile to be verified before usage
+            Route::group(['middleware' => ['profile.verified']], function () {
+                // Code
+                Route::post('code/generate', [CodeController::class, 'generateCode']);
+                Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
+                Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
+                Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
+                Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+
+                // routes that needs user to be merchant
+                Route::group(['middleware' => ['merchant.user']], function () {
+                    Route::post('code/summary', [CodeController::class, 'codeSummary']);
+                    Route::post('code/resolve', [CodeController::class, 'resolveCode']);
+                });
+            });
+
+            // Dispute Transaction, Create Support Ticket
+            Route::post('users/create-ticket/', [SupportTicketController::class, 'createTicket']); //Transaction param to be inncluded later
+
+            // NUBAN Endpoints
+
+        });
+    });
 });
