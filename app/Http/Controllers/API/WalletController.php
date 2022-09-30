@@ -29,7 +29,7 @@ class WalletController extends Controller
     {
         $user = User::find(auth()->id());
 
-        return $this->successResponse("Retrieved wallet transactions", WalletTransactionResource::collection($user->transactions)->sortByDesc('created_at'));
+        return $this->successResponse("Retrieved wallet transactions", WalletTransactionResource::collection($user->transactions)->sortBy('created_at'));
     }
 
     public function withdraw(Request $request)
