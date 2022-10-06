@@ -156,10 +156,8 @@ class CodeController extends Controller
         // check if pin is valid, if it isnt, it throw the InvalidTransactionPin Exception
         $user->validatePin($request->pin);
 
-        $customerCodes = $user->customerCodes()->get();
-        dd(count($user->customerCodes()->whereIn('status', [CodeStatus::ACTIVE, CodeStatus::PENDING])->get()));
         // return failure if user has 1 active or pending code
-        if ($customerCodes->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->get()->count()) {
+        if ($user->customerCodes()->whereIn('status', [CodeStatus::ACTIVE, CodeStatus::PENDING])->get()->count()) {
             return $this->failureResponse("You have an unused or pending transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
         }
 
