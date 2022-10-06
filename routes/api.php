@@ -121,11 +121,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // Routes that require entire profile to be verified before usage
             Route::group(['middleware' => ['verified.profile']], function () {
                 // Code
-                Route::post('code/generate', [CodeController::class, 'generateCode']);
-                Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
-                Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
-                Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
-                Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+                // routes that needs user to be customer
+                Route::group(['middleware' => ['customer.user']], function () {
+                    Route::post('code/generate', [CodeController::class, 'generateCode']);
+                    Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
+                    Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
+                    Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
+                    Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
+                });
 
                 // routes that needs user to be merchant
                 Route::group(['middleware' => ['merchant.user']], function () {
