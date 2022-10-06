@@ -79,14 +79,14 @@ class User extends Authenticatable implements Wallet
         return $this->hasOne(Pin::class);
     }
 
-    public function customerCode()
+    public function customerCodes()
     {
-        return $this->hasMany(Code::class, 'customer_id');
+        return $this->hasMany(Code::class, 'customer_id', 'id');
     }
 
-    public function merchantCode()
+    public function merchantCodes()
     {
-        return $this->hasMany(Code::class, 'merchant_id');
+        return $this->hasMany(Code::class, 'merchant_id', 'id');
     }
 
     ############################################################
