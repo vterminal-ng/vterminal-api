@@ -157,7 +157,7 @@ class CodeController extends Controller
         $user->validatePin($request->pin);
 
         // return failure if user has 1 active or pending code
-        if ($user->customerCodes()->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->count() > 0) {
+        if ($user->customerCodes()->where('status', CodeStatus::PENDING)->orWhere('status', CodeStatus::ACTIVE)->get()->count()) {
             return $this->failureResponse("You have an unused or pending transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
         }
 
