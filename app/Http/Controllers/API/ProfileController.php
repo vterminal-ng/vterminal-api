@@ -30,7 +30,7 @@ class ProfileController extends Controller
         if ($user->isClean()) return $this->failureResponse('At least one value must change', Response::HTTP_NOT_ACCEPTABLE);
 
         // mark user new email as unverified
-        $user->fill([
+        $user->forceFill([
             'email_verified_at' => null,
         ]);
 
