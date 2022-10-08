@@ -33,7 +33,7 @@ class UserDetailController extends Controller
             'first_name' => ['required', 'string', 'min:3'],
             'last_name' => ['required', 'string', 'min:3'],
             'other_names' => ['nullable', 'string'],
-            'date_of_birth' => ['required'],
+            'date_of_birth' => ['required', 'date_format:Y-m-d'],
             'gender' => ['required', 'in:male,female'],
             //'referral_code' => ['string'],
             'referrer' => ['nullable', 'string'],
