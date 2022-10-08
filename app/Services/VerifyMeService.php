@@ -30,13 +30,9 @@ class VerifyMeService
         return $response;
     }
 
-    public function verifyVin($vin, $dob, $params)
+    public function verifyVin($vin, $params)
     {
-        $reponse = $this->performRequest('POST', "/v1/verifications/identities/vin/$vin", [
-            'dob' => $dob,
-            'firstname' => $params['firstname'],
-            'lastname' => $params['lastname']
-        ]);
+        $reponse = $this->performRequest('POST', "/v1/verifications/identities/vin/$vin", $params);
         // dd($reponse);
         $response = json_decode((string)$reponse);
         return $response;
@@ -51,13 +47,13 @@ class VerifyMeService
         return $response;
     }
 
-    public function verifyPassport($passport, $params)
-    {
-        $reponse = $this->performRequest('POST', "/v1/verifications/identities/drivers_license/$passport", $params);
+    // public function verifyPassport($passport, $params)
+    // {
+    //     $reponse = $this->performRequest('POST', "/v1/verifications/identities/drivers_license/$passport", $params);
 
-        $response = json_decode((string)$reponse);
-        return $response;
-    }
+    //     $response = json_decode((string)$reponse);
+    //     return $response;
+    // }
 
     public function verifyNin($nin, $params)
     {
