@@ -28,10 +28,10 @@ class VerificationController extends Controller
     {
         $request->validate([
             'identity_type' => ['required', 'in:bvn,nin,voters_card,drivers_license'],
-            'bvn' => ['required_if:identity_type,bvn', 'string', 'size:11'],
-            'vin' => ['required_if:identity_type,voters_card', 'string'],
-            'nin' => ['required_if:identity_type,nin', 'string'],
-            'driver_license_no' => ['required_if:identity_type,drivers_license', 'string'],
+            'bvn' => ['required_if:identity_type,bvn'],
+            'vin' => ['required_if:identity_type,voters_card'],
+            'nin' => ['required_if:identity_type,nin'],
+            'driver_license_no' => ['required_if:identity_type,drivers_license'],
         ]);
 
         $user = auth()->user();
