@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Verification;
 use App\Traits\ApiResponder;
 use App\Services\VerifyMeService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -25,91 +26,96 @@ class VerificationController extends Controller
     public function verifyDetails(Request $request)
     {
         $request->validate([
-            'identity_type' => ['required', 'in:bvn,nin,voters_card,passport,drivers_license'],
+            'identity_type' => ['required', 'in:bvn,nin,voters_card,drivers_license'],
             'bvn' => ['required_if:identity_type,bvn', 'string', 'size:11'],
             'vin' => ['required_if:identity_type,voters_card', 'string'],
-            'passport_no' => ['required_if:identity_type,passport', 'string'],
             'nin' => ['required_if:identity_type,nin', 'string'],
             'driver_license_no' => ['required_if:identity_type,drivers_license', 'string'],
-            'date_of_birth' => ['required', 'string'],
         ]);
 
         $user = auth()->user();
 
-        if (!$user->userDetail) {
-            return $this->failureResponse("Please complete your profile before you continue", Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($user->verification) {
+            return $this->failureResponse("Identity already verified", Response::HTTP_BAD_REQUEST);
         }
 
         $params = [
-            'dob' => $request->date_of_birth,
+            'dob' => $user->userDetail->date_of_birth, // format is Y-m-d 
             'firstname' => $user->userDetail->first_name,
             'lastname' => $user->userDetail->last_name,
         ];
 
-        $datebirth = $request->date_of_birth;
-        $pieces = explode("-", $datebirth);
-        $votersCardDob = $pieces[2] . '-' . $pieces[0] . '-' . $pieces[1];
         //dd($votersCardDob);
         $identityType = $request->identity_type;
 
         switch ($identityType) {
             case IdentityType::DRIVERS_LICENSE:
+                // converting date of birth format to the required format (d-m-Y)
+                $params['dob'] = Carbon::createFromFormat("Y-m-d", $params['dob'])->format('d-m-Y');
                 $response = $this->verifyMeService->verifyLicense($request->driver_license_no, $params);
+                // dd($response->data);
                 $idNo = $response->data->licenseNo;
                 break;
             case IdentityType::NIN:
+                // converting date of birth format to the required format (d-m-Y)
+                $params['dob'] = Carbon::createFromFormat("Y-m-d", $params['dob'])->format('d-m-Y');
                 $response = $this->verifyMeService->verifyNin($request->nin, $params);
+                // dd($response->data);
                 $idNo = $response->data->nin;
                 break;
             case IdentityType::VOTERS_CARD:
-                $response = $this->verifyMeService->verifyVin($request->vin, $votersCardDob, $params);
+                $response = $this->verifyMeService->verifyVin($request->vin, $params);
+                // dd($response->data);
                 $idNo = $response->data->vin;
                 break;
-            case IdentityType::PASSPORT:
-                $response = $this->verifyMeService->verifyPassport($request->passport_no, $params);
-                $idNo = $response->data->passportNo;
-                break;
-            default:
+            case IdentityType::BVN:
+                // converting date of birth format to the required format (d-m-Y)
+                $params['dob'] = Carbon::createFromFormat("Y-m-d", $params['dob'])->format('d-m-Y');
                 $response = $this->verifyMeService->verifyBvn($request->bvn, $params);
+                // dd($response->data);
                 $idNo = $response->data->bvn;
                 break;
+            default:
+                return $this->failureResponse(
+                    "An error occured. Invalid Identity Type.",
+                    Response::HTTP_BAD_REQUEST
+                );
         }
 
-        if ($response->status === 'success') {
-            //dd($idNo);
-            //   dd($response);
-            $data = $response->data;
-            $lastName = $data->lastname ?? $data->lastName;
-
-            if ($lastName !== $user->userDetail->last_name) {
-
-                return $this->failureResponse("Verification Failed", Response::HTTP_UNPROCESSABLE_ENTITY);
+        $verifyMePayload = $response->data;
+        $lastName = $verifyMePayload->lastname ?? $verifyMePayload->lastName;
+        $isLastNameSame = strtolower($lastName) == strtolower($user->userDetail->last_name);
+        // If identity type is voters card, check verification with only lastname, but otherewise use data of birth and lastname 
+        if ($identityType == IdentityType::VOTERS_CARD) {
+            if (!$isLastNameSame) {
+                return $this->failureResponse("Verification Failed. Identity info. does not match your profile data", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-            //dd($user->phone_number);
-            $verifyMeServiceData = Verification::create([
-                'user_id' => $user->id,
-                'identity_type' => $identityType,
-                'identity_number' => $idNo,
-                //'passport_base64_string' => $data->photo,
-                'first_name' => $data->firstname ?? $data->firstName,
-                'last_name' => $data->lastname ?? $data->lastName,
-                'date_of_birth' => $data->birthdate ?? $request->date_of_birth,
-                'phone_number' => $data->phone ?? $user->phone_number,
-                'gender' => $data->gender,
-                'payload' => $data
-            ]);
-
-            //dd($verifyMeServiceData);
-            return $this->successResponse(
-                "Verification Passed. Thank you.",
-                $verifyMeServiceData,
-                Response::HTTP_OK
-            );
+        } else {
+            $isDateOfBirthSame = $verifyMePayload->birthdate ==  Carbon::createFromFormat("Y-m-d", $user->userDetail->date_of_birth)->format('d-m-Y');
+            if (!$isLastNameSame || !$isDateOfBirthSame) {
+                return $this->failureResponse("Verification Failed. Identity info. does not match your profile data", Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
         }
 
-        return $this->failureResponse(
-            "An error occured. Please contact support",
-            Response::HTTP_BAD_REQUEST
+        //dd($user->phone_number);
+        $verifyMeServiceData = Verification::create([
+            'user_id' => $user->id,
+            'identity_type' => $identityType,
+            'identity_number' => $idNo,
+            'passport_base64_string' => $verifyMePayload->photo ?? null,
+            'first_name' => $verifyMePayload->firstname ?? $verifyMePayload->firstName,
+            'last_name' => $verifyMePayload->lastname ?? $verifyMePayload->lastName,
+            'date_of_birth' => $verifyMePayload->birthdate ?? $request->date_of_birth,
+            'phone_number' => $verifyMePayload->phone ?? $user->phone_number,
+            'gender' => $verifyMePayload->gender,
+            'payload' => json_encode($verifyMePayload)
+        ]);
+
+        //dd($verifyMeServiceData);
+        return $this->successResponse(
+            "Verification Passed. Thank you.",
+            $verifyMeServiceData,
+            Response::HTTP_OK
         );
     }
 }
