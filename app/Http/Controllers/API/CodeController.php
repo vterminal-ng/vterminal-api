@@ -354,6 +354,7 @@ class CodeController extends Controller
         // validate
         $request->validate([
             'code' => ['required'],
+            'pin' => ['required'],
         ]);
 
         // get code details
@@ -361,6 +362,8 @@ class CodeController extends Controller
 
         //get merchant
         $merchant = User::find(auth()->id());
+
+        $merchant->validatePin($request->pin);
 
         if (!$code) {
             return $this->failureResponse('Code not found', Response::HTTP_NOT_FOUND);
