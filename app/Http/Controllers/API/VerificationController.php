@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Constants\IdentityType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VerificationResource;
 use App\Models\Verification;
 use App\Traits\ApiResponder;
 use App\Services\VerifyMeService;
@@ -114,8 +115,7 @@ class VerificationController extends Controller
         //dd($verifyMeServiceData);
         return $this->successResponse(
             "Verification Passed. Thank you.",
-            $verifyMeServiceData,
-            Response::HTTP_OK
+            new VerificationResource($verifyMeServiceData),
         );
     }
 }
