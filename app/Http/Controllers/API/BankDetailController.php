@@ -75,7 +75,7 @@ class BankDetailController extends Controller
 
         return $this->successResponse(
             "Bank Details Added Successfully",
-            [new BankDetailResource($bankDetails), $response->message],
+            new BankDetailResource($bankDetails),
             Response::HTTP_CREATED
         );
     }
