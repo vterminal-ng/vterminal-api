@@ -27,11 +27,11 @@ class UserDetail extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return ($this->first_name . ' ' . $this->last_name) ?? 'No Name';
     }
 
     public function getInitialsAttribute()
     {
-        return $this->first_name[0] . $this->last_name[0];
+        return ($this->first_name[0] . $this->last_name[0]) ?? 'VT';
     }
 }
