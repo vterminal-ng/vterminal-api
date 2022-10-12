@@ -64,14 +64,14 @@
                                             <img src="../../assets/media/image/user/man_avatar3.jpg"
                                                  class="rounded-circle" alt="avatar">
                                         </figure>
-                                        {{ $user->userDetail->getFullNameAttribute() }}
+                                        {{ $user->userDetail->full_name }}
                                     </a>
                                 </td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone_number }}</td>
                                 <td>{{ ucfirst($user->role) }}</td>
                                 <td>
-                                    <span class="badge bg-danger-bright text-danger">Blocked</span>
+                                    <span class="badge bg-warning-bright text-warning">{{ ($user->is_active) ? 'Active' : 'Blocked' }}</span>
                                 </td>
                                 <td>{{ $user->created_at->diffForHumans() }}</td>
                                 <td>{{ $user->updated_at->diffForHumans() }}</td>
@@ -84,7 +84,7 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <a href="{{ route('admin.userdetails', $user->id) }}" class="dropdown-item">View Profile</a>
-                                            <a href="#" class="dropdown-item">Edit</a>
+                                            <a href="{{ route('admin.userstatus', $user) }}" class="dropdown-item">{{ ($user->is_active) ? 'Block User' : 'Unblock User' }}</a>
                                             <a href="#" class="dropdown-item text-danger">Delete</a>
                                         </div>
                                     </div>

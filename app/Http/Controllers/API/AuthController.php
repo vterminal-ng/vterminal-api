@@ -75,6 +75,10 @@ class AuthController extends Controller
             return $this->failureResponse('Incorrect login credentials', Response::HTTP_UNAUTHORIZED);
         }
 
+        if (!$user->is_active) {
+            return $this->failureResponse('User account is currently blocked', Response::HTTP_UNAUTHORIZED);
+        }
+
         // delete any existing token for the user
         $user->tokens()->delete();
 
