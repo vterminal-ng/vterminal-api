@@ -81,11 +81,10 @@ class DashboardController extends Controller
 
     public function changeUserStatus(User $user)
     {   
-        return true;
-        // $status = $user->is_active;
-		// $user->update(['active' => !$status]);
+        $status = $user->is_active;
+		$user->update(['is_active' => !$status]);
 
-        // return back()->with('success', 'User status updated succesfully!');
+        return back()->with('success', 'User status updated succesfully!');
     }
 
     public function getCustomers(Request $request)
