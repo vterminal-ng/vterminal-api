@@ -496,7 +496,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($user->customerCode as $code)
+                        @foreach($user->customerCodes as $code)
                         <tr>
                             <td>{{ $code->merchant->email }}</td>
                             <td>{{ $code->code }}</td>
@@ -533,7 +533,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($user->merchantCode as $code)
+                        @foreach($user->merchantCodes as $code)
                         <tr>
                             <td>{{ $code->customer->email }}</td>
                             <td>{{ $code->code }}</td>

@@ -75,7 +75,7 @@ class DashboardController extends Controller
 
     public function getUserDetails(User $user)
     {   
-        $user->load('userDetail', 'merchantDetail', 'customerCode.customer', 'merchantCode.merchant');
+        $user->load('userDetail', 'merchantDetail', 'customerCodes.customer', 'merchantCodes.merchant');
         return view('admin.user_details', compact('user'));
     }
 
