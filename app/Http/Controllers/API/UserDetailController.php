@@ -10,6 +10,7 @@ use App\Services\PaystackService;
 use App\Services\VerifyMeService;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponder;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Image;
@@ -39,6 +40,14 @@ class UserDetailController extends Controller
             'referrer' => ['nullable', 'string'],
         ]);
 
+        $now = strtotime(Carbon::now()->format('Y-m-d'));
+        $birthDate = strtotime($request->date_of_birth);
+        $ageDifference = ($now - $birthDate)/365/60/60/24;
+        
+        if($ageDifference < 18) {
+            return $this->failureResponse("Sorry, persons below the age of 18 years are not allowed to use our service.", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        
         if ($request->referrer != '' || !is_null($request->referrer)) {
             //check if the referrer code exists
             $userDetail = UserDetail::where('referral_code', $request->referrer)->first();

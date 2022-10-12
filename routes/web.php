@@ -43,7 +43,7 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
     // Users
     Route::get('/users', [DashboardController::class, 'getUsers'])->name('admin.users');
     Route::get('/users/{user}', [DashboardController::class, 'getUserDetails'])->name('admin.userdetails');
-    // Route::get('/users/{user}/status', [DashboardController::class, 'changeUserStatus'])->name('admin.userstatus');
+    Route::get('/users/{user}/status', [DashboardController::class, 'changeUserStatus'])->name('admin.userstatus');
 
     // Customers
     Route::get('/customers', [DashboardController::class, 'getCustomers'])->name('admin.customers');

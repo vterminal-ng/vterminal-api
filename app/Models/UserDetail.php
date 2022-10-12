@@ -20,6 +20,8 @@ class UserDetail extends Model
         'referrer'
     ];
 
+    protected $appends = ['full_name', 'initials'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
