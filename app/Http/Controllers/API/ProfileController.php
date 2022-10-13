@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\EmailUpdated;
 use App\Rules\CheckCurrentAndNewPassword;
 use App\Rules\CheckCurrentPassword;
 use App\Traits\ApiResponder;
@@ -36,6 +37,7 @@ class ProfileController extends Controller
 
         $user->save();
 
+        $user->notify(new EmailUpdated());
         return $this->successResponse("Email updated, Please verify new email");
     }
 

@@ -7,6 +7,8 @@ use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\WalletTransactionResource;
 use App\Models\User;
+use App\Notifications\Deposit;
+use App\Notifications\Withdraw;
 use App\Services\PaystackService;
 use App\Traits\ApiResponder;
 use App\Traits\Generators;
@@ -37,7 +39,6 @@ class WalletController extends Controller
         $request->validate([
             "amount" => ['required'],
         ]);
-
         // get user object of auth user
         $user = User::find(auth()->id());
 
@@ -65,6 +66,7 @@ class WalletController extends Controller
         // TODO: Disable OTP in the paystack portal
         $response = $this->paystackService->finalizeTransfer($transferCode);
 
+        $user->notify(new Withdraw());
         // return Success
         return $this->successResponse("Withdrawal Complete");
     }
@@ -118,6 +120,7 @@ class WalletController extends Controller
                 $amountToDeposit = $response->data->amount / 100;
                 $user->walletDeposit($amountToDeposit);
 
+                $user->notify(new Deposit());
                 // return success
                 return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
                 break;

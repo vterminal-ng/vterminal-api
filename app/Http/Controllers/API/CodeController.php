@@ -11,6 +11,9 @@ use App\Http\Resources\CodeResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Models\Code;
 use App\Models\User;
+use App\Notifications\CodeActivated;
+use App\Notifications\CodeGenerated;
+use App\Notifications\CodeResolved;
 use App\Services\PaystackService;
 use App\Traits\ApiResponder;
 use App\Traits\Generators;
@@ -208,7 +211,8 @@ class CodeController extends Controller
 
         $code = Code::create($params);
 
-
+        $user->notify(new CodeGenerated());
+        
         return $this->successResponse("Generated code successfully", new CodeResource($code->fresh()));
     }
 
@@ -222,6 +226,7 @@ class CodeController extends Controller
 
         $code = Code::where('reference', $request->reference)->first();
 
+        $user = User::where('email', $code->customer->email)->first();
         // dd($code->customer->email);
 
         $code->customer->validatePin($request->pin);
@@ -276,7 +281,8 @@ class CodeController extends Controller
                     'status' => CodeStatus::ACTIVE
                 ])->save();
 
-                // return 
+                $user->notify(new CodeActivated($code));
+
                 return $this->successResponse('Code activated successfully', ['code' => new CodeResource($code)]);
 
                 break;
@@ -403,6 +409,11 @@ class CodeController extends Controller
             'merchant_id' => $merchant->id,
             'status' => CodeStatus::COMPLETED
         ])->save();
+
+        $users = [$code->customer, $code->merchant];
+        foreach($users as $user) {
+            $user->notify(new CodeResolved($code));
+        }
         // return details
         return $this->successResponse("Trasaction complete", new CodeResource($code));
     }
