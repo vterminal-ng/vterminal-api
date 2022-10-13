@@ -24,6 +24,10 @@ class VerificationResource extends JsonResource
             'phone_number' => $this->phone_number,
             'gender' => $this->gender,
             'passport_base64_string' => $this->passport_base64_string,
+            "createDates" => [
+                'creadtedAtHuman' => $this->created_at->diffForHumans(),
+                'creadtedAt' => $this->created_at,
+            ]
         ];
     }
 }

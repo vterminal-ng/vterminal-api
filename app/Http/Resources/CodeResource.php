@@ -30,6 +30,10 @@ class CodeResource extends JsonResource
             'accountNumber' => $this->account_number,
             'paystackTransferRecipientCode' => $this->paystack_transfer_recipient_code,
             'reference' => $this->reference,
+            "createDates" => [
+                'creadtedAtHuman' => $this->created_at->diffForHumans(),
+                'creadtedAt' => $this->created_at,
+            ],
             'customer' => new UserResource($this->whenLoaded('customer')),
             'merchant' => new UserResource($this->whenLoaded('merchant')),
         ];
