@@ -7,19 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SuccessfulRegistration extends Notification
+class CustomerDetails extends Notification
 {
     use Queueable;
 
-    public $role;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($role)
+    public function __construct()
     {
-        $this->role = $role;
+        //
     }
 
     /**
@@ -42,9 +41,10 @@ class SuccessfulRegistration extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->greeting('vTerminal | Successful Registration')
-                    ->line('Your ' . $this->role . ' registration on vTerminal was successful. Please complete your profile!')
-                    ->line('Regards, vTerminal Admin');
+            ->greeting('vTerminal | Customer Details')
+            ->line('Dear Customer')
+            ->line('Your vTerminal registration was successful Please login to complete your profile.')
+            ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
 
     /**

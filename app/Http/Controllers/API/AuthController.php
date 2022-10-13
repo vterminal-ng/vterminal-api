@@ -52,8 +52,12 @@ class AuthController extends Controller
         //create token for user
         $token = $user->createToken("access Token")->plainTextToken;
 
+        $role = $user->role;
         // notify user of successful registration
-        $user->notify(new SuccessfulRegistration());
+        if($user->role === 'merchant') {
+            $user->notify(new SuccessfulRegistration($role));
+        }
+        
         // return the token
         return $this->successResponse(
             "Registeration Successful",
@@ -92,7 +96,9 @@ class AuthController extends Controller
         // update the updated_at column
         $user->touch();
 
-        $user->notify(new SuccessfulLogin());
+        if($user->userDetail) {
+            $user->notify(new SuccessfulLogin());
+        }
 
         return $this->successResponse(
             "Login Successful",
@@ -127,6 +133,10 @@ class AuthController extends Controller
 
         // update the updated_at column
         $user->touch();
+        // notify user
+        if($user->userDetail) {
+            $user->notify(new SuccessfulLogin());
+        }
 
         return $this->successResponse(
             "Login Successful",
