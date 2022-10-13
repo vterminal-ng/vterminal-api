@@ -11,14 +11,17 @@ class EmailUpdated extends Notification
 {
     use Queueable;
 
+    protected $firstname;
+    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($firstname, $lastname)
     {
-        //
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -42,7 +45,7 @@ class EmailUpdated extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Email Updated')
-            ->line('Dear ' . $notifiable->userDetail->first_name)
+            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
             ->line('Your email has been changed. Please verify the new email.')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }

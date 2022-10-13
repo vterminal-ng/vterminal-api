@@ -97,7 +97,7 @@ class AuthController extends Controller
         $user->touch();
 
         if($user->userDetail) {
-            $user->notify(new SuccessfulLogin());
+            $user->notify(new SuccessfulLogin($user->userDetail->first_name, $user->userDetail->last_name));
         }
 
         return $this->successResponse(

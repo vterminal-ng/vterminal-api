@@ -11,14 +11,17 @@ class SuccessfulLogin extends Notification
 {
     use Queueable;
 
+    protected $firstname;
+    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($firstname, $lastname)
     {
-        //
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -42,7 +45,7 @@ class SuccessfulLogin extends Notification
     {
         return (new MailMessage)
                     ->greeting('vTerminal | Login Notification')
-                    ->line('Dear ' . $notifiable->userDetail->first_name)
+                    ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
                     ->line('A login activity occured on your account. If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
 

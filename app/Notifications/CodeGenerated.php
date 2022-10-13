@@ -11,14 +11,19 @@ class CodeGenerated extends Notification
 {
     use Queueable;
 
+    protected $code;
+    protected $firstname;
+    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($code, $firstname, $lastname)
     {
-        //
+        $this->code = $code;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -42,8 +47,8 @@ class CodeGenerated extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Code Generated')
-            ->line('Dear ' . $notifiable->userDetail->first_name)
-            ->line('Transaction code generated successfully.')
+            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
+            ->line('Transaction code {'.$this->code.'} generated successfully.')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
 
     }

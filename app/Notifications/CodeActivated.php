@@ -12,14 +12,18 @@ class CodeActivated extends Notification
     use Queueable;
 
     protected $code;
+    protected $firstname;
+    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($code)
+    public function __construct($code, $firstname, $lastname)
     {
         $this->code = $code;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -43,7 +47,7 @@ class CodeActivated extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Code Activated')
-            ->line('Dear ' . $notifiable->userDetail->first_name)
+            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
             ->line('Your transaction code ' . $this->code . ' has been activated')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
 

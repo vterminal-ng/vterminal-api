@@ -66,7 +66,7 @@ class WalletController extends Controller
         // TODO: Disable OTP in the paystack portal
         $response = $this->paystackService->finalizeTransfer($transferCode);
 
-        $user->notify(new Withdraw());
+        $user->notify(new Withdraw($user->userDetail->first_name, $user->userDetail->last_name));
         // return Success
         return $this->successResponse("Withdrawal Complete");
     }
@@ -120,7 +120,7 @@ class WalletController extends Controller
                 $amountToDeposit = $response->data->amount / 100;
                 $user->walletDeposit($amountToDeposit);
 
-                $user->notify(new Deposit());
+                $user->notify(new Deposit($user->userDetail->first_name, $user->userDetail->last_name));
                 // return success
                 return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
                 break;
