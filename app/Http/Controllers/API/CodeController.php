@@ -211,7 +211,7 @@ class CodeController extends Controller
 
         $code = Code::create($params);
 
-        $user->notify(new CodeGenerated($code, $user->userDetail->first_name, $user->userDetail->last_name));
+        $user->notify(new CodeGenerated($user->userDetail->first_name, $user->userDetail->last_name));
         
         return $this->successResponse("Generated code successfully", new CodeResource($code->fresh()));
     }
@@ -281,7 +281,7 @@ class CodeController extends Controller
                     'status' => CodeStatus::ACTIVE
                 ])->save();
 
-                $user->notify(new CodeActivated($code, $user->userDetail->first_name, $user->userDetail->last_name));
+                $user->notify(new CodeActivated($user->userDetail->first_name, $user->userDetail->last_name));
 
                 return $this->successResponse('Code activated successfully', ['code' => new CodeResource($code)]);
 
@@ -412,7 +412,7 @@ class CodeController extends Controller
 
         $users = [$code->customer, $code->merchant];
         foreach($users as $user) {
-            $user->notify(new CodeResolved($code, $user->userDetail->first_name, $user->userDetail->last_name));
+            $user->notify(new CodeResolved($user->userDetail->first_name, $user->userDetail->last_name));
         }
         // return details
         return $this->successResponse("Trasaction complete", new CodeResource($code));
