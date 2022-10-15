@@ -45,7 +45,7 @@ class CodeActivated extends Notification
         return (new MailMessage)
             ->greeting('vTerminal | Code Activated')
             ->line('Hello ' . $this->code->customer->userDetail->fullname . ',')
-            ->line('Your transaction code ' . $this->code . ' has been activated')
+            ->line('Your transaction code has been activated')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
 
