@@ -126,7 +126,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     Route::post('code/generate', [CodeController::class, 'generateCode']);
                     Route::post('code/transaction/summary', [CodeController::class, 'transactionSummary']);
                     Route::post('code/transaction/activate', [CodeController::class, 'activateCode']);
-                    Route::post('code/transaction/activate-with-saved-card', [CodeController::class, 'activateCodeWithSavedCard']);
                     Route::post('code/transaction/cancel', [CodeController::class, 'cancelCode']);
                 });
 
