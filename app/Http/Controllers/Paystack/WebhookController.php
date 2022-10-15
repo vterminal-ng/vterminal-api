@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Models\Code;
 use App\Models\User;
+use App\Notifications\CodeActivated;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -91,6 +92,9 @@ class WebhookController extends Controller
                     $code->forceFill([
                         'status' => CodeStatus::ACTIVE
                     ])->save();
+
+                    $code->customer->notify(new CodeActivated($code));
+
                     Log::info("Code activated successfully");
 
                     break;

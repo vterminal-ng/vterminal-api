@@ -211,8 +211,8 @@ class CodeController extends Controller
 
         $code = Code::create($params);
 
-        $user->notify(new CodeGenerated($code, $user->userDetail->first_name, $user->userDetail->last_name));
-        
+        $user->notify(new CodeGenerated($code));
+
         return $this->successResponse("Generated code successfully", new CodeResource($code->fresh()));
     }
 
@@ -251,6 +251,8 @@ class CodeController extends Controller
                     'status' => CodeStatus::ACTIVE
                 ])->save();
 
+                $user->notify(new CodeActivated($code));
+
                 return $this->successResponse("Your transaction code $request->transaction_code has been activated successfully", new WalletTransactionResource($withdrawResponse));
                 break;
             case PaymentMethod::NEW_CARD:
@@ -281,7 +283,7 @@ class CodeController extends Controller
                     'status' => CodeStatus::ACTIVE
                 ])->save();
 
-                $user->notify(new CodeActivated($code, $user->userDetail->first_name, $user->userDetail->last_name));
+                $user->notify(new CodeActivated($code));
 
                 return $this->successResponse('Code activated successfully', ['code' => new CodeResource($code)]);
 
@@ -411,8 +413,8 @@ class CodeController extends Controller
         ])->save();
 
         $users = [$code->customer, $code->merchant];
-        foreach($users as $user) {
-            $user->notify(new CodeResolved($code, $user->userDetail->first_name, $user->userDetail->last_name));
+        foreach ($users as $user) {
+            $user->notify(new CodeResolved($code));
         }
         // return details
         return $this->successResponse("Trasaction complete", new CodeResource($code));

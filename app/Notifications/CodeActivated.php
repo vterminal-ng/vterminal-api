@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Code;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,18 +13,14 @@ class CodeActivated extends Notification
     use Queueable;
 
     protected $code;
-    protected $firstname;
-    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($code, $firstname, $lastname)
+    public function __construct(Code $code)
     {
         $this->code = $code;
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
     }
 
     /**
@@ -47,10 +44,9 @@ class CodeActivated extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Code Activated')
-            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
+            ->line('Hello ' . $this->code->customer->userDetail->fullname . ',')
             ->line('Your transaction code ' . $this->code . ' has been activated')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
-
     }
 
     /**
