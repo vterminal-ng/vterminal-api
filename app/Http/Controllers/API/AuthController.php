@@ -52,12 +52,8 @@ class AuthController extends Controller
         //create token for user
         $token = $user->createToken("access Token")->plainTextToken;
 
-        $role = $user->role;
         // notify user of successful registration
-        if($user->role === 'merchant') {
-            $user->notify(new SuccessfulRegistration($role));
-        }
-        
+        // TODO:
         // return the token
         return $this->successResponse(
             "Registeration Successful",

@@ -414,7 +414,7 @@ class CodeController extends Controller
 
         $users = [$code->customer, $code->merchant];
         foreach ($users as $user) {
-            $user->notify(new CodeResolved($code));
+            $user->notify(new CodeResolved($user->userDetail->first_name, $user->userDetail->last_name));
         }
         // return details
         return $this->successResponse("Trasaction complete", new CodeResource($code));

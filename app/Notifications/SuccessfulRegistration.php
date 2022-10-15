@@ -11,7 +11,7 @@ class SuccessfulRegistration extends Notification
 {
     use Queueable;
 
-    public $role;
+    protected $role;
     /**
      * Create a new notification instance.
      *

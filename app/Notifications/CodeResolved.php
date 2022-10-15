@@ -12,15 +12,17 @@ class CodeResolved extends Notification
 {
     use Queueable;
 
-    protected $code;
+    protected $firstname;
+    protected $lastname;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Code $code)
+    public function __construct($firstname, $lastname)
     {
-        $this->code = $code;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
     }
 
     /**
@@ -44,8 +46,8 @@ class CodeResolved extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Email Updated')
-            ->line('Hello ' . $this->code->customer->userDetail->fullname . ',')
-            ->line('Transaction code ' . $this->code . ' has been resolved.')
+            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
+            ->line('Transaction code has been resolved.')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
 
