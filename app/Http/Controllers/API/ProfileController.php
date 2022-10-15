@@ -37,7 +37,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        $user->notify(new EmailUpdated());
+        $user->notify(new EmailUpdated($user));
         return $this->successResponse("Email updated, Please verify new email");
     }
 
