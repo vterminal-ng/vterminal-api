@@ -11,17 +11,15 @@ class Deposit extends Notification
 {
     use Queueable;
 
-    protected $firstname;
-    protected $lastname;
+    protected $user;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($firstname, $lastname)
+    public function __construct($user)
     {
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
+        $this->user = $user;
     }
 
     /**
@@ -45,7 +43,7 @@ class Deposit extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Successful Deposit.')
-            ->line('Dear ' . $this->firstname . ' ' . $this->lastname)
+            ->line('Dear ' . $this->user->userDetail->fullName)
             ->line('Your deposit was successful')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
