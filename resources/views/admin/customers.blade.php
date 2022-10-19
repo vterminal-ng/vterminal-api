@@ -64,7 +64,11 @@
                                             <img src="../../assets/media/image/user/man_avatar3.jpg"
                                                  class="rounded-circle" alt="avatar">
                                         </figure>
-                                        {{ $user->userDetail->fullname }}
+                                        @if ($user->userDetail)
+                                        {{ $user->userDetail->fullname }}                                          
+                                        @else
+                                            N/A
+                                        @endif
                                         {{-- {{ $user->userDetail->first_name }} {{ $user->userDetail->last_name }} --}}
                                     </a>
                                 </td>
@@ -84,7 +88,11 @@
                                             <i class="ti-more-alt"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
+                                            @if ($user->userDetail)
                                             <a href="{{ route('admin.userdetails', $user->id) }}" class="dropdown-item">View Profile</a>
+                                            @else
+                                            <a href="#" class="dropdown-item">View Profile</a>
+                                            @endif
                                             <a href="{{ route('admin.userstatus', $user) }}" class="dropdown-item">{{ ($user->is_active) ? 'Block User' : 'Unblock User' }}</a>
                                             <a href="#" class="dropdown-item text-danger">Delete</a>
                                         </div>
