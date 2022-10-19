@@ -90,8 +90,7 @@ class DashboardController extends Controller
     public function getCustomers(Request $request)
     {
         // All Customers
-        // $users = User::where('role', 'customer')->with('userDetail')->latest()->get();
-        $users = User::where('role', 'merchant')->with('userDetail')->latest()->get();
+        $users = User::where('role', 'customer')->latest()->get();
 
         if ($request->has('status')) {
             $status = $request->query('status');
