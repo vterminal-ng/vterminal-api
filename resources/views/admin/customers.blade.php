@@ -64,7 +64,8 @@
                                             <img src="../../assets/media/image/user/man_avatar3.jpg"
                                                  class="rounded-circle" alt="avatar">
                                         </figure>
-                                        {{ $user->userDetail->first_name }} {{ $user->userDetail->last_name }}
+                                        {{ $user->userDetail->fullname }}
+                                        {{-- {{ $user->userDetail->first_name }} {{ $user->userDetail->last_name }} --}}
                                     </a>
                                 </td>
                                 <td>{{ $user->email }}</td>
