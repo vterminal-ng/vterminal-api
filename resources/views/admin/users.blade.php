@@ -64,7 +64,7 @@
                                             <img src="../../assets/media/image/user/man_avatar3.jpg"
                                                  class="rounded-circle" alt="avatar">
                                         </figure>
-                                        @if ()
+                                        @if ($user->userDetail)
                                         {{ $user->userDetail->fullname }}                                          
                                         @else
                                             N/A
