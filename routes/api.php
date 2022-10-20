@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//merchant address verification route
+Route::post('/merchant_address_verification', [MerchantDetailController::class, 'verifyMerchantAddress']);
+
+
 
 // PUBLIC ROUTES
 Route::get('me', [MeController::class, 'getMe']);

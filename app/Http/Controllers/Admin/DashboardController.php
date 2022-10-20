@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use App\Models\Code;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Models\MerchantDetail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Code;
 
 class DashboardController extends Controller
 {
@@ -133,5 +134,12 @@ class DashboardController extends Controller
         }
 
         return view('admin.merchants', compact('users'));
+    }
+    public function verifyMerchantAddress(MerchantDetail $mercahantDetail)
+    {
+        $this->$mercahantDetail->update([
+            'address_verified_at' => true
+        ]);
+        return redirect()->back()->with('success',' merchant verified!');
     }
 }
