@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\MerchantDetailResource;
-use App\Models\MerchantDetail;
 use App\Models\User;
+use App\Jobs\AddressUpload;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\MerchantDetail;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\MerchantDetailResource;
 
 class MerchantDetailController extends Controller
 {
@@ -99,5 +100,47 @@ class MerchantDetailController extends Controller
             new MerchantDetailResource($merchantDetail),
             Response::HTTP_ACCEPTED
         );
+    }
+
+    public function addressConfirmation(Request $request){
+        //validate request body
+        $request->validate([
+            'address_confirmation' => ['mimes:png,jpeg,gif,bmp', 'max:2048','required'],
+            
+
+          
+        ]);
+
+        //get the image
+        $image = $request->file('image');
+        //$image_path = $image->getPathName();
+ 
+        // get original file name and replace any spaces with _
+        // example: ofiice card.png = timestamp()_office_card.pnp
+        $filename = time()."_".preg_replace('/\s+/', '_', strtolower($image->getClientOriginalName()));
+ 
+        // move image to temp location (tmp disk)
+        $tmp = $image->storeAs('uploads/address', $filename, 'tmp');
+ 
+ 
+        //create the upload
+        $newDetail = MerchantDetail::create([
+            'user_id'=>auth()->id(),
+            'address_confirmation'=> $filename,
+            'disk'=> config('site.upload_disk'),
+           
+            
+        ]);
+
+        //dispacth job to handle image manipulation
+        $this->dispatch(new AddressUpload($newDetail));
+
+        //return cuccess response
+
+        return response()->json([
+            'success'=> true,
+            'message'=>'successfully uploaded a file',
+            'data' => $newDetail
+        ]);
     }
 }

@@ -23,4 +23,16 @@ class MerchantDetail extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getImagesAttribute()
+    {
+        return [
+            "original" => $this->getImagePath("original"),
+        ];
+    }
+
+    public function getImagePath($size)
+    {
+        return Storage::disk($this->disk)->url("uploads/original/{$size}/" . $this->image);
+    }
 }

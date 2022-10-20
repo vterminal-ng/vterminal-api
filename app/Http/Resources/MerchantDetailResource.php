@@ -21,6 +21,7 @@ class MerchantDetailResource extends JsonResource
             "verifiedDate" => $this->business_verified,
             "hasPhysicalLocation" => $this->has_physical_location,
             "user" => new UserResource($this->whenLoaded('user')),
+            'address_confirmation' =>  $this->images,
 
         ];
     }
