@@ -16,7 +16,11 @@ class MerchantDetail extends Model
         'business_city',
         'business_address',
         'business_verified_at',
-        'has_physical_location'
+        'has_physical_location',
+        'address_confirmation',
+        'address_verified_at',
+        'upload_successfull',
+        'disk'
     ];
 
     public function user()
