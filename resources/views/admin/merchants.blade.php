@@ -75,6 +75,7 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone_number }}</td>
                                 <td>{{ ucfirst($user->role) }}</td>
+
                                 <td>
                                     <span class="badge bg-warning-bright text-warning">{{ ($user->is_active) ? 'Active' : 'Blocked' }}</span>
                                 </td>
@@ -99,6 +100,15 @@
                                     </div>
                                 </td>
                             </tr>
+                            <div>
+                                <a href="#">
+                                    <img src="{{$user->address_confirmation}}" alt="error! try uploading again ">
+                                    merchants proof of address
+                                </a>
+                                <br>
+                                <br>
+                                <button class="btn btn-danger" onclick="verifyMerchantAddress()">verify merchant address</button>
+                            </div>
                             @endforeach
                             </tbody>
                         </table>

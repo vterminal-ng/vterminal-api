@@ -10,6 +10,8 @@ use Illuminate\Http\Response;
 use App\Models\MerchantDetail;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MerchantDetailResource;
+use Image;
+
 
 class MerchantDetailController extends Controller
 {
