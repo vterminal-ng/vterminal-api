@@ -32,8 +32,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //merchant address verification route
-Route::post('/merchant_address_verification', [MerchantDetailController::class, 'verifyMerchantAddress']);
-
+Route::post('/merchant_address_verification', [DashboardController::class, 'verifyMerchantAddress']);
+Route::post('/merchant_address_upload', [MerchantDetailController::class, 'addressConfirmation']);
 
 
 // PUBLIC ROUTES
