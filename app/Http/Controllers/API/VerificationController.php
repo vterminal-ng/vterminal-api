@@ -12,6 +12,7 @@ use App\Services\VerifyMeService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 
 class VerificationController extends Controller
@@ -19,6 +20,7 @@ class VerificationController extends Controller
     use ApiResponder;
 
     protected $verifyMeService;
+    protected $dojahVerifyService;
 
     public function __construct(VerifyMeService $verifyMeService, DojahVerifyService $dojahVerifyService)
     {
@@ -121,16 +123,106 @@ class VerificationController extends Controller
         );
     }
 
-    public function verifyBusinessInfo(Request $request) {
+    public function verifyCacInfo(Request $request) {
         $request->validate([
-            'company_name' => ['required', 'string'],
             'cac_rc_number' => ['required', 'string'],
+            'company_name' => ['required', 'string'],
+            'cac_certificate' => ['mimes:png,jpg,jpeg', 'max:2048']
+        ]);
+
+        $user = auth()->user();
+
+        if($user->merchantDetail->business_verified_at !== null) {
+            return $this->failureResponse(
+                "Business information verified already!",
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        if ($request->hasFile('cac_certificate')) {
+
+            $destination = 'storage/' . $user->merchantDetail->reg_certificate;
+
+            if (File::exists($destination)) {
+                File::delete($destination);
+            }
+            
+            $certificate = $request->file('cac_certificate')->store('business', 'public');
+            
+            // CAC Information
+            $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
+            
+            if($cacInfo->entity->rc_number !== $request->cac_rc_number) {
+                return $this->failureResponse(
+                    "Business verification failed! Registration number does not match",
+                    Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
+            
+            $user->merchantDetail()->update([
+                'business_verified_at' => \Carbon\Carbon::now(),
+                'registered_business_name' => $cacInfo->entity->company_name,
+                'rc_number' => $cacInfo->entity->rc_number,
+                'date_of_registration' => $cacInfo->entity->date_of_registration,
+                'reg_certificate' => $certificate,
+            ]);
+
+            return $this->successResponse(
+                "Business information updated.",
+                [
+                    "certificate->image_path" => 'storage/' . $certificate
+                ],
+                Response::HTTP_OK
+            );
+        } else {
+            return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        
+    }
+    
+    public function verifyTinInfo(Request $request) {
+        $request->validate([
             'tin_no' => ['required', 'string'],
         ]);
+        
+        $user = auth()->user();
+
+        if($user->merchantDetail->tin_verified_at !== null) {
+            return $this->failureResponse(
+                "TIN verified already!",
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
         // Tax Identification No Information
         $tinInfo = $this->dojahVerifyService->LookupTinNo($request->tin_no);
-        // CAC Information
-        $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
-        
+
+        //dd($tinInfo);
+
+        if($tinInfo->entity->cac_reg_number !== $user->merchantDetail->rc_number) {
+            return $this->failureResponse(
+                "Verification failed! Business information does not match.",
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        if($tinInfo->entity->firstin !== $request->tin_no) {
+            return $this->failureResponse(
+                "TIN Verification failed!",
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        $user->merchantDetail()->update([
+            'tin_number' => $tinInfo->entity->firstin,
+            'tin_verified_at' => \Carbon\Carbon::now(),
+        ]);
+
+        return $this->successResponse(
+            "TIN Verification Successful",
+            NULL,
+            Response::HTTP_OK
+        );
+
     }
 }

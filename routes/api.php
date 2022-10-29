@@ -67,8 +67,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
             Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
             Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
-            
-            Route::get('users/merchant/business-info', [VerificationController::class, 'verifyBusinessInfo']);
+            // Upgrade business
+            Route::post('users/merchant/verify-cac', [VerificationController::class, 'verifyCacInfo']);
+            Route::post('users/merchant/verify-tin', [VerificationController::class, 'verifyTinInfo']);
         });
 
         // Add or Update Email
