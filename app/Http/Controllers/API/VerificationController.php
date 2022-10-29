@@ -131,6 +131,6 @@ class VerificationController extends Controller
         $tinInfo = $this->dojahVerifyService->LookupTinNo($request->tin_no);
         // CAC Information
         $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
-        dd(['tin' => $tinInfo, 'cac' => $cacInfo]);
+        
     }
 }
