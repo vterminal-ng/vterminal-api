@@ -6,6 +6,7 @@ use App\Constants\IdentityType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VerificationResource;
 use App\Models\Verification;
+use App\Services\DojahVerifyService;
 use App\Traits\ApiResponder;
 use App\Services\VerifyMeService;
 use Carbon\Carbon;
@@ -19,9 +20,10 @@ class VerificationController extends Controller
 
     protected $verifyMeService;
 
-    public function __construct(VerifyMeService $verifyMeService)
+    public function __construct(VerifyMeService $verifyMeService, DojahVerifyService $dojahVerifyService)
     {
         $this->verifyMeService = $verifyMeService;
+        $this->dojahVerifyService = $dojahVerifyService;
     }
 
     public function verifyDetails(Request $request)
@@ -117,5 +119,18 @@ class VerificationController extends Controller
             "Verification Passed. Thank you.",
             new VerificationResource($verifyMeServiceData),
         );
+    }
+
+    public function verifyBusinessInfo(Request $request) {
+        $request->validate([
+            'company_name' => ['required', 'string'],
+            'cac_rc_number' => ['required', 'string'],
+            'tin_no' => ['required', 'string'],
+        ]);
+        // Tax Identification No Information
+        $tinInfo = $this->dojahVerifyService->LookupTinNo($request->tin_no);
+        // CAC Information
+        $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
+        dd(['tin' => $tinInfo, 'cac' => $cacInfo]);
     }
 }

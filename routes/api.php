@@ -49,17 +49,17 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
-
+    
     Route::post('logout', [AuthController::class, 'logout']);
-
+    
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
     Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
-
+    
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
-
+    
     Route::group(['middleware' => ['verified.phone']], function () {
-
+        
         // routes that needs user to be merchant
         Route::group(['middleware' => ['merchant.user']], function () {
             // CRUD functions routes for Merchant Details
@@ -67,6 +67,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
             Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
             Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
+            
+            Route::get('users/merchant/business-info', [VerificationController::class, 'verifyBusinessInfo']);
         });
 
         // Add or Update Email

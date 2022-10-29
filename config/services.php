@@ -125,4 +125,11 @@ return [
         'channel' =>  env('BANK_LIST_CHANNEL', 'paystack'),
     ],
 
+    'dojah' => [
+        'base_url' => env('DOJAH_BASE_URL'),
+        'app_id' => env('DOJAH_APP_ID'),
+        'private_key' => env('DOJAH_PRIVATE_KEY'),
+        'public_key' => env('DOJAH_PUBLIC_KEY'),
+    ],
+
 ];
