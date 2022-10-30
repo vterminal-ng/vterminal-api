@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\ResetPassword;
+use App\Traits\CanRewardPoint;
 use App\Traits\HasPin;
 use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Wallet;
@@ -14,7 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements Wallet
 {
-    use HasApiTokens, HasFactory, Notifiable, HasWallet, HasPin;
+    use HasApiTokens, HasFactory, Notifiable, HasWallet, HasPin, CanRewardPoint;
 
     /**
      * The attributes that are mass assignable.
