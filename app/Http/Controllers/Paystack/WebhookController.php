@@ -12,6 +12,7 @@ use App\Http\Resources\WalletTransactionResource;
 use App\Models\Code;
 use App\Models\User;
 use App\Notifications\CodeActivated;
+use App\Notifications\Deposit;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -136,6 +137,8 @@ class WebhookController extends Controller
                     // Award point for the wallet being funded
                     $user->rewardPointFor(RewardAction::WALLET_FUNDED);
 
+                    // notify user about deposit
+                    $user->notify(new Deposit($user));
 
                     break;
                 case TransactionType::ADD_CARD:

@@ -124,7 +124,8 @@ class WalletController extends Controller
                 // Award point for the wallet being funded
                 $user->rewardPointFor(RewardAction::WALLET_FUNDED);
 
-                $user->notify(new Deposit($user->userDetail->first_name, $user->userDetail->last_name));
+                // notify user about deposit
+                $user->notify(new Deposit($user));
                 // return success
                 return $this->successResponse("Successfully deposited $amountToDeposit into wallet");
                 break;
