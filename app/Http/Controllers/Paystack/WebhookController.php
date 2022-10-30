@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Paystack;
 
 use App\Constants\CodeStatus;
+use App\Constants\RewardAction;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
@@ -131,6 +132,9 @@ class WebhookController extends Controller
                     Log::info("Wallet deposit details", ['wallet' => new WalletTransactionResource($wallet)]);
                     Log::info("Done Crediting user's wallet!");
                     Log::info("User's wallet balance after crediting: $user->balance");
+
+                    // Award point for the wallet being funded
+                    $user->rewardPointFor(RewardAction::WALLET_FUNDED);
 
 
                     break;

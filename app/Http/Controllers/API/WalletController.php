@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Constants\PaymentMethod;
+use App\Constants\RewardAction;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\WalletTransactionResource;
@@ -119,6 +120,9 @@ class WalletController extends Controller
                 // if transation was successful,get amount from the verification and deposit into wallet.
                 $amountToDeposit = $response->data->amount / 100;
                 $user->walletDeposit($amountToDeposit);
+
+                // Award point for the wallet being funded
+                $user->rewardPointFor(RewardAction::WALLET_FUNDED);
 
                 $user->notify(new Deposit($user->userDetail->first_name, $user->userDetail->last_name));
                 // return success
