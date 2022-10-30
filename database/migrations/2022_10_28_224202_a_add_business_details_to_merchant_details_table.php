@@ -14,14 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('merchant_details', function (Blueprint $table) {
-            $table->string('registered_business_name')->nullable();
-            $table->string('rc_number')->nullable();
+            $table->string('registered_business_name')->nullable()->nullable();
+            $table->string('rc_number')->nullable()->nullable();
             $table->timestamp('date_of_registration')->nullable();
-            $table->string('reg_certificate')->nullable();
+            $table->string('reg_certificate')->nullable()->nullable();
             $table->string('type_of_company')->nullable();
             $table->string('cac_document')->nullable();
-            $table->timestamp('cac_uploaded_at')->nullable();
-            $table->string('tin_number')->nullable();
+            $table->timestamp('cac_uploaded_at')->nullable()->nullable();
+            $table->string('tin_number')->nullable()->nullable();
             $table->timestamp('tin_verified_at')->nullable();
         });
     }
