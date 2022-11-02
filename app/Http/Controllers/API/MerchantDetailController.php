@@ -116,10 +116,10 @@ class MerchantDetailController extends Controller
         //get the image
         $image = $request->file('image');
         //$image_path = $image->getPathName();
- 
+        
         // get original file name and replace any spaces with _
         // example: ofiice card.png = timestamp()_office_card.pnp
-        $filename = time()."_".preg_replace('/\s+/', '_', strtolower($image->getClientOriginalName()));
+        $filename = date('ymdHi'). $image->getClientOriginalName();
  
         // move image to temp location (tmp disk)
         $tmp = $image->storeAs('uploads/address', $filename, 'tmp');

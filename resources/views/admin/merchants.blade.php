@@ -51,11 +51,13 @@
                                 <th>Created At</th>
                                 <th>Updated At</th>
                                 <th class="text-right">Action</th>
+                                <th>Proof of Address</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($users as $user)
                             <tr>
+
                                 <td></td>
                                 <td>{{ $user->id }}</td>
                                 <td>
@@ -99,20 +101,19 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td>
+                                    <a href="{{route ('admin.merchant_address', $user->id)}}">View</a>
+                                </td>
                             </tr>
-                            <div>
-                                <a href="#">
-                                    <img src="{{$user->address_confirmation}}" alt="error! try uploading again ">
-                                    merchants proof of address
-                                </a>
-                                <br>
-                                <br>
-                                <button class="btn btn-danger" onclick="verifyMerchantAddress()">verify merchant address</button>
-                            </div>
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.verifies', $user->id)}}" class="text-white font-weight-normal btn btn-success">Verify Address Id   {{$user->id}}</a>
+                                </td>
+                            </tr>
                             @endforeach
                             </tbody>
                         </table>
-                    </div>
+                    </div
                 </div>
             </div>
         </div>

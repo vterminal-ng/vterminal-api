@@ -135,11 +135,23 @@ class DashboardController extends Controller
 
         return view('admin.merchants', compact('users'));
     }
-    public function verifyMerchantAddress(MerchantDetail $mercahantDetail)
+    public function getImage(Request $request){
+        $user = User::all();
+        if($user) {
+            return view('admin.merchant_address', compact('user'));
+        }
+
+       
+    }
+    public function verify($id)
     {
-        $this->$mercahantDetail->update([
-            'address_verified_at' => true
-        ]);
-        return redirect()->back()->with('success',' merchant verified!');
+        $user = User::find($id);
+        if($user) {
+            $user->update([
+                'address_verified_at' => true
+            ]);
+        }
+       
+        return redirect()->back()->with('success',' address  verified!');
     }
 }

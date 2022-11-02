@@ -50,4 +50,8 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function(){
 
     // Merchants
     Route::get('/merchants', [DashboardController::class, 'getMerchants'])->name('admin.merchants');
+    Route::get('/merchant_address', [DashboardController::class, 'getImage'])->name('admin.merchant_address');
+    Route::get('/verifies/{id}', [DashboardController::class,'verify'])->name('admin.verifies');
+
+
 });

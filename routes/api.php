@@ -31,9 +31,9 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//merchant address verification route
-Route::post('/merchant_address_verification', [DashboardController::class, 'verifyMerchantAddress']);
-Route::post('/merchant_address_upload', [MerchantDetailController::class, 'addressConfirmation']);
+//merchant address verification routes
+//Route::post('/merchant_address_verification', [DashboardController::class, 'verifyMerchantAddress']);
+//Route::post('/merchant_address_upload', [MerchantDetailController::class, 'addressConfirmation']);
 
 
 // PUBLIC ROUTES
@@ -53,6 +53,13 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    
+        //merchant address verification routes
+    //Route::post('/merchant_address_verification', [DashboardController::class, 'verifyMerchantAddress']);
+    Route::post('/merchant_address_upload', [MerchantDetailController::class, 'addressConfirmation']);
+
+
+
 
     Route::post('logout', [AuthController::class, 'logout']);
 
