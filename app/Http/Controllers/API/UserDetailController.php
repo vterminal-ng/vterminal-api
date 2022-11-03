@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Constants\RewardAction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
@@ -42,18 +43,20 @@ class UserDetailController extends Controller
 
         $now = strtotime(Carbon::now()->format('Y-m-d'));
         $birthDate = strtotime($request->date_of_birth);
-        $ageDifference = ($now - $birthDate)/365/60/60/24;
-        
-        if($ageDifference < 18) {
+        $ageDifference = ($now - $birthDate) / 365 / 60 / 60 / 24;
+
+        if ($ageDifference < 18) {
             return $this->failureResponse("Sorry, persons below the age of 18 years are not allowed to use our service.", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
         if ($request->referrer != '' || !is_null($request->referrer)) {
             //check if the referrer code exists
             $userDetail = UserDetail::where('referral_code', $request->referrer)->first();
             if (!$userDetail) {
                 return $this->failureResponse(['referrer' => ['Invalid referral code']], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
+            // // Award VPoints to the user that refered this new guy 
+            // $userDetail->user->rewardPointFor(RewardAction::REFERRAL);
         }
 
         // get authenticated user instance

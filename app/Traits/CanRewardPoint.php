@@ -25,7 +25,7 @@ trait CanRewardPoint
                 ]);
                 break;
             case RewardAction::ONLINE_PURCHASE:
-                $point = 15;
+                $point = -15;
                 $this->actionPoints()->create([
                     'performed_action' => $action,
                     'point' => $point,
@@ -45,12 +45,18 @@ trait CanRewardPoint
                     'point' => $point,
                 ]);
                 break;
+            case RewardAction::WALLET_FUNDED:
+                $point = 10;
+                $this->actionPoints()->create([
+                    'performed_action' => $action,
+                    'point' => $point,
+                ]);
+                break;
 
             default:
                 # code...
                 break;
         }
-        // add to action points table
 
         // send mail with job
     }
