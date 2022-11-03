@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActionPointController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\AuthorizedCardController;
 use App\Http\Controllers\API\MeController;
@@ -58,6 +59,9 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    Route::get('users/total-points', [ActionPointController::class, 'totalRewardPoint']);
+    Route::get('users/reward-points', [ActionPointController::class, 'rewardPoint']);
+
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
@@ -75,6 +79,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
             Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
             Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
+
+            Route::get('users/merchant/business-info', [VerificationController::class, 'verifyBusinessInfo']);
         });
 
         // Add or Update Email
@@ -126,7 +132,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('cards/add', [AuthorizedCardController::class, 'add']);
             Route::delete('cards/delete', [AuthorizedCardController::class, 'delete']);
 
-            // Routes that require entire profile to be verified before usage
+            // Routes that require entire profile to be completed before usage
             Route::group(['middleware' => ['verified.profile']], function () {
                 // Code
                 // routes that needs user to be customer
