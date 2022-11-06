@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Constants\IdentityType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VerificationResource;
+use App\Jobs\UploadCacCertificate;
 use App\Models\Verification;
 use App\Services\DojahVerifyService;
 use App\Traits\ApiResponder;
@@ -159,7 +160,7 @@ class VerificationController extends Controller
                 );
             }
             
-            $user->merchantDetail()->update([
+            $verifyCac = $user->merchantDetail()->update([
                 'business_verified_at' => \Carbon\Carbon::now(),
                 'registered_business_name' => $cacInfo->entity->company_name,
                 'rc_number' => $cacInfo->entity->rc_number,
@@ -167,6 +168,8 @@ class VerificationController extends Controller
                 'reg_certificate' => $certificate,
             ]);
 
+            $this->dispatch(new UploadCacCertificate($verifyCac));
+            
             return $this->successResponse(
                 "Business information updated.",
                 [
