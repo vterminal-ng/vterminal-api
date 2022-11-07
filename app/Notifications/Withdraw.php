@@ -43,7 +43,7 @@ class Withdraw extends Notification
     {
         return (new MailMessage)
                     ->greeting('vTerminal | Successful Withdrawal.')
-                    ->line('Dear ' . $this->user->userDetail->fullName)
+                    ->line('Dear ' . $this->code->customer->userDetail->fullname . ',')
                     ->line('Your withdrawal was successful')
                     ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }

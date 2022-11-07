@@ -43,7 +43,7 @@ class Deposit extends Notification
     {
         return (new MailMessage)
             ->greeting('vTerminal | Successful Deposit.')
-            ->line('Dear ' . $this->user->userDetail->fullName)
+            ->line('Dear ' . $this->code->customer->userDetail->fullname . ',')
             ->line('Your deposit was successful')
             ->line('If you do not recognize nor authorize this activity, please contact admin immediately!');
     }
