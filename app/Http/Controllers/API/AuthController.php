@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Jobs\SendLoginEmailNotification;
 use App\Models\User;
 use App\Notifications\SuccessfulLogin;
 use App\Notifications\SuccessfulRegistration;
@@ -92,8 +93,9 @@ class AuthController extends Controller
         // update the updated_at column
         $user->touch();
 
-        if($user->userDetail) {
-            $user->notify(new SuccessfulLogin($user));
+        if ($user->userDetail) {
+            // dd($user);
+            $this->dispatch(new SendLoginEmailNotification($user));
         }
 
         return $this->successResponse(
@@ -130,7 +132,7 @@ class AuthController extends Controller
         // update the updated_at column
         $user->touch();
         // notify user
-        if($user->userDetail) {
+        if ($user->userDetail) {
             $user->notify(new SuccessfulLogin());
         }
 
