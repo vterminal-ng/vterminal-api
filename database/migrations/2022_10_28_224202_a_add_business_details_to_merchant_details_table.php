@@ -19,6 +19,8 @@ return new class extends Migration
             $table->timestamp('date_of_registration')->nullable();
             $table->string('reg_certificate')->nullable();
             $table->string('type_of_company')->nullable();
+            $table->string('cac_document')->nullable();
+            $table->timestamp('cac_uploaded_at')->nullable();
             $table->string('tin_number')->nullable();
             $table->timestamp('tin_verified_at')->nullable();
         });

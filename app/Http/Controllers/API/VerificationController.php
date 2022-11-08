@@ -6,6 +6,8 @@ use App\Constants\IdentityType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VerificationResource;
 use App\Jobs\UploadCacCertificate;
+use App\Models\MerchantDetail;
+use App\Models\User;
 use App\Models\Verification;
 use App\Services\DojahVerifyService;
 use App\Traits\ApiResponder;
@@ -15,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class VerificationController extends Controller
 {
@@ -124,73 +127,101 @@ class VerificationController extends Controller
         );
     }
 
-    public function verifyCacInfo(Request $request) {
+    public function verifyCacInfo(Request $request)
+    {
         $request->validate([
             'cac_rc_number' => ['required', 'string'],
             'company_name' => ['required', 'string'],
-            'cac_certificate' => ['mimes:png,jpg,jpeg', 'max:2048']
+            'cac_certificate' => ['required', 'mimes:png,jpg,jpeg', 'max:2048']
         ]);
 
-        $user = auth()->user();
+        $user = User::find(auth()->id());
 
-        if($user->merchantDetail->business_verified_at !== null) {
+        if ($user->merchantDetail->business_verified_at) {
             return $this->failureResponse(
                 "Business information verified already!",
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        if ($request->hasFile('cac_certificate')) {
+        $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
 
-            $destination = 'storage/' . $user->merchantDetail->reg_certificate;
-
-            if (File::exists($destination)) {
-                File::delete($destination);
+        //check if user has uploaded cac before
+        if ($user->merchantDetail->cac_uploaded_at) {
+            if (Storage::disk('public')->exists("uploads/cac/" . $user->merchantDetail->cac_document)) {
+                Storage::disk('public')->delete("uploads/cac/" . $user->merchantDetail->cac_document);
             }
-            
-            $certificate = $request->file('cac_certificate')->store('business', 'public');
-            
-            // CAC Information
-            $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
-            
-            if($cacInfo->entity->rc_number !== $request->cac_rc_number) {
-                return $this->failureResponse(
-                    "Business verification failed! Registration number does not match",
-                    Response::HTTP_UNPROCESSABLE_ENTITY
-                );
-            }
-            
-            $verifyCac = $user->merchantDetail()->update([
-                'business_verified_at' => \Carbon\Carbon::now(),
-                'registered_business_name' => $cacInfo->entity->company_name,
-                'rc_number' => $cacInfo->entity->rc_number,
-                'date_of_registration' => $cacInfo->entity->date_of_registration,
-                'reg_certificate' => $certificate,
+            $user->merchantDetail()->update([
+                'cac_uploaded_at' => null
             ]);
-
-            $this->dispatch(new UploadCacCertificate($verifyCac));
-            
-            return $this->successResponse(
-                "Business information updated.",
-                [
-                    "certificate->image_path" => 'storage/' . $certificate
-                ],
-                Response::HTTP_OK
-            );
-        } else {
-            return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
+        //get the image name and upload image to temp location
+        $cacFilename = $this->UploadToTempLocation($request);
+
+        $user->merchantDetail()->update([
+            'registered_business_name' => $cacInfo->entity->company_name,
+            'rc_number' => $cacInfo->entity->rc_number,
+            'date_of_registration' => $cacInfo->entity->date_of_registration,
+            'cac_document' => $cacFilename,
+        ]);
+
+        $this->dispatch(new UploadCacCertificate($user->merchantDetail));
+
+        return $this->successResponse("CAC details recieved. Awaiting approval");
+
+
+        // if ($request->hasFile('cac_certificate')) {
+
+        //     $destination = 'storage/' . $user->merchantDetail->reg_certificate;
+
+        //     if (File::exists($destination)) {
+        //         File::delete($destination);
+        //     }
+
+        //     $certificate = $request->file('cac_certificate')->store('business', 'public');
+
+        //     // CAC Information
+        //     $cacInfo = $this->dojahVerifyService->lookupCacInfo($request->company_name, $request->cac_rc_number);
+
+        //     if ($cacInfo->entity->rc_number !== $request->cac_rc_number) {
+        //         return $this->failureResponse(
+        //             "Business verification failed! Registration number does not match",
+        //             Response::HTTP_UNPROCESSABLE_ENTITY
+        //         );
+        //     }
+
+        //     $CacInfo = $user->merchantDetail()->update([
+        //         'business_verified_at' => \Carbon\Carbon::now(),
+        //         'registered_business_name' => $cacInfo->entity->company_name,
+        //         'rc_number' => $cacInfo->entity->rc_number,
+        //         'date_of_registration' => $cacInfo->entity->date_of_registration,
+        //         'reg_certificate' => $certificate,
+        //     ]);
+
+        //     $this->dispatch(new UploadCacCertificate($CacInfo));
+
+        //     return $this->successResponse(
+        //         "Business information updated.",
+        //         [
+        //             "certificate->image_path" => 'storage/' . $certificate
+        //         ],
+        //         Response::HTTP_OK
+        //     );
+        // } else {
+        //     return $this->failureResponse("Please select a valid image file", Response::HTTP_UNPROCESSABLE_ENTITY);
+        // }
     }
-    
-    public function verifyTinInfo(Request $request) {
+
+    public function verifyTinInfo(Request $request)
+    {
         $request->validate([
             'tin_no' => ['required', 'string'],
         ]);
-        
+
         $user = auth()->user();
 
-        if($user->merchantDetail->tin_verified_at !== null) {
+        if ($user->merchantDetail->tin_verified_at !== null) {
             return $this->failureResponse(
                 "TIN verified already!",
                 Response::HTTP_UNPROCESSABLE_ENTITY
@@ -202,14 +233,14 @@ class VerificationController extends Controller
 
         //dd($tinInfo);
 
-        if($tinInfo->entity->cac_reg_number !== $user->merchantDetail->rc_number) {
+        if ($tinInfo->entity->cac_reg_number !== $user->merchantDetail->rc_number) {
             return $this->failureResponse(
                 "Verification failed! Business information does not match.",
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        if($tinInfo->entity->firstin !== $request->tin_no) {
+        if ($tinInfo->entity->firstin !== $request->tin_no) {
             return $this->failureResponse(
                 "TIN Verification failed!",
                 Response::HTTP_UNPROCESSABLE_ENTITY
@@ -226,6 +257,17 @@ class VerificationController extends Controller
             NULL,
             Response::HTTP_OK
         );
+    }
 
+    private function UploadToTempLocation(Request $request)
+    {
+        $image = $request->file('cac_certificate');
+        // ofiice card.png = timestamp()_office_card.pnp
+        $filename = time() . "_" . $request->cac_rc_number . "_" . preg_replace('/\s+/', '_', strtolower($image->getClientOriginalName()));
+
+        // move image to temp location (tmp disk)
+        $image->storeAs('uploads/cac', $filename, 'tmp');
+
+        return $filename;
     }
 }

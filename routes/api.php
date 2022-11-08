@@ -19,6 +19,7 @@ use App\Http\Controllers\Paystack\WebhookController;
 use App\Models\BankDetail;
 use App\Models\Pin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +34,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 // PUBLIC ROUTES
+Route::get('red', function () {
+    Redis::set('name', 'Gabe');
+
+    $name = Redis::get('name');
+
+    dd($name);
+});
 Route::get('me', [MeController::class, 'getMe']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -49,17 +57,17 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    
+
     Route::post('logout', [AuthController::class, 'logout']);
-    
+
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
     Route::post('phone/otp/verify', [OtpController::class, 'verifySmsOtp']);
-    
+
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
-    
+
     Route::group(['middleware' => ['verified.phone']], function () {
-        
+
         // routes that needs user to be merchant
         Route::group(['middleware' => ['merchant.user']], function () {
             // CRUD functions routes for Merchant Details
@@ -67,9 +75,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('users/merchant-details', [MerchantDetailController::class, 'read']);
             Route::patch('users/merchant-details', [MerchantDetailController::class, 'update']);
             Route::put('users/merchant-details', [MerchantDetailController::class, 'update']);
-            // Upgrade business
-            Route::post('users/merchant/verify-cac', [VerificationController::class, 'verifyCacInfo']);
-            Route::post('users/merchant/verify-tin', [VerificationController::class, 'verifyTinInfo']);
         });
 
         // Add or Update Email
@@ -136,6 +141,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::group(['middleware' => ['merchant.user']], function () {
                     Route::post('code/summary', [CodeController::class, 'codeSummary']);
                     Route::post('code/resolve', [CodeController::class, 'resolveCode']);
+
+                    // Upgrade business
+                    Route::post('users/merchant/verify-cac', [VerificationController::class, 'verifyCacInfo']);
+                    Route::post('users/merchant/verify-tin', [VerificationController::class, 'verifyTinInfo']);
                 });
             });
 
