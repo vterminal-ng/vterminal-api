@@ -59,9 +59,6 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    // Route::get('users/total-points', [ActionPointController::class, 'totalRewardPoint']);
-    // Route::get('users/reward-points', [ActionPointController::class, 'rewardPoint']);
-
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Constants\ChargeFrom;
 use App\Constants\CodeStatus;
 use App\Constants\PaymentMethod;
+use App\Constants\RewardAction;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CodeResource;
@@ -411,6 +412,9 @@ class CodeController extends Controller
             'merchant_id' => $merchant->id,
             'status' => CodeStatus::COMPLETED
         ])->save();
+
+        // Rewarding customer point for completing a POS transaction
+        $code->customer->rewardPointFor(RewardAction::POS_PURCHASE);
 
         $users = [$code->customer, $code->merchant];
         foreach ($users as $user) {
