@@ -133,7 +133,7 @@ class AuthController extends Controller
         $user->touch();
         // notify user
         if ($user->userDetail) {
-            $user->notify(new SuccessfulLogin());
+            $user->notify(new SuccessfulLogin($user));
         }
 
         return $this->successResponse(

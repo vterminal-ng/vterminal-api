@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Constants\RewardAction;
 use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ActionPointController extends Controller
 {
