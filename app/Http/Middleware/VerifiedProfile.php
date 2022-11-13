@@ -28,7 +28,7 @@ class VerifiedProfile
         // Specific to user role type
         switch ($user->role) {
             case 'customer':
-                if (!$user->authorizedCard || !$user->hasSetPin() || !$user->bankDetail)
+                if (!$user->hasSetPin() || !$user->authorizedCard || !$user->bankDetail)
                     return $this->failureResponse("Kindly complete your profile setup", Response::HTTP_UNAUTHORIZED);
                 break;
             case 'merchant':

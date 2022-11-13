@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Constants\BankListChannel;
+use App\Constants\RewardAction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BankDetailResource;
+use App\Models\ActionPoint;
 use App\Models\BankDetail;
 use App\Models\User;
+use App\Models\UserDetail;
 use App\Services\PaystackService;
 use App\Services\NubanService;
 use App\Services\VerifyMeService;
@@ -64,7 +67,7 @@ class BankDetailController extends Controller
 
         //dd($recipientcode);
 
-        $bankDetails = BankDetail::create([
+        $bankDetail = BankDetail::create([
             'user_id' => auth()->id(),
             'account_number' => $request->account_number,
             'account_name' => $request->account_name,
@@ -73,9 +76,19 @@ class BankDetailController extends Controller
             'recipient_code' => $recipientcode
         ]);
 
+        // // Find the person that refered the currently authenticated user and reward them points for it
+        // // Beacuse adding bank details is the last step for setting up the user account
+        // $RefreeUserDetail = UserDetail::where('referral_code', $bankDetail->user->userDetail->referrer);
+
+        // // if the auth user's role is customer and has no
+        // if ($bankDetail->user->role == 'customer' && ActionPoint::where('user_id', $RefreeUserDetail->user->id)->where('performed_action', RewardAction::REFERRAL)->first()) {
+        //     // if the user was refered by someone, reward the referrer
+        //     if ($RefreeUserDetail) $RefreeUserDetail->user->rewardPointFor(RewardAction::REFERRAL);
+        // }
+
         return $this->successResponse(
             "Bank Details Added Successfully",
-            new BankDetailResource($bankDetails),
+            new BankDetailResource($bankDetail),
             Response::HTTP_CREATED
         );
     }
