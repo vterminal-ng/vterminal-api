@@ -7,12 +7,13 @@ use App\Http\Resources\MerchantDetailResource;
 use App\Models\MerchantDetail;
 use App\Models\User;
 use App\Traits\ApiResponder;
+use App\Traits\Generators;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class MerchantDetailController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, Generators;
 
     public function create(Request $request)
     {
@@ -28,13 +29,15 @@ class MerchantDetailController extends Controller
 
         // make sure that the user_id provided in the request belongs to the currently authenticated user 
         //$this->authorize('create', $request->user_id);
-
+        $merchant_code = $this->generateMerchantCode();
+        
         $merchantDetails = $user->merchantDetail()->create([
             'business_name' => $request->business_name,
             'business_state' => $request->business_state,
             'business_city' => $request->business_city,
             'business_address' => $request->business_address,
-            'has_physical_location' => $request->has_physical_location
+            'has_physical_location' => $request->has_physical_location,
+            'merchant_code' => $merchant_code
         ]);
 
         return $this->successResponse(

@@ -46,4 +46,9 @@ trait Generators
     {
         return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 6)), 0, 6);
     }
+
+    public function generateMerchantCode(): string
+    {
+        return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 7)), 0, 7);
+    }
 }

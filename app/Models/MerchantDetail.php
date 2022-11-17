@@ -24,7 +24,8 @@ class MerchantDetail extends Model
         'date_of_registration',
         'type_of_company',
         'tin_number',
-        'tin_verified_at'
+        'tin_verified_at',
+        'merchant_code',
     ];
 
     public function user()
