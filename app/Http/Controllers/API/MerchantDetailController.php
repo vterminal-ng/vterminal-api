@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
-use App\Jobs\AddressUpload;
+//use App\Jobs\AddressUpload;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -113,17 +113,24 @@ class MerchantDetailController extends Controller
           
         ]);
 
-        //get the image
-        $image = $request->file('image');
-        //$image_path = $image->getPathName();
+
+        if ($request->has('address_confirmation')) {
+            # code...
+                //get the image
+            $image = $request->file('address_confirmation');
+            //$image_path = $image->getPathName();
+            
+            // get original file name and replace any spaces with _
+            // example: ofiice card.png = timestamp()_office_card.pnp
+
+            $filename = $image->hashName();
+    
+            // move image to temp location (tmp disk)
+            $path = $image->storeAs('app/public', $filename, 'public');
+    
+        } 
         
-        // get original file name and replace any spaces with _
-        // example: ofiice card.png = timestamp()_office_card.pnp
-        $filename = date('ymdHi'). $image->getClientOriginalName();
- 
-        // move image to temp location (tmp disk)
-        $tmp = $image->storeAs('uploads/address', $filename, 'tmp');
- 
+        
  
         //create the upload
         $newDetail = MerchantDetail::create([
@@ -135,14 +142,14 @@ class MerchantDetailController extends Controller
         ]);
 
         //dispacth job to handle image manipulation
-        $this->dispatch(new AddressUpload($newDetail));
+        //$this->dispatch(new AddressUpload($newDetail));
 
         //return cuccess response
 
         return response()->json([
             'success'=> true,
             'message'=>'successfully uploaded a file',
-            'data' => $newDetail
+            'data' => $newDetail->images
         ]);
     }
 }

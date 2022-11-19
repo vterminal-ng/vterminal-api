@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('merchant_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->string('business_name');
-            $table->string('business_state');
-            $table->string('business_address');
+            $table->unsignedBigInteger('user_id');
+            $table->string('business_name')->nullable();
+            $table->string('business_state')->nullable();
+            $table->string('business_address')->nullable();
             $table->dateTime('business_verified_at')->nullable();
             $table->boolean('has_physical_location')->default(false);
             $table->timestamps();

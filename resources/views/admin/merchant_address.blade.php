@@ -2,18 +2,13 @@
 
 
 @section('content')
-
-<div class="row">
-    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <img src="{{url('awesome.jpeg')}}" alt="no view"> 
-            <div class="col-3">
-            </div>
-            User id No  {{$user->id}}
-          </div>
-        </div>
-      </div>
-    </div>
+<img src="{{url('http://vterminal-api.test/storage/app/public/public/y0zAjmzulDAniDqBPsRRtGKTXYxsbbnkWlnsF4RO.png
+'}}" alt="try uploading again">
 @endsection
+
+
+<!--"success": true,
+    "message": "successfully uploaded a file",
+    "data": {
+        "public": "http://vterminal-api.test/storage/app/public/public/y0zAjmzulDAniDqBPsRRtGKTXYxsbbnkWlnsF4RO.png"
+}-->

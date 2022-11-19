@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MerchantDetail extends Model
 {
@@ -31,12 +32,12 @@ class MerchantDetail extends Model
     public function getImagesAttribute()
     {
         return [
-            "original" => $this->getImagePath("original"),
+            "public" => $this->getImagePath("public"),
         ];
     }
 
     public function getImagePath($size)
     {
-        return Storage::disk($this->disk)->url("uploads/original/{$size}/" . $this->image);
+        return Storage::disk($this->disk)->url("app/public/{$size}/" . $this->address_confirmation);
     }
 }

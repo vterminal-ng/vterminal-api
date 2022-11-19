@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('merchant_details', function (Blueprint $table) {
-            $table->string('address_confirmation');
+            $table->string('address_confirmation')->nullable();
             $table->boolean('address_verified_at')->default(false);
             $table->boolean('upload_successful')->default(false);
             $table->string('disk')->default('public');
