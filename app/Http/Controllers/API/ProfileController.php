@@ -65,4 +65,27 @@ class ProfileController extends Controller
             ]
         );
     }
+
+    public function generateApiKey(Request $request)
+    {
+        //
+    }
+
+    public function reGenerateApiKey(Request $request)
+    {
+        //
+    }
+
+    public function getApiKey()
+    {
+        //
+        $api_key  = User::where('id', auth()->id())->pluck('api_key');
+
+        return $this->successResponse(
+            "User's API KEY",
+            [
+                "api_key" => $api_key
+            ]
+        );
+    }
 }
