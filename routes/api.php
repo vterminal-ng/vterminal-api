@@ -155,6 +155,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     Route::post('users/merchant/verify-cac', [VerificationController::class, 'verifyCacInfo']);
                     Route::post('users/merchant/verify-tin', [VerificationController::class, 'verifyTinInfo']);
                 });
+
+                // Generating API keys
+                Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
+                Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
+                Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
             });
 
             // Dispute Transaction, Create Support Ticket
