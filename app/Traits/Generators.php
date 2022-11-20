@@ -46,4 +46,11 @@ trait Generators
     {
         return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 6)), 0, 6);
     }
+
+    public function generateUserApiKey(): string
+    {
+        $chars = substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 6)), 0, 3);
+        $nums = floor(microtime(true) * 1000);
+        return $chars.$nums;
+    }
 }

@@ -8,13 +8,14 @@ use App\Notifications\EmailUpdated;
 use App\Rules\CheckCurrentAndNewPassword;
 use App\Rules\CheckCurrentPassword;
 use App\Traits\ApiResponder;
+use App\Traits\Generators;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    use ApiResponder;
+    use ApiResponder, Generators;
 
     public function updateEmail(Request $request)
     {
@@ -69,7 +70,7 @@ class ProfileController extends Controller
     public function generateApiKey(Request $request)
     {
         // Generate an API KEY
-        $api_key = "pk_" . floor(microtime(true) * 1000);
+        $api_key = $this->generateUserApiKey();
 
         $user = auth()->user();
 
@@ -88,7 +89,7 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        $api_key = "pk_" . floor(microtime(true) * 1000);
+        $api_key = $this->generateUserApiKey();
 
         $user->api_key = $api_key;
         $user->save();
