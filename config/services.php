@@ -137,4 +137,10 @@ return [
         'email' => env('VTPASS_EMAIL'),
         'password' => env('VTPASS_PASS'),
     ],
+    'squadco' => [
+        'base_url' => env('SQUADCO_BASE_URL', 'https://sandbox-api-d.squadco.com'),
+        'public_key' => env('SQUADCO_PUBLIC_KEY', 'sandbox_pk_99141f166014eb8dd1a513b5e9066cd0a9b0215abd36'),
+        'secret' => env('SQUADCO_SECRET_KEY', 'sandbox_sk_99141f166014eb8dd1a51fb5e00067a2d4a33c55b538'),
+    ],
+
 ];
