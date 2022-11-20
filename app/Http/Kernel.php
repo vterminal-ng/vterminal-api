@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'verified.email' => \App\Http\Middleware\VerifiedEmail::class,
         'verified.profile' => \App\Http\Middleware\VerifiedProfile::class,
         'log.context' => \App\Http\Middleware\LogContextMiddleware::class,
+        'apikey' => \App\Http\Middleware\ApiKey::class,
     ];
 }
