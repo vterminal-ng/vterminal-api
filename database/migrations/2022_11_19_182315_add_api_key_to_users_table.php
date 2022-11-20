@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $this->string('api_key')->nullable();
-        });
+        if(!Schema::hasColumn('users', 'api_key')){
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('api_key')->unique()->nullable();
+            });
+        }
     }
 
     /**
@@ -27,7 +29,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $this->dropColumn('api_key');
+            $table->dropColumn(['api_key']);
         });
     }
 };

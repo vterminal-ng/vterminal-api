@@ -61,6 +61,10 @@ Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.c
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
+    Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
+    Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
+
     Route::post('logout', [AuthController::class, 'logout']);
 
     Route::post('phone/otp/send', [OtpController::class, 'sendSmsOtp']);
@@ -157,9 +161,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 });
 
                 // Generating API keys
-                Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
-                Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
-                Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
+                // Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
+                // Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
+                // Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
             });
 
             // Dispute Transaction, Create Support Ticket
