@@ -75,4 +75,11 @@ trait Generators
         $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
         return Carbon::now()->format('YmdHm') . $typeAbbr . substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
     }
+
+    public function generateUserApiKey(): string
+    {
+        $chars = substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 6)), 0, 3);
+        $nums = floor(microtime(true) * 1000);
+        return $chars.$nums;
+    }
 }
