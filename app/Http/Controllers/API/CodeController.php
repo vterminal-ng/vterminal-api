@@ -260,7 +260,7 @@ class CodeController extends Controller
 
                 $response = $this->paystackService->initializeTransaction($code->customer->email, $totalAmountInKobo, $code->reference, $code->transaction_type);
 
-                // return 
+                // return
                 return $this->successResponse("Payment page URL generated for trancastion code $request->transaction_code", $response->data);
                 break;
             case PaymentMethod::SAVED_CARD:
@@ -391,7 +391,7 @@ class CodeController extends Controller
                 break;
 
             case TransactionType::VDEPOSIT:
-                // Lowest transfer charge is 10 naira for tansations of 5000 and below 
+                // Lowest transfer charge is 10 naira for tansations of 5000 and below
                 $charge = 10;
                 $amount = $code->total_amount;
 
@@ -422,5 +422,33 @@ class CodeController extends Controller
         }
         // return details
         return $this->successResponse("Trasaction complete", new CodeResource($code));
+    }
+
+    ##########################################################
+        # External API
+    ##########################################################
+    public function generatePaymentLink(Request $request)
+    {
+        // Get the merchant details
+        // Get the customer details
+        // Get the transaction details
+        // Generate transaction code
+        // Send OTP to user
+        // Return the payment link
+    }
+
+    public function getPaymentDetails(Request $request, $code)
+    {
+        // Send the transaction details using the code in the req param
+    }
+
+    public function chargeCustomer(Request $request, $code)
+    {
+        // Charge customer
+    }
+
+    public function verifyTransaction(Request $request, $code)
+    {
+        // Send the transaction status
     }
 }
