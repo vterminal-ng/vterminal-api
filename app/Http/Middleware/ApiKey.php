@@ -21,11 +21,13 @@ class ApiKey
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!$request->has('api_key')) return $this->failureResponse('API Key is required', Response::HTTP_UNAUTHORIZED);
+        if(!$request->has('apikey')) return $this->failureResponse('API Key is required', Response::HTTP_UNAUTHORIZED);
 
-        $user = User::where('api_key', $request->query('api_key'))->first();
+        $user = User::where('api_key', $request->query('apikey'))->first();
 
         if(!$user) return $this->failureResponse('Invalid: API Key Not Found', Response::HTTP_UNAUTHORIZED);
+
+        $request->user = $user;
 
         return $next($request);
     }
