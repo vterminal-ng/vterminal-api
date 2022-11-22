@@ -176,4 +176,9 @@ Route::group(['middleware' => ['dev.apikey']], function() {
     Route::get('/v1/user', function(Request $request) {
         return $request->user;
     });
+
+    Route::post('v1/paymentlink', [CodeController::class, 'generatePaymentLink']);
+    Route::get('v1/paymentdetails/{code}', [CodeController::class, 'getPaymentDetails']);
+    Route::post('v1/chargeCustomer/{code}', [CodeController::class, 'chargeCustomer']);
+    Route::get('v1/verifyPayment', [CodeController::class, 'verifyPayment']);
 });
