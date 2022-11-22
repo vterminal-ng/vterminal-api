@@ -154,12 +154,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     // Upgrade business
                     Route::post('users/merchant/verify-cac', [VerificationController::class, 'verifyCacInfo']);
                     Route::post('users/merchant/verify-tin', [VerificationController::class, 'verifyTinInfo']);
-                });
 
-                // Generating API keys
-                Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
-                Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
-                Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
+                    // Generating API keys
+                    Route::post('users/api-key', [ProfileController::class, 'generateApiKey']);
+                    Route::put('users/api-key', [ProfileController::class, 'reGenerateApiKey']);
+                    Route::get('users/api-key', [ProfileController::class, 'getApiKey']);
+                });
             });
 
             // Dispute Transaction, Create Support Ticket
@@ -168,5 +168,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // NUBAN Endpoints
 
         });
+    });
+});
+
+// EXTERNAL ROUTES
+Route::group(['middleware' => ['dev.apikey']], function() {
+    Route::get('/v1/user', function(Request $request) {
+        return $request->user;
     });
 });
