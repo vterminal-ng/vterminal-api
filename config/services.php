@@ -132,4 +132,9 @@ return [
         'public_key' => env('DOJAH_PUBLIC_KEY'),
     ],
 
+    'vtpass' => [
+        'base_url' => env('VTPASS_BASE_URL'),
+        'email' => env('VTPASS_EMAIL'),
+        'password' => env('VTPASS_PASS'),
+    ],
 ];

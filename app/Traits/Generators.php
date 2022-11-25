@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Constants\TransactionType;
+use App\Constants\BillsPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 
@@ -50,5 +51,25 @@ trait Generators
     public function generateMerchantCode(): string
     {
         return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 7)), 0, 7);
+    }
+
+    public function generateBasicToken() {
+        return base64_encode(config('services.vtpass.email').":".config('services.vtpass.password'));
+    }
+
+    public function generateRequestID($type): string
+    {
+        $typeAbbr = "";
+        switch ($type) {
+            case BillsPayment::AIRTIME:
+                $typeAbbr = 'AIR';
+                break;
+            default:
+                $typeAbbr = 'NOTA';
+                break;
+        }
+        $noOfCharacters = 6;
+        $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
+        return Carbon::now()->format('Ymdhm') . $typeAbbr . substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
     }
 }

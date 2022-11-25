@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActionPointController;
+use App\Http\Controllers\API\BillsPayment\AirtimeController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\AuthorizedCardController;
 use App\Http\Controllers\API\MeController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\BillsPayment\ElectricityController;
 use App\Http\Controllers\API\CodeController;
 use App\Http\Controllers\API\PinController;
 use App\Http\Controllers\API\StateController;
@@ -66,6 +68,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
+    // Temporary location for these routes for ease of testing
+    Route::post('users/buy-airtime', [AirtimeController::class, 'topup']);
+    Route::post('users/bill/verify-meter', [ElectricityController::class, 'verifyMeter']);
 
     Route::group(['middleware' => ['verified.phone']], function () {
 

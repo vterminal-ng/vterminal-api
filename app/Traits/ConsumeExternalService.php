@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 trait ConsumeExternalService
 {
+    use Generators;
 
     /**
      * Send Http requests and throws exception for all error responses
@@ -57,5 +58,20 @@ trait ConsumeExternalService
         $response->throwIf($response->serverError());
 
         return $response->body();
+    }
+
+    public function performVtRequest($method, $endpoint, $formParams = [], $headers = [])
+    {
+        $client = new Client([
+            'base_uri' => $this->baseUri
+        ]);
+
+        if (isset($this->basicToken)) {
+            $headers['Authorization'] = "Basic $this->basicToken";
+        }
+
+        $response = $client->request($method, $endpoint, ['form_params' => $formParams, 'headers' => $headers]);
+
+        return $response->getBody()->getContents();
     }
 }
