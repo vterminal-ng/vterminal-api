@@ -429,26 +429,123 @@ class CodeController extends Controller
     ##########################################################
     public function generatePaymentLink(Request $request)
     {
+        // Validate Request
+        $request->validate([
+            "payment_method" => ['nullable', 'string', "in:" . PaymentMethod::all()],
+            "amount" => ['required', 'integer'],
+            "customer_id" => ['required', 'integer', 'exists:users,id']
+        ]);
+
         // Get the merchant details
-        // Get the customer details
-        // Get the transaction details
-        // Generate transaction code
-        // Send OTP to user
+        $merchant = $request->user->id;
+        $transactionType = TransactionType::VPAYMENT;
+
+        // check if pin is valid, if it isnt, it throw the InvalidTransactionPin Exception
+        // $user->validatePin($request->pin);
+
+        // return failure if user has 1 active or pending code
+        // if ($user->customerCodes()->whereIn('status', [CodeStatus::ACTIVE, CodeStatus::PENDING])->get()->count()) {
+        //     return $this->failureResponse("You have an unused or pending transaction code, kindly use the code or cancel before creating a new one", Response::HTTP_BAD_REQUEST);
+        // }
+
+        $params = [];
+
+        // gen 6 digit random code
+        $transactionCode = $this->generateTransCode();
+
+        //TODO: check if code already exists, if it does, send failure response
+
+        // gen 16 digit transaction reference
+        $reference = $this->generateReference($request->transaction_type);
+
+        $params['customer_id'] = $request->customer_id;
+        $params['code'] = $transactionCode;
+        $params['transaction_type'] = $transactionType;
+        $params['amount'] = $request->amount;
+        $params['reference'] = $reference;
+        $params['payment_method'] = $request->payment_method ?? PaymentMethod::WALLET;
+
+        //save code
+        $code = Code::create($params);
+
+        // Send OTP to user --- This should be SMS
+        // $user->notify(new CodeGenerated($code));
+
         // Return the payment link
+        return $this->successResponse("Payment Link Generated", [
+            "url" => "https://pay.vterminal.ng/".$code
+        ]);
+
     }
 
     public function getPaymentDetails(Request $request, $code)
     {
-        // Send the transaction details using the code in the req param
+        // Get the code details
+        $code = Code::where('code', $code)->first();
+
+        if (!$code) {
+            return $this->failureResponse('Code not found', Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->successResponse("Transaction Details", new CodeResource($code));
     }
 
     public function chargeCustomer(Request $request, $code)
     {
-        // Charge customer
+        // validate
+        $request->validate([
+            'pin' => ['required'],
+        ]);
+
+        // get code details
+        $code = Code::where('code', $request->code)->first();
+
+        if (!$code) {
+            return $this->failureResponse('Code not found', Response::HTTP_NOT_FOUND);
+        }
+
+        // Get the customer
+        $customer = User::findOrFail($code->customer_id);
+        // Get the merchant
+        $merchant = User::findOrFail($code->merchant_id);
+
+        // For wallet payment. Check if user has money in wallet
+        if($code->total_amount > $customer->walletMetadata()->previous_balance)
+            return $this->failureResponse('Insufficient funds: You don\'t have enough money in your wallet.', Response::HTTP_BAD_REQUEST);
+        // For card payment
+
+        $customer->validatePin($request->pin);
+
+        if ($code->status != CodeStatus::ACTIVE) {
+            return $this->failureResponse('This code is not activated. Kindly let the customer know.', Response::HTTP_BAD_GATEWAY);
+        }
+
+        // Credit merchant wallet
+        $merchant->walletDeposit($code->total_amount);
+
+        $code->forceFill([
+            'status' => CodeStatus::COMPLETED
+        ])->save();
+
+        // Rewarding customer point for completing a POS transaction
+        // $code->customer->rewardPointFor(RewardAction::POS_PURCHASE);
+
+        // $users = [$code->customer, $code->merchant];
+        // foreach ($users as $user) {
+        //     $user->notify(new CodeResolved($user->userDetail->first_name, $user->userDetail->last_name));
+        // }
+
+        // return details
+        return $this->successResponse("Trasaction complete", new CodeResource($code));
     }
 
     public function verifyTransaction(Request $request, $code)
     {
         // Send the transaction status
+        $code_status = Code::where('code', $request->code)->pluck('status');
+
+        return $this->successResponse("Trasaction Status", [
+            'status' => $code_status
+        ]);
     }
 }
