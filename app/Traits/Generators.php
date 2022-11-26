@@ -64,12 +64,15 @@ trait Generators
             case BillsPayment::AIRTIME:
                 $typeAbbr = 'AIR';
                 break;
+            case BillsPayment::ELECTRICITY:
+                $typeAbbr = 'ELE';
+                break;
             default:
                 $typeAbbr = 'NOTA';
                 break;
         }
         $noOfCharacters = 6;
         $setOfCharactersToSelectFrom = '123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ';
-        return Carbon::now()->format('Ymdhm') . $typeAbbr . substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
+        return Carbon::now()->format('YmdHm') . $typeAbbr . substr(str_shuffle(str_repeat($setOfCharactersToSelectFrom, $noOfCharacters)), 0, $noOfCharacters);
     }
 }

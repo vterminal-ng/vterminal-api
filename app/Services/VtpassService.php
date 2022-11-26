@@ -40,7 +40,7 @@ class VtpassService
         
         $response = $this->performVtRequest(
             'POST',
-            "/merchant-verify",
+            "/api/merchant-verify",
             [
                 'billersCode' => $meterNo,
                 'serviceID' => $operator,
@@ -49,7 +49,27 @@ class VtpassService
         );
 
         $reponse = json_decode($response);
-        dd($reponse);
+        
+        return $reponse;
+    }
+
+    public function makeElectricityPayment($requestId, $meterType, $meterNo, $amount, $operator) {
+        
+        $response = $this->performVtRequest(
+            'POST',
+            "/api/pay",
+            [
+                'request_id' => $requestId,
+                'serviceID' => $operator,
+                'billersCode' => $meterNo,
+                'variation_code' => $meterType,
+                'amount' => $amount,
+                'phone' => auth()->user()->phone_number
+            ],
+        );
+
+        $reponse = json_decode($response);
+        
         return $reponse;
     }
 }

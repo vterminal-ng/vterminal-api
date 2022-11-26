@@ -71,6 +71,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Temporary location for these routes for ease of testing
     Route::post('users/buy-airtime', [AirtimeController::class, 'topup']);
     Route::post('users/bill/verify-meter', [ElectricityController::class, 'verifyMeter']);
+    Route::post('users/bill/pay-electricity', [ElectricityController::class, 'payElectricity']);
 
     Route::group(['middleware' => ['verified.phone']], function () {
 
