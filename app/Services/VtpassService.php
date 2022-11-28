@@ -16,11 +16,11 @@ class VtpassService
     public function __construct()
     {
         $this->baseUri = config('services.vtpass.base_url');
-        $this->basicToken = $this->generateBasicToken();
+        $this->basicToken = $this->generateVtBasicToken();
     }
 
     public function purchaseAirtime($requestId, $serviceId, $amount, $phoneNo) {
-        $response = $this->performVtRequest(
+        $response = $this->performBasicRequest(
             'POST',
             "/api/pay",
             [
@@ -38,7 +38,7 @@ class VtpassService
 
     public function verifyElectricityMeter($meterType, $meterNo, $operator) {
         
-        $response = $this->performVtRequest(
+        $response = $this->performBasicRequest(
             'POST',
             "/api/merchant-verify",
             [
@@ -55,7 +55,7 @@ class VtpassService
 
     public function makeElectricityPayment($requestId, $meterType, $meterNo, $amount, $operator) {
         
-        $response = $this->performVtRequest(
+        $response = $this->performBasicRequest(
             'POST',
             "/api/pay",
             [

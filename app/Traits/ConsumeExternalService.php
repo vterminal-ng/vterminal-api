@@ -60,7 +60,7 @@ trait ConsumeExternalService
         return $response->body();
     }
 
-    public function performVtRequest($method, $endpoint, $formParams = [], $headers = [])
+    public function performBasicRequest($method, $endpoint, $formParams = [], $headers = [])
     {
         $client = new Client([
             'base_uri' => $this->baseUri
