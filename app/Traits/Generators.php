@@ -53,7 +53,7 @@ trait Generators
         return substr(str_shuffle(str_repeat('123456789ABCDEFGHIJKLMNOPQRSTUVWSYZ', 7)), 0, 7);
     }
 
-    public function generateBasicToken() {
+    public function generateVtBasicToken() {
         return base64_encode(config('services.vtpass.email').":".config('services.vtpass.password'));
     }
 
