@@ -44,6 +44,9 @@ class AuthorizedCardController extends Controller
     {
         $user = User::find(auth()->id());
 
+        if (!$user->authorizedCard) {
+            return $this->failureResponse("User does not have a saved card", Response::HTTP_NOT_FOUND);
+        }
         return $this->successResponse("My card", new AuthorizedCardResource($user->authorizedCard));
     }
 
