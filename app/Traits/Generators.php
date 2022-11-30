@@ -64,6 +64,9 @@ trait Generators
             case BillsPayment::AIRTIME:
                 $typeAbbr = 'AIR';
                 break;
+            case BillsPayment::DATA:
+                $typeAbbr = 'DAT';
+                break;
             case BillsPayment::ELECTRICITY:
                 $typeAbbr = 'ELE';
                 break;
