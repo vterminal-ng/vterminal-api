@@ -19,23 +19,6 @@ class VtpassService
         $this->basicToken = $this->generateVtBasicToken();
     }
 
-    public function purchaseAirtime($requestId, $serviceId, $amount, $phoneNo) {
-        $response = $this->performBasicRequest(
-            'POST',
-            "/api/pay",
-            [
-                "request_id" => $requestId,
-                "serviceID" => $serviceId,
-                "amount" => $amount,
-                "phone" => $phoneNo,
-            ],
-        );
-
-        $reponse = json_decode($response);
-
-        return $reponse;
-    }
-
     public function verifyElectricityMeter($meterType, $meterNo, $operator) {
         
         $response = $this->performBasicRequest(
@@ -53,22 +36,34 @@ class VtpassService
         return $reponse;
     }
 
-    public function makeElectricityPayment($requestId, $meterType, $meterNo, $amount, $operator) {
+    public function makeVtPayment($requestId, $variationCode, $billersCode, $amount, $serviceId, $phone) {
         
         $response = $this->performBasicRequest(
             'POST',
             "/api/pay",
             [
                 'request_id' => $requestId,
-                'serviceID' => $operator,
-                'billersCode' => $meterNo,
-                'variation_code' => $meterType,
+                'serviceID' => $serviceId,
+                'billersCode' => $billersCode,
+                'variation_code' => $variationCode,
                 'amount' => $amount,
-                'phone' => auth()->user()->phone_number
+                'phone' => $phone
             ],
         );
 
         $reponse = json_decode($response);
+        
+        return $reponse;
+    }
+
+    public function getDataVariations($serviceId) {
+        
+        $response = $this->performBasicRequest(
+            'GET',
+            "/api/service-variations?serviceID=$serviceId"
+        );
+
+        $reponse = json_decode($response, true);
         
         return $reponse;
     }

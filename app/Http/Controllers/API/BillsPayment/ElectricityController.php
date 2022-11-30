@@ -66,7 +66,7 @@ class ElectricityController extends Controller
         // Debit user
         $user->walletWithdraw($request->amount);
 
-        $rep = $this->vtpassService->makeElectricityPayment($reqId, $request->meter_type, $request->meter_number, $request->amount, $request->operator_id);
+        $rep = $this->vtpassService->makeVtPayment($reqId, $request->meter_type, $request->meter_number, $request->amount, $request->operator_id, $user->phone_number);
         
         if($rep) {
             if (isset($rep->content->error)) {
@@ -76,12 +76,22 @@ class ElectricityController extends Controller
                 );
             } else {
                 if ($rep->content->transactions->status === "delivered") {
+                    // store transaction info
                     // store electricity purchase info
 
                     // send customer email
 
                     return $this->successResponse(
                         "Electricity Purchase Successful",
+                        NULL,
+                        Response::HTTP_OK
+                    );
+                } else {
+                    // store transaction info
+                    // store electricity purchase info
+
+                    return $this->successResponse(
+                        "Electricity Purchase is Processing",
                         NULL,
                         Response::HTTP_OK
                     );
