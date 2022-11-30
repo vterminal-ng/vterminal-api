@@ -51,7 +51,7 @@ class AirtimeController extends Controller
         // Debit user
         $user->walletWithdraw($request->amount);
 
-        $rep = $this->vtpassService->purchaseAirtime($reqId, $networkName, $request->amount, $request->phone_no);
+        $rep = $this->vtpassService->makeVtPayment($reqId, NULL, NULL, $request->amount, $networkName, $request->phone_no);
         
         switch ($rep->code) {
             case "000":

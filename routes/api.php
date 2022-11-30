@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\BillsPayment\DataController;
 use App\Http\Controllers\API\BillsPayment\ElectricityController;
 use App\Http\Controllers\API\CodeController;
 use App\Http\Controllers\API\PinController;
@@ -72,6 +73,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/buy-airtime', [AirtimeController::class, 'topup']);
     Route::post('users/bill/verify-meter', [ElectricityController::class, 'verifyMeter']);
     Route::post('users/bill/pay-electricity', [ElectricityController::class, 'payElectricity']);
+    Route::get('users/bill/{serviceId}/get-data-plans', [DataController::class, 'getDataPlans']);
+    Route::post('users/bill/buy-data', [DataController::class, 'buyData']);
 
     Route::group(['middleware' => ['verified.phone']], function () {
 
