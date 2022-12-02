@@ -41,7 +41,10 @@ class AuthorizedCardController extends Controller
         $response = $this->squadcoService->initiateTransaction($user->email, $chargeAmountInKobo, $this->generateReference(TransactionType::ADD_CARD), TransactionType::ADD_CARD);
 
         // return 
-        return $this->successResponse("Payment page URL generated", $response->data);
+        return $this->successResponse("Payment page URL generated", [
+            "authorization_url" => $response->data->checkout_url,
+            "reference" => $response->data->transaction_ref
+        ]);
     }
 
     public function getCard()
