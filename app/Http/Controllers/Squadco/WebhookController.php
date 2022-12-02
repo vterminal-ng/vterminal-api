@@ -30,15 +30,26 @@ class WebhookController extends Controller
     {
         Log::info("Recieving webhook notifcation from squadco");
 
-        if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('x-squad-encrypted-body', $_SERVER))
+        if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('x-squad-encrypted-body', $_SERVER)) {
+            Log::info($_SERVER['X-SQUAD-ENCRYPTED-BODY']);
+            Log::info($_SERVER['REQUEST_METHOD']);
+            Log::info(array_key_exists('X-SQUAD-ENCRYPTED-BODY', $_SERVER));
+            Log::info(array_key_exists('x-squad-encrypted-body', $_SERVER));
+            Log::info("signature error");
+
             exit();
+        }
         // Retrieve the request's body
         $input = @file_get_contents("php://input");
         define('SQUAD_SECRET_KEY',  config('services.squadco.secret')); //ENTER YOUR SECRET KEY HERE
         // validate event do all at once to avoid timing attack
-        if ($_SERVER['x-squad-encrypted-body'] !== strtoupper(hash_hmac('sha512', $input, SQUAD_SECRET_KEY)))
+        if ($_SERVER['x-squad-encrypted-body'] !== strtoupper(hash_hmac('sha512', $input, SQUAD_SECRET_KEY))) {
             // The Webhook request is not from SQUAD 
+            Log::info(config('services.squadco.secret'));
+            Log::info(SQUAD_SECRET_KEY);
+            Log::info("This webhook is not from squadco");
             exit();
+        }
         http_response_code(200);
         // The Webhook request is from SQUAD
         $event = json_decode($input);
