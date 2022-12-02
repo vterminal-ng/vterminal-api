@@ -31,7 +31,9 @@ class WebhookController extends Controller
         Log::info("Recieving webhook notifcation from squadco");
 
         if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('x-squad-encrypted-body', $_SERVER)) {
-            Log::info($_SERVER['X-SQUAD-ENCRYPTED-BODY']);
+            Log::info($_SERVER);
+            Log::info("REQEUST VARIABLE");
+            Log::info($request);
             Log::info($_SERVER['REQUEST_METHOD']);
             Log::info(array_key_exists('X-SQUAD-ENCRYPTED-BODY', $_SERVER));
             Log::info(array_key_exists('x-squad-encrypted-body', $_SERVER));
