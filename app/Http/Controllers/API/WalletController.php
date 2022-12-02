@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\Deposit;
 use App\Notifications\Withdraw;
 use App\Services\PaystackService;
+use App\Services\SquadcoService;
 use App\Traits\ApiResponder;
 use App\Traits\Generators;
 use GrahamCampbell\ResultType\Success;
@@ -22,10 +23,12 @@ class WalletController extends Controller
     use ApiResponder, Generators;
 
     protected $paystackService;
+    protected $squadcoService;
 
-    public function __construct(PaystackService $paystackService)
+    public function __construct(PaystackService $paystackService, SquadcoService $squadcoService)
     {
         $this->paystackService = $paystackService;
+        $this->squadcoService = $squadcoService;
     }
 
     public function getTransactions(Request $request)
@@ -95,30 +98,33 @@ class WalletController extends Controller
             case PaymentMethod::NEW_CARD:
                 $amountInKobo = $request->amount * 100;
 
-                $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
+                // $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
+                $response = $this->squadcoService->initiateTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
 
                 // return 
-                return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
+                return $this->successResponse("Payment page URL generated for wallet deposit", [
+                    "authorization_url" => $response->data->checkout_url,
+                    "reference" => $response->data->transaction_ref
+                ]);
                 break;
             case PaymentMethod::SAVED_CARD:
                 if (!$user->authorizedCard) {
                     return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
                 }
 
-                $response = $this->paystackService->chargeAuthorization(
-                    $user->email,
+                $response = $this->squadcoService->chargeAuthorization(
                     $amountInKobo,
                     $user->authorizedCard->authorization_code,
                     $this->generateReference($type)
                 );
 
                 // if transaction fialed, return falure
-                if ($response->data->status == "failed") {
-                    return $this->failureResponse("Deposit failed! reason: $response->data->status", Response::HTTP_OK);
+                if (!$response->success) {
+                    return $this->failureResponse("Deposit failed! reason: $response->message", Response::HTTP_OK);
                 }
 
                 // if transation was successful,get amount from the verification and deposit into wallet.
-                $amountToDeposit = $response->data->amount / 100;
+                $amountToDeposit = $response->data->transaction_amount / 100;
                 $user->walletDeposit($amountToDeposit);
 
                 // Award point for the wallet being funded

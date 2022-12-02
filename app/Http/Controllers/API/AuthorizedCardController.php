@@ -8,6 +8,7 @@ use App\Http\Resources\AuthorizedCardResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\PaystackService;
+use App\Services\SquadcoService;
 use App\Traits\ApiResponder;
 use App\Traits\Generators;
 use Illuminate\Http\Response;
@@ -17,10 +18,12 @@ class AuthorizedCardController extends Controller
     use ApiResponder, Generators;
 
     protected $paystackService;
+    protected $squadcoService;
 
-    public function __construct(PaystackService $paystackService)
+    public function __construct(PaystackService $paystackService, SquadcoService $squadcoService)
     {
         $this->paystackService = $paystackService;
+        $this->squadcoService = $squadcoService;
     }
 
     public function add(Request $request)
@@ -34,7 +37,8 @@ class AuthorizedCardController extends Controller
 
         $chargeAmountInKobo = 5000; // 50 NGN
 
-        $response = $this->paystackService->initializeTransaction($user->email, $chargeAmountInKobo, $this->generateReference(TransactionType::ADD_CARD), TransactionType::ADD_CARD);
+        // $response = $this->paystackService->initializeTransaction($user->email, $chargeAmountInKobo, $this->generateReference(TransactionType::ADD_CARD), TransactionType::ADD_CARD);
+        $response = $this->squadcoService->initiateTransaction($user->email, $chargeAmountInKobo, $this->generateReference(TransactionType::ADD_CARD), TransactionType::ADD_CARD);
 
         // return 
         return $this->successResponse("Payment page URL generated", $response->data);

@@ -22,6 +22,7 @@ class Code extends Model
         'charge_amount',
         'charge_from',
         'reference',
+        'gateway_ref',
         'vterminal_charge',
         'merchant_charge',
         'bank_name',

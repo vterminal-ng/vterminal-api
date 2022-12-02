@@ -219,7 +219,7 @@ class PaystackService
         return json_decode((string)$response);
     }
 
-    public function calculateApplicableFee(int $amount): int
+    public function calculateApplicableFee(int $amount)
     {
         $decimalFee = 1.5 / 100;
         $flatFee = 100;

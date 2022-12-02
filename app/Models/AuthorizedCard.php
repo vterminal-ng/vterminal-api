@@ -13,6 +13,7 @@ class AuthorizedCard extends Model
         "user_id",
         "authorization_code",
         "card_type",
+        "card_pan",
         "last4",
         "exp_month",
         "exp_year",

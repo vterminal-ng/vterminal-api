@@ -22,7 +22,7 @@ class SquadcoService
     {
         $metadata['transaction_type'] = $transactionType;
 
-        $response = $this->performRequest(
+        $response = $this->makeRequest(
             'POST',
             "/transaction/initiate",
             [
@@ -43,7 +43,7 @@ class SquadcoService
 
     public function chargeAuthorization($amount, $authorizationCode, $reference)
     {
-        $response = $this->performRequest(
+        $response = $this->makeRequest(
             'POST',
             "/transaction/charge_card",
             [
@@ -59,13 +59,23 @@ class SquadcoService
 
     public function verifyTransaction($reference)
     {
-        $response = $this->performRequest('GET', "/transaction/verify/$reference");
+        $response = $this->makeRequest('GET', "/transaction/verify/$reference");
         // dd($response);
 
         return json_decode((string)$response);
     }
 
-    public function refundTransaction($gateway_ref, $reference, $refundType = "Full", $refundAmount = null, $reason = "Refunding first payment on card made to save card")
+    /**
+     * refundTransaction
+     *
+     * @param  mixed $gateway_ref 
+     * @param  mixed $reference
+     * @param  mixed $refundType ("Full" or "Partial")
+     * @param  mixed $refundAmount (is only required when refundType is Partial)
+     * @param  mixed $reason (optional)
+     * @return void
+     */
+    public function refundTransaction($gateway_ref, $reference, $refundType = "Full", $refundAmount = null, $reason = null)
     {
         //refund type can be "Full" or "Partial"
         // refund_amount is only required when refund_type is Partial
@@ -102,7 +112,7 @@ class SquadcoService
      */
     public function CreateVirtualAccountsForCustomer($firstName, $lastName,  $dob, $mobile, $bvn, $gender, $address, $customerId, $middleName = null, $email = null)
     {
-        $response = $this->performRequest(
+        $response = $this->makeRequest(
             'POST',
             "/virtual-account",
             [
@@ -125,7 +135,7 @@ class SquadcoService
 
     public function CreateVirtualAccountsForBusiness($businessName, $mobile, $bvn, $customerId)
     {
-        $response = $this->performRequest(
+        $response = $this->makeRequest(
             'POST',
             "/virtual-account",
             [
@@ -138,5 +148,33 @@ class SquadcoService
         // dd($response);
 
         return json_decode((string)$response);
+    }
+
+    public function calculateApplicableFee(int $amount)
+    {
+        $decimalFee = 1.0 / 100;
+        $feeCap = 1500;
+
+        $applicableFee = round(($decimalFee * $amount), 2);
+
+        if ($applicableFee > $feeCap) {
+            $applicableFee = $feeCap;
+        }
+
+        return $applicableFee;
+    }
+
+    public function calculateVirtualAccountApplicableFee(int $amount)
+    {
+        $decimalFee = 0.1 / 100;
+        $feeCap = 1000;
+
+        $applicableFee = round(($decimalFee * $amount), 2);
+
+        if ($applicableFee > $feeCap) {
+            $applicableFee = $feeCap;
+        }
+
+        return $applicableFee;
     }
 }
