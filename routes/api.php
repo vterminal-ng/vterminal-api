@@ -20,6 +20,7 @@ use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
 use App\Http\Controllers\API\SupportTicketController;
 use App\Http\Controllers\Paystack\WebhookController;
+use App\Http\Controllers\Squadco\WebhookController as SquadcoWebhookController;
 use App\Models\BankDetail;
 use App\Models\Pin;
 use Illuminate\Http\Request;
@@ -57,7 +58,8 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 Route::get('/bank-codes', [BankDetailController::class, 'getBanks']);
 Route::post('users/nuban-details/', [BankDetailController::class, 'getAccountDetails']);
 
-Route::post('webhook', [WebhookController::class, 'webhook'])->middleware('log.context');
+Route::post('webhook/paystack', [WebhookController::class, 'webhook'])->middleware('log.context');
+Route::post('webhook/squadco', [SquadcoWebhookController::class, 'webhook'])->middleware('log.context');
 
 // AUTHENTICATED ROUTES
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -175,8 +177,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 // EXTERNAL ROUTES
-Route::group(['middleware' => ['dev.apikey']], function() {
-    Route::get('/v1/user', function(Request $request) {
+Route::group(['middleware' => ['dev.apikey']], function () {
+    Route::get('/v1/user', function (Request $request) {
         return $request->user;
     });
 
