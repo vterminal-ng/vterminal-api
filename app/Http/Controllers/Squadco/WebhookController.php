@@ -30,6 +30,7 @@ class WebhookController extends Controller
     {
         Log::info("Recieving webhook notifcation from squadco");
         Log::info($request);
+        // currently there is no token_id provided in the webhook body
         exit();
         if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_SQUAD_ENCRYPTED_BODY', $_SERVER))
             exit();
@@ -159,10 +160,13 @@ class WebhookController extends Controller
                     Log::info("Found the user with email: {$event->Body->email}");
 
                     Log::info("Saving authorization object to the database");
+                    $cardPan = $event->Body->payment_information->pan;
                     $user->authorizedCard()->create([
                         "authorization_code" => $event->Body->payment_information->token_id,
                         "card_type" => $event->Body->payment_information->card_type,
-                        "card_pan" => $event->Body->payment_information->pan,
+                        "card_pan" => $cardPan,
+                        "bin" => substr($cardPan, 0, 6),
+                        "last4" => substr($cardPan, -4),
                         "reference" => $event->Body->transaction_ref,
                     ]);
                     Log::info("Saving authorization object complete");
