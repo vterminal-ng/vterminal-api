@@ -34,6 +34,7 @@ class WebhookController extends Controller
             Log::info($_SERVER);
             Log::info("REQEUST VARIABLE");
             Log::info($request);
+            Log::info($request->headers->all());
             Log::info($_SERVER['REQUEST_METHOD']);
             Log::info(array_key_exists('X-SQUAD-ENCRYPTED-BODY', $_SERVER));
             Log::info(array_key_exists('x-squad-encrypted-body', $_SERVER));
