@@ -43,7 +43,7 @@ class WebhookController extends Controller
         // The Webhook request is from SQUAD
         $event = json_decode($input);
 
-        Log::info("Recieved $event->event event from squadco with {$event->body->transaction_status} status");
+        Log::info("Recieved $event->Event event from squadco with {$event->Body->transaction_status} status");
         /**
          * Expected fields in metadata
          * transaction_ => [
@@ -51,9 +51,9 @@ class WebhookController extends Controller
          *  code
          * ]
          */
-        $transactionType = $event->body->meta->transaction_type ?? null;
+        $transactionType = $event->Body->meta->transaction_type ?? null;
 
-        if ($event->event  == 'charge_successful') {
+        if ($event->Event  == 'charge_successful') {
             if (is_null($transactionType)) {
                 Log::info("Transaction type is null");
                 exit();
@@ -66,21 +66,21 @@ class WebhookController extends Controller
                     Log::info("===================================================");
                     Log::info("");
 
-                    Log::info("Checking status of the squadco transaction. The status is \"{$event->body->transaction_status}\"");
-                    if ($event->body->transaction_status != "success") {
-                        Log::info(" Code activation payment failed from squadco (ref: {$event->body->transaction_ref})",);
+                    Log::info("Checking status of the squadco transaction. The status is \"{$event->Body->transaction_status}\"");
+                    if ($event->Body->transaction_status != "success") {
+                        Log::info(" Code activation payment failed from squadco (ref: {$event->Body->transaction_ref})",);
                         exit();
                     }
 
-                    Log::info("Finding transaction code with reference {$event->body->transaction_ref} in database.");
-                    $code = Code::with(['customer'])->where('reference', $event->body->transaction_ref)->first();
+                    Log::info("Finding transaction code with reference {$event->Body->transaction_ref} in database.");
+                    $code = Code::with(['customer'])->where('reference', $event->Body->transaction_ref)->first();
 
                     Log::info("Checking if code status is valid for activation");
                     // if transaction code status is \anything other than PENDING, then it is invalid,
                     // we can't activate code that isn't pending
                     if (!$code || $code->status != CodeStatus::PENDING) {
                         // refund payment
-                        $this->squadcoService->refundTransaction($event->body->gateway_ref, $event->body->transaction_ref);
+                        $this->squadcoService->refundTransaction($event->Body->gateway_ref, $event->Body->transaction_ref);
                         // $code->customer->deposit($code->total_amount);
                         Log::error("Invalid transaction code. Reason: Code status is not pending");
                         exit();
@@ -106,27 +106,27 @@ class WebhookController extends Controller
                     Log::info("CREDITING VTERMINAL USER WALLET");
                     Log::info("===================================================");
                     Log::info("");
-                    Log::info("Checking status of the squadco transaction. The status is \"{$event->body->transaction_status}\"");
+                    Log::info("Checking status of the squadco transaction. The status is \"{$event->Body->transaction_status}\"");
                     // if transaction fialed, return falure
-                    if ($event->body->transaction_status != "success") {
-                        Log::info(" Code activation payment failed from squadco (ref: {$event->body->transaction_ref})",);
+                    if ($event->Body->transaction_status != "success") {
+                        Log::info(" Code activation payment failed from squadco (ref: {$event->Body->transaction_ref})",);
                         exit();
                     }
                     // get user object of auth user
-                    Log::info("Finding user with email: {$event->body->email}");
-                    $user = User::where('email', $event->body->email)->first();
+                    Log::info("Finding user with email: {$event->Body->email}");
+                    $user = User::where('email', $event->Body->email)->first();
 
                     if (!$user) {
-                        Log::error("Could not find user with email: {$event->body->email}");
+                        Log::error("Could not find user with email: {$event->Body->email}");
                         exit();
                     }
-                    Log::info("Found the user with email: {$event->body->email}");
+                    Log::info("Found the user with email: {$event->Body->email}");
                     Log::info("The User ", ["user" => new UserResource($user)]);
 
-                    Log::info("Squadco transaction total amount in kobo \"{$event->body->amount}\"");
-                    Log::info("Squadco transaction amount in kobo \"{$event->body->amount}\"");
+                    Log::info("Squadco transaction total amount in kobo \"{$event->Body->amount}\"");
+                    Log::info("Squadco transaction amount in kobo \"{$event->Body->amount}\"");
                     // if transation was successful,get amount from the verification and deposit into wallet.
-                    $amountToDeposit = $event->body->merchant_amount;
+                    $amountToDeposit = $event->Body->merchant_amount;
 
                     Log::info("Crediting the user's wallet with $amountToDeposit");
                     Log::info("User's previous wallet balance: $user->balance");
@@ -149,25 +149,25 @@ class WebhookController extends Controller
                     Log::info("===================================================");
                     Log::info("");
 
-                    Log::info("Finding user with email: {$event->body->email}");
-                    $user = User::where('email', $event->body->email)->first();
+                    Log::info("Finding user with email: {$event->Body->email}");
+                    $user = User::where('email', $event->Body->email)->first();
                     if (!$user) {
-                        Log::error("Could not find user with email: {$event->body->email}");
+                        Log::error("Could not find user with email: {$event->Body->email}");
                         exit();
                     }
-                    Log::info("Found the user with email: {$event->body->email}");
+                    Log::info("Found the user with email: {$event->Body->email}");
 
                     Log::info("Saving authorization object to the database");
                     $user->authorizedCard()->create([
-                        "authorization_code" => $event->body->payment_information->token_id,
-                        "card_type" => $event->body->payment_information->card_type,
-                        "card_pan" => $event->body->payment_information->pan,
-                        "reference" => $event->body->transaction_ref,
+                        "authorization_code" => $event->Body->payment_information->token_id,
+                        "card_type" => $event->Body->payment_information->card_type,
+                        "card_pan" => $event->Body->payment_information->pan,
+                        "reference" => $event->Body->transaction_ref,
                     ]);
                     Log::info("Saving authorization object complete");
 
                     Log::info("Start processing refund");
-                    $this->squadcoService->refundTransaction($event->body->gateway_ref, $event->body->transaction_ref);
+                    $this->squadcoService->refundTransaction($event->Body->gateway_ref, $event->Body->transaction_ref);
 
                     break;
                 default:
