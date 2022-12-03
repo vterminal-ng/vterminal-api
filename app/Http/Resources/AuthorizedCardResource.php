@@ -22,6 +22,7 @@ class AuthorizedCardResource extends JsonResource
             "expMonth" => $this->exp_month,
             "expYear" => $this->exp_year,
             "bin" => $this->bin,
+            "cardPan" => $this->card_pan,
             "bank" => $this->bank,
             "signature" => $this->signature,
             "accountName" => $this->account_name,
