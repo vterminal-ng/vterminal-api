@@ -29,6 +29,7 @@ class WebhookController extends Controller
     public function webhook(Request $request)
     {
         Log::info("Recieving webhook notifcation from squadco");
+        Log::info($request);
 
         if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_SQUAD_ENCRYPTED_BODY', $_SERVER))
             exit();
