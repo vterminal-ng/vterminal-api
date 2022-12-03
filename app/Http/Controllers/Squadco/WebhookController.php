@@ -30,7 +30,7 @@ class WebhookController extends Controller
     {
         Log::info("Recieving webhook notifcation from squadco");
         Log::info($request);
-
+        exit();
         if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_SQUAD_ENCRYPTED_BODY', $_SERVER))
             exit();
         // Retrieve the request's body
