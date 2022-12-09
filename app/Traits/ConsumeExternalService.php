@@ -29,7 +29,7 @@ trait ConsumeExternalService
         }
 
         $response = $client->request($method, $endpoint, ['form_params' => $formParams, 'headers' => $headers]);
-        dd($response);
+        // dd($response);
 
         return $response->getBody()->getContents();
     }
