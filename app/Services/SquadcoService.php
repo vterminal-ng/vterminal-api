@@ -34,7 +34,6 @@ class SquadcoService
                 "transaction_ref" => $reference,
                 "payment_channels" => ["card"],
                 "pass_charge" => true,
-                "is_recurring" => $transactionType == TransactionType::ADD_CARD ? true : false,
                 "metadata" => $metadata,
             ]
         );
