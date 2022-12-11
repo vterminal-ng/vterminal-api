@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\BillsPayment\CableSubsController;
 use App\Http\Controllers\API\BillsPayment\DataController;
 use App\Http\Controllers\API\BillsPayment\ElectricityController;
 use App\Http\Controllers\API\CodeController;
@@ -77,6 +78,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/bill/pay-electricity', [ElectricityController::class, 'payElectricity']);
     Route::get('users/bill/{serviceId}/get-data-plans', [DataController::class, 'getDataPlans']);
     Route::post('users/bill/buy-data', [DataController::class, 'buyData']);
+
+    Route::post('users/bill/verify-decoder', [CableSubsController::class, 'verifySmartCard']);
+    Route::get('users/bill/cable-variations/{serviceId}', [CableSubsController::class, 'getVariations']);
+    Route::post('users/bill/pay-tv', [CableSubsController::class, 'processTvSub']);
 
     Route::group(['middleware' => ['verified.phone']], function () {
 
