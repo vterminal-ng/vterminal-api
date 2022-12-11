@@ -29,7 +29,7 @@ class ElectricityController extends Controller
             'meter_type' => ['required', 'string'],
         ]);
 
-        $rep = $this->vtpassService->verifyElectricityMeter($request->meter_type, $request->meter_number, $request->operator_id);
+        $rep = $this->vtpassService->verifyService($request->meter_type, $request->meter_number, $request->operator_id);
 
         if (isset($rep->content->error)) {
             return $this->failureResponse("Cannot Verify Meter!", Response::HTTP_UNPROCESSABLE_ENTITY);

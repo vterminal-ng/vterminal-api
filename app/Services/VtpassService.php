@@ -19,15 +19,15 @@ class VtpassService
         $this->basicToken = $this->generateVtBasicToken();
     }
 
-    public function verifyElectricityMeter($meterType, $meterNo, $operator) {
+    public function verifyService($type, $billerCode, $serviceId) {
         
         $response = $this->performBasicRequest(
             'POST',
             "/api/merchant-verify",
             [
-                'billersCode' => $meterNo,
-                'serviceID' => $operator,
-                'type' => $meterType
+                'billersCode' => $billerCode,
+                'serviceID' => $serviceId,
+                'type' => $type
             ],
         );
 
@@ -36,7 +36,7 @@ class VtpassService
         return $reponse;
     }
 
-    public function makeVtPayment($requestId, $variationCode, $billersCode, $amount, $serviceId, $phone) {
+    public function makeVtPayment($requestId, $variationCode, $billersCode, $amount, $serviceId, $phone, $subType = NULL) {
         
         $response = $this->performBasicRequest(
             'POST',
@@ -47,7 +47,8 @@ class VtpassService
                 'billersCode' => $billersCode,
                 'variation_code' => $variationCode,
                 'amount' => $amount,
-                'phone' => $phone
+                'phone' => $phone,
+                'subscription_type' => $subType,
             ],
         );
 
@@ -56,7 +57,7 @@ class VtpassService
         return $reponse;
     }
 
-    public function getDataVariations($serviceId) {
+    public function getServiceVariations($serviceId) {
         
         $response = $this->performBasicRequest(
             'GET',

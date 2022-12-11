@@ -32,7 +32,7 @@ class DataController extends Controller
 
         $serviceId = "mtn-data";
         // return network data plans
-        $rep = $this->vtpassService->getDataVariations($serviceId);
+        $rep = $this->vtpassService->getServiceVariations($serviceId);
 
         if (isset($rep['content']['errors'])) {
             return $this->failureResponse(
@@ -61,7 +61,7 @@ class DataController extends Controller
         $reqId = $this->generateRequestID($type);
 
         // return network data plans
-        $variation = $this->vtpassService->getDataVariations($request->service_id);
+        $variation = $this->vtpassService->getServiceVariations($request->service_id);
         if (isset($variation->content->errors)) {
             return $this->failureResponse(
                 "Service unavailable", Response::HTTP_UNPROCESSABLE_ENTITY
