@@ -136,6 +136,11 @@ class User extends Authenticatable implements Wallet
         return $this->withdraw($amount, meta: $this->walletMetadata());
     }
 
+    public function walletTransfer(Wallet $userWallet, $amount)
+    {
+        return $this->transfer($userWallet, $amount, meta: $this->walletMetadata());
+    }
+
     public function walletMetadata()
     {
         return [

@@ -145,6 +145,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // Wallet
             Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
             Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
+            Route::post('my-wallet/transfer', [WalletController::class, 'transfer']);
 
             //Card
             Route::post('cards/add', [AuthorizedCardController::class, 'add']);
@@ -153,6 +154,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // Routes that require entire profile to be completed before usage
             Route::group(['middleware' => ['verified.profile']], function () {
                 // Code
+
                 // routes that needs user to be customer
                 Route::group(['middleware' => ['customer.user']], function () {
                     Route::post('code/generate', [CodeController::class, 'generateCode']);

@@ -142,4 +142,24 @@ class WalletController extends Controller
                 break;
         }
     }
+
+    public function transfer(Request $request)
+    {
+        $request->validate([
+            'amount' => ['required', 'min:1000', 'max:500000'],
+            'email' => ['required', 'email']
+        ]);
+
+        $beneficiary = User::where('email', $request->email)->first();
+
+        if (!$beneficiary || !$beneficiary->hasVerifiedEmail() || !$beneficiary->is_active) {
+            return $this->failureResponse("The beneficairy account does not exist or is currently inactive", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $sender = User::find(auth()->id());
+
+        $sender->walletTransfer($beneficiary, $request->amount);
+
+        return $this->successResponse("Transfer Successful");
+    }
 }
