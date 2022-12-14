@@ -107,7 +107,16 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <a href="{{ route('admin.verifies', $user->id)}}" class="text-white font-weight-normal btn btn-success">Verify Address Id   {{$user->id}}</a>
+
+                                    <a href="{{ route('admin.verifies', $user->id)}}" class="text-white font-weight-normal btn btn-success">Verify Address user with Id   {{$user->id}}</a>
+
+
+                                    <!--<form action="{{ route('admin.verifies', $user->id)}}" method="put">
+                                        @csrf
+                                        
+                                        <button name="address_verified_at" type="submit" value="1" class="text-white font-weight-normal btn btn-success">Verify Address user with Id   {{$user->id}}</button>
+                                    
+                                    </form>-->
                                 </td>
                             </tr>
                             @endforeach

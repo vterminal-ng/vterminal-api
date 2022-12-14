@@ -135,10 +135,14 @@ class DashboardController extends Controller
 
         return view('admin.merchants', compact('users'));
     }
-    public function getImage(Request $request){
-        $user = User::all();
+    public function getImage($id){
+        $user = User::find($id);
         if($user) {
             return view('admin.merchant_address', compact('user'));
+        }
+        else {
+            
+            return response('id not found');
         }
 
        
@@ -152,6 +156,6 @@ class DashboardController extends Controller
             ]);
         }
        
-        return redirect()->back()->with('success',' address  verified!');
+        return redirect()->back()->with('success',' address verified!');
     }
 }

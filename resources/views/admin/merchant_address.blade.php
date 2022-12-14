@@ -2,8 +2,7 @@
 
 
 @section('content')
-<img src="{{url('http://vterminal-api.test/storage/app/public/public/y0zAjmzulDAniDqBPsRRtGKTXYxsbbnkWlnsF4RO.png
-'}}" alt="try uploading again">
+<img src="{{$user->address_confirmation}}" alt="try uploading again">
 @endsection
 
 
