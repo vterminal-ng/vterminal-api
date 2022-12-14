@@ -13,6 +13,7 @@ use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
 use App\Http\Controllers\API\BillsPayment\CableSubsController;
 use App\Http\Controllers\API\BillsPayment\DataController;
+use App\Http\Controllers\API\BillsPayment\EducationPaymentController;
 use App\Http\Controllers\API\BillsPayment\ElectricityController;
 use App\Http\Controllers\API\CodeController;
 use App\Http\Controllers\API\PinController;
@@ -82,6 +83,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/bill/verify-decoder', [CableSubsController::class, 'verifySmartCard']);
     Route::get('users/bill/cable-variations/{serviceId}', [CableSubsController::class, 'getVariations']);
     Route::post('users/bill/pay-tv', [CableSubsController::class, 'processTvSub']);
+
+    Route::get('/users/bill/variations/exam/{examId}', [EducationPaymentController::class, 'getExamVariations']);
+    Route::post('/users/bill/verify-jamb-profile', [EducationPaymentController::class, 'verifyJambProfile']);
+    Route::post('/users/bill/pay-education', [EducationPaymentController::class, 'makeExamPayment']);
 
     Route::group(['middleware' => ['verified.phone']], function () {
 

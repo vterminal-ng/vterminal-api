@@ -111,7 +111,7 @@ class CableSubsController extends Controller
         }
         
         // Debit user
-        // $user->walletWithdraw($variationAmount);
+        $user->walletWithdraw($variationAmount);
 
         switch($request->service_id) {
             case "gotv":

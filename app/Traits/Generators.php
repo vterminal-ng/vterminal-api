@@ -73,6 +73,9 @@ trait Generators
             case BillsPayment::CABLETV:
                 $typeAbbr = 'CTV';
                 break;
+            case BillsPayment::EXAM:
+                $typeAbbr = 'EXAM';
+                break;
             default:
                 $typeAbbr = 'NOTA';
                 break;

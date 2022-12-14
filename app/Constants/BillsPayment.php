@@ -8,4 +8,5 @@ class BillsPayment
     public const ELECTRICITY = "electricity";
     public const DATA = "data";
     public const CABLETV = "cabletv";
+    public const EXAM = "exam";
 }
