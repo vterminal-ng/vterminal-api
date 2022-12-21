@@ -56,7 +56,7 @@ class WalletController extends Controller
         // TODO: Middle ware to avoid people who haven't added a payout account to perform this request
         // initialize transfer paystack request
         $amountInKobo = $request->amount * 100;
-        $response = $this->paystackService->initiateTransfer($amountInKobo, $user->bankDetail->recipient_code);
+        $response = $this->paystackService->initiateTransfer($amountInKobo, $user->bankDetail->recipient_code, TransactionType::PAYOUT);
 
         if (!$response->status) {
             // reversing the transaction because the paystack transfer failed
@@ -72,7 +72,7 @@ class WalletController extends Controller
 
         $user->notify(new Withdraw($user));
         // return Success
-        return $this->successResponse("Withdrawal Complete");
+        return $this->successResponse("Withdrawal of $request->amount Complete");
     }
 
     public function deposit(Request $request)

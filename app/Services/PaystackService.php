@@ -134,8 +134,10 @@ class PaystackService
         return json_decode((string)$response);
     }
 
-    public function initiateTransfer($amount, $recipientCode)
+    public function initiateTransfer($amount, $recipientCode, $transactionType, $metadata = [])
     {
+        $metadata['transaction_type'] = $transactionType;
+
         $response = $this->makeRequest(
             'POST',
             "/transfer",
@@ -143,6 +145,7 @@ class PaystackService
                 "source" => "balance",
                 "amount" => $amount,
                 "recipient" => $recipientCode,
+                "metadata" => $metadata
             ],
 
         );
