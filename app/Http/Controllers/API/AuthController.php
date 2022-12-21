@@ -95,6 +95,7 @@ class AuthController extends Controller
 
         if ($user->userDetail) {
             // dd($user);
+            // test my change 
             $this->dispatch(new SendLoginEmailNotification($user));
         }
 
