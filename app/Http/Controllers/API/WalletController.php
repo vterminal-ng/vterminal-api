@@ -64,11 +64,11 @@ class WalletController extends Controller
             return $this->failureResponse("Withdrawal failed, Reason: $response->message", Response::HTTP_BAD_REQUEST);
         }
         // get the transfer code from above request
-        $transferCode = $response->data->transfer_code;
+        // $transferCode = $response->data->transfer_code;
 
         // finalize transfer paystack request
         // TODO: Disable OTP in the paystack portal
-        $response = $this->paystackService->finalizeTransfer($transferCode);
+        // $response = $this->paystackService->finalizeTransfer($transferCode);
 
         $user->notify(new Withdraw($user));
         // return Success
