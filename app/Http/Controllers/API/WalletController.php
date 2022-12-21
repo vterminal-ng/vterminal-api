@@ -98,25 +98,27 @@ class WalletController extends Controller
             case PaymentMethod::NEW_CARD:
                 $amountInKobo = $request->amount * 100;
 
-                // $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
-                $response = $this->squadcoService->initiateTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
+                $response = $this->paystackService->initializeTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
+                // $response = $this->squadcoService->initiateTransaction($user->email, $amountInKobo, $this->generateReference($type), $type);
 
-                // return 
-                return $this->successResponse("Payment page URL generated for wallet deposit", [
-                    "authorization_url" => $response->data->checkout_url,
-                    "reference" => $response->data->transaction_ref
-                ]);
+                return $this->successResponse("Payment page URL generated for wallet deposit", $response->data);
+                // return $this->successResponse("Payment page URL generated for wallet deposit", [
+                //     "authorization_url" => $response->data->checkout_url,
+                //     "reference" => $response->data->transaction_ref
+                // ]);
                 break;
             case PaymentMethod::SAVED_CARD:
                 if (!$user->authorizedCard) {
                     return $this->failureResponse("You do not have a saved card yet", Response::HTTP_BAD_REQUEST);
                 }
 
-                $response = $this->squadcoService->chargeAuthorization(
-                    $amountInKobo,
-                    $user->authorizedCard->authorization_code,
-                    $this->generateReference($type)
-                );
+                // $response = $this->squadcoService->chargeAuthorization(
+                //     $amountInKobo,
+                //     $user->authorizedCard->authorization_code,
+                //     $this->generateReference($type)
+                // );
+
+                $response = $this->paystackService->chargeAuthorization($user->email, $amountInKobo, $user->authorizedCard->authorization_code, $this->generateReference($type));
 
                 // if transaction fialed, return falure
                 if (!$response->success) {
