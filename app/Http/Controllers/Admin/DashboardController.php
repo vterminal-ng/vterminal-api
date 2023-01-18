@@ -150,11 +150,8 @@ class DashboardController extends Controller
     public function verify($id)
     {
         $user = User::find($id);
-        if($user) {
-            $user->update([
-                'address_verified_at' => true
-            ]);
-        }
+        $user-> address_verified_at = 1;
+
        
         return redirect()->back()->with('success',' address verified!');
     }

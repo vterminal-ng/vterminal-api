@@ -2,11 +2,12 @@
 
 
 @section('content')
-<img src="{{$user->address_confirmation}}" alt="try uploading again">
+<img src="/storage/app/public/{{$user->address_confirmation}}" alt="try uploading again">
 @endsection
 
 
 <!--"success": true,
+/storage/app/public/{{$newLocation->image}}
     "message": "successfully uploaded a file",
     "data": {
         "public": "http://vterminal-api.test/storage/app/public/public/y0zAjmzulDAniDqBPsRRtGKTXYxsbbnkWlnsF4RO.png"
