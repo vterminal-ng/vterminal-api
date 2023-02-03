@@ -91,6 +91,11 @@ class User extends Authenticatable implements Wallet
         return $this->hasMany(Code::class, 'merchant_id', 'id');
     }
 
+    public function virtualAccount()
+    {
+        return $this->hasOne(VirtualAccount::class);
+    }
+
     ############################################################
 
     public function hasVerifiedPhone()

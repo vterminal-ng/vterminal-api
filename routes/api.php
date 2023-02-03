@@ -140,7 +140,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::delete('users/bank-details', [BankDetailController::class, 'deleteBankDetail']);
 
             Route::post('users/verify-identity', [VerificationController::class, 'verifyDetails']);
-            Route::post('users/verify-bvn-with-nuban', [UserDetailController::class, 'verifyBvn']);
+            Route::post('users/verify-bvn', [UserDetailController::class, 'verifyBvn']);
 
             // Wallet
             Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);

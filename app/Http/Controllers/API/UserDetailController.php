@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Models\UserDetail;
+use App\Models\VirtualAccount;
 use App\Services\PaystackService;
 use App\Services\VerifyMeService;
 use Illuminate\Http\Request;
@@ -197,8 +198,6 @@ class UserDetailController extends Controller
     {
         $request->validate([
             'bvn' => ['required'],
-            'account_no' => ['required'],
-            'bank_code' => ['required']
         ]);
 
         $user = auth()->user();
@@ -207,38 +206,36 @@ class UserDetailController extends Controller
             return $this->failureResponse("Please complete your profile before you continue", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $bvn = $request->bvn;
+        $dob = Carbon::createFromFormat('Y-m-d', $user->userDetail->date_of_birth)->format('d-m-Y');
+        $bvnInfo = $this->verifyMeService->verifyBvn(trim($request->bvn), [
+            "dob" => $dob,
+            "lastname" => $user->userDetail->last_name,
+            "firstname" => $user->userDetail->first_name,
+        ]);
 
-        $accountInfo = $this->verifyMeService->getAccountDetails($request->bank_code, $request->account_no);
-
-        // Compare nuban bvn and verifyMe bvn
-        // We can condition both name and bvn check together but i separated them to 
-        // know where the verification failure emanates from
-
-        if ($accountInfo->data->bvn !== $bvn) {
-            return $this->failureResponse(
-                "BVN does not match",
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-
-        $dbLastname = strtolower($user->userDetail->last_name);
-        $verifyLastname = strtolower($accountInfo->data->lastname);
-
-        //dd($user->userDetail->last_name . " " . strtolower($accountInfo->data->lastname) );
-        if ($dbLastname !== $verifyLastname) {
+        if (!$bvnInfo->data->fieldMatches->lastname) {
             return $this->failureResponse(
                 "Last name does not match",
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        // create paystack customer code
-        $paystackCustomer = $this->paystackService->createCustomer($user->email, $user->userDetail->first_name, $dbLastname, $user->phone, NULL);
-        // dd($paystackCustomer);
+        $paystackCustomer = $this->paystackService->createCustomer($user->email, $user->userDetail->first_name, $user->userDetail->last_name, $user->phone, NULL);
         $customerCode = $paystackCustomer->data->customer_code;
-        // // create dedicated account TODO: REGISTER BUISNESS ACCOUNT
         $virtual = $this->paystackService->createDedicatedVirtualAccount($customerCode);
-        dd($virtual);
+
+        // Saving the customer_code in the user details table instead
+        $user->userDetail->customer_code = $customerCode;
+        $user->userDetail->save();
+
+        // Saving the necessary fields of the Paystack virtual account creation response into a VirtualAccount table for a user
+        $virtualAccount = new VirtualAccount();
+        $virtualAccount->user_id = $user->id;
+        $virtualAccount->account_number = $virtual->data->account_number;
+        $virtualAccount->account_name = $virtual->data->account_name;
+        $virtualAccount->bank_name = $virtual->data->bank->name;
+        $virtualAccount->save();
+
+        return $this->successResponse("Congratulations!, BVN verified and account number generated successfully", $virtual->data);
     }
 }
