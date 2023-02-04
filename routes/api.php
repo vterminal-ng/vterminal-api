@@ -21,6 +21,7 @@ use App\Http\Controllers\API\StateController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\WalletController;
 use App\Http\Controllers\API\SupportTicketController;
+use App\Http\Controllers\API\VirtualAccountController;
 use App\Http\Controllers\Paystack\WebhookController;
 use App\Http\Controllers\Squadco\WebhookController as SquadcoWebhookController;
 use App\Models\BankDetail;
@@ -153,7 +154,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             // Routes that require entire profile to be completed before usage
             Route::group(['middleware' => ['verified.profile']], function () {
-                // Code
+                Route::get('user/virutal-account/{user}', [VirtualAccountController::class, 'show']);
 
                 // routes that needs user to be customer
                 Route::group(['middleware' => ['customer.user']], function () {
