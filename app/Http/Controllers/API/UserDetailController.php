@@ -203,8 +203,8 @@ class UserDetailController extends Controller
 
         $user = User::find(auth()->id());
 
-        if (!$user->userDetail) {
-            return $this->failureResponse("Please complete your profile before you continue", Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (!$user->hasVerifiedBvn) {
+            return $this->failureResponse("BVN is already verified for this profile", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $dob = Carbon::createFromFormat('Y-m-d', $user->userDetail->date_of_birth)->format('d-m-Y');

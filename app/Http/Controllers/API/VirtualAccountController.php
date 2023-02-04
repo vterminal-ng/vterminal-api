@@ -19,7 +19,7 @@ class VirtualAccountController extends Controller
      */
     public function index()
     {
-        $virtualAccounts = VirtualAccount::all();
+        $virtualAccounts = VirtualAccount::with('user')->all();
 
         return $this->successResponse("All users virtual accounts", VirtualAccountResource::collection($virtualAccounts));
     }
@@ -45,9 +45,9 @@ class VirtualAccountController extends Controller
     {
         $user = User::find(auth()->id());
 
-        $virtualAccount = VirtualAccount::with('user')->where("user_id", $user->id)->first();
+        $virtualAccount = VirtualAccount::where("user_id", $user->id)->first();
 
-        return $this->successResponse("All users virtual accounts", new VirtualAccountResource($virtualAccount));
+        return $this->successResponse("virtual account details", new VirtualAccountResource($virtualAccount));
     }
 
     /**

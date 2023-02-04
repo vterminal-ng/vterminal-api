@@ -104,6 +104,11 @@ class User extends Authenticatable implements Wallet
         return (bool)$this->phone_number_verified_at;
     }
 
+    public function hasVerifiedBvn()
+    {
+        return (bool)$this->bvn_verified_at;
+    }
+
     public function markPhoneAsVerified()
     {
         return $this->forceFill([
