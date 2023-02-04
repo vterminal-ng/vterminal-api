@@ -16,9 +16,9 @@ class VirtualAccountResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'bank_name' => $this->identity_type,
-            'account_number' => $this->identity_number,
-            'account_name' => $this->first_name,
+            'bank_name' => $this->bank_name,
+            'account_number' => $this->account_number,
+            'account_name' => $this->account_name,
             "createDates" => [
                 'creadtedAtHuman' => $this->created_at->diffForHumans(),
                 'creadtedAt' => $this->created_at,
