@@ -41,8 +41,10 @@ class VirtualAccountController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show()
     {
+        $user = User::find(auth()->id());
+
         $virtualAccount = VirtualAccount::with('user')->where("user_id", $user->id);
 
         return $this->successResponse("All users virtual accounts", new VirtualAccountResource($virtualAccount));

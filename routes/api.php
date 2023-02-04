@@ -154,7 +154,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             // Routes that require entire profile to be completed before usage
             Route::group(['middleware' => ['verified.profile']], function () {
-                Route::get('users/virutal-account/{user}', [VirtualAccountController::class, 'show']);
+                Route::get('users/virutal-account', [VirtualAccountController::class, 'show']);
 
                 // routes that needs user to be customer
                 Route::group(['middleware' => ['customer.user']], function () {
