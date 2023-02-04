@@ -17,7 +17,8 @@ class UserDetail extends Model
         'date_of_birth',
         'gender',
         'referral_code',
-        'referrer'
+        'referrer',
+        'paystack_customer_code',
     ];
 
     protected $appends = ['full_name', 'initials'];

@@ -28,7 +28,8 @@ class User extends Authenticatable implements Wallet
         'phone_number',
         'phone_number_verified_at',
         'role',
-        'is_active'
+        'is_active',
+        'bvn_verified_at',
     ];
 
     /**
@@ -107,6 +108,13 @@ class User extends Authenticatable implements Wallet
     {
         return $this->forceFill([
             'phone_number_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+
+    public function markBvnAsVerified()
+    {
+        return $this->forceFill([
+            'bvn_verified_at' => $this->freshTimestamp(),
         ])->save();
     }
 

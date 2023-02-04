@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Constants\RewardAction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserDetailResource;
+use App\Http\Resources\VirtualAccountResource;
 use App\Models\User;
 use App\Models\UserDetail;
 use App\Models\VirtualAccount;
@@ -200,7 +201,7 @@ class UserDetailController extends Controller
             'bvn' => ['required'],
         ]);
 
-        $user = auth()->user();
+        $user = User::find(auth()->id());
 
         if (!$user->userDetail) {
             return $this->failureResponse("Please complete your profile before you continue", Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -225,7 +226,7 @@ class UserDetailController extends Controller
         $virtual = $this->paystackService->createDedicatedVirtualAccount($customerCode);
 
         // Saving the customer_code in the user details table instead
-        $user->userDetail->customer_code = $customerCode;
+        $user->userDetail->paystack_customer_code = $customerCode;
         $user->userDetail->save();
 
         // Saving the necessary fields of the Paystack virtual account creation response into a VirtualAccount table for a user
@@ -236,6 +237,9 @@ class UserDetailController extends Controller
         $virtualAccount->bank_name = $virtual->data->bank->name;
         $virtualAccount->save();
 
-        return $this->successResponse("Congratulations!, BVN verified and account number generated successfully", $virtual->data);
+        // set bvn as verified
+        $user->markBvnAsVerified();
+
+        return $this->successResponse("Congratulations!, BVN verified and account number generated successfully", new VirtualAccountResource($virtualAccount));
     }
 }
