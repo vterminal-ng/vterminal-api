@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Constants\PaymentMethod;
-use App\Constants\TransactionType;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\WalletTransactionResource;
 use App\Models\User;
-use App\Notifications\Deposit;
-use App\Notifications\Withdraw;
-use App\Services\PaystackService;
-use App\Traits\ApiResponder;
 use App\Traits\Generators;
-use GrahamCampbell\ResultType\Success;
+use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Notifications\Deposit;
+use App\Notifications\Withdraw;
+use App\Constants\PaymentMethod;
+use App\Services\PaystackService;
+use App\Constants\TransactionType;
+use App\Http\Controllers\Controller;
+use App\Notifications\DepositReceipt;
+use GrahamCampbell\ResultType\Success;
+use App\Notifications\WithdrawalReceipt;
+use Illuminate\Support\Facades\Notification;
+use App\Http\Resources\WalletTransactionResource;
 
 class WalletController extends Controller
 {
@@ -38,9 +41,12 @@ class WalletController extends Controller
     {
         $request->validate([
             "amount" => ['required'],
+            'customer_email' => ['required']
         ]);
         // get user object of auth user
         $user = User::find(auth()->id());
+        $customer_email = $request->customer_email;
+
 
         if (!$user->bankDetail) {
             return $this->failureResponse("Kindly add a bank account for payout", Response::HTTP_BAD_REQUEST);
@@ -53,6 +59,13 @@ class WalletController extends Controller
         // initialize transfer paystack request
         $amountInKobo = $request->amount * 100;
         $response = $this->paystackService->initiateTransfer($amountInKobo, $user->bankDetail->recipient_code);
+        
+        //array for receipt notification
+        $receipt = [
+            'amount' => $amountInKobo,
+            'Date' => carbon::now(),
+
+        ];
 
         if (!$response->status) {
             // reversing the transaction because the paystack transfer failed
@@ -66,22 +79,30 @@ class WalletController extends Controller
         // TODO: Disable OTP in the paystack portal
         $response = $this->paystackService->finalizeTransfer($transferCode);
 
+        // receipt notification
+        Notification::send($user, new WithdrawalReceipt($receipt));
+        Notification::send($customer_email, new WithdrawalReceipt($receipt));
+
+
         $user->notify(new Withdraw($user));
         // return Success
         return $this->successResponse("Withdrawal Complete");
     }
 
     public function deposit(Request $request)
-    {
+    { 
         $request->validate([
             "amount" => ['required', 'min:500', 'integer'],
             'payment_method' => ['required', "in:" . PaymentMethod::NEW_CARD . ',' . PaymentMethod::SAVED_CARD],
             'pin' => ['required'],
+            'customer_email' => ['required']
+
 
         ]);
 
         // get user object of auth user
         $user = User::find(auth()->id());
+        $customer_email = $request->customer_email;
 
         $user->validatePin($request->pin);
 
@@ -89,7 +110,14 @@ class WalletController extends Controller
 
         $amountInKobo = $request->amount * 100;
 
+        //array for receipt notification
+        $receipt = [
+            'amount' => $amountInKobo,
+            'reference' =>  $this->generateReference($type),
+            'Date' => carbon::now(),
+            'payment_method' => $request->payment_method,
 
+        ];
         switch ($request->payment_method) {
             case PaymentMethod::NEW_CARD:
                 $amountInKobo = $request->amount * 100;
@@ -119,6 +147,10 @@ class WalletController extends Controller
                 // if transation was successful,get amount from the verification and deposit into wallet.
                 $amountToDeposit = $response->data->amount / 100;
                 $user->walletDeposit($amountToDeposit);
+
+                // receipt notification
+                Notification::send($user, new DepositReceipt($receipt));
+                Notification::send($customer_email, new DepositReceipt($receipt));
 
                 $user->notify(new Deposit($user->userDetail->first_name, $user->userDetail->last_name));
                 // return success
