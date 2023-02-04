@@ -45,7 +45,7 @@ class VirtualAccountController extends Controller
     {
         $user = User::find(auth()->id());
 
-        $virtualAccount = VirtualAccount::with('user')->where("user_id", $user->id);
+        $virtualAccount = VirtualAccount::with('user')->where("user_id", $user->id)->first();
 
         return $this->successResponse("All users virtual accounts", new VirtualAccountResource($virtualAccount));
     }
