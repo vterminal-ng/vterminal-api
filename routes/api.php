@@ -144,7 +144,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('users/verify-bvn', [UserDetailController::class, 'verifyBvn']);
 
             // Wallet
-            Route::post('my-wallet/balance', [WalletController::class, 'balance']);
+            Route::get('my-wallet/balance', [WalletController::class, 'balance']);
             Route::post('my-wallet/deposit', [WalletController::class, 'deposit']);
             Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
             Route::post('my-wallet/transfer', [WalletController::class, 'transfer']);
