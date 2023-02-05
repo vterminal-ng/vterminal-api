@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Traits\Generators;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class MerchantDetailFactory extends Factory
 {
+    use Generators;
     /**
      * Define the model's default state.
      *
@@ -20,6 +22,7 @@ class MerchantDetailFactory extends Factory
             'business_name' => $this->faker->company(),
             'business_state' => $this->faker->city(),
             'business_address' => $this->faker->streetAddress(),
+            'merchant_code' => $this->generateMerchantCode(),
             // 'business_verified_at' => null,
             // 'has_physical_location' => $this->faker->randomElement(['true', 'false'])
         ];

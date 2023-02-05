@@ -6,7 +6,9 @@ use App\Constants\PaymentMethod;
 use App\Constants\RewardAction;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Merchant;
 use App\Http\Resources\WalletTransactionResource;
+use App\Models\MerchantDetail;
 use App\Models\User;
 use App\Notifications\Deposit;
 use App\Notifications\Withdraw;
@@ -149,10 +151,10 @@ class WalletController extends Controller
     {
         $request->validate([
             'amount' => ['required', 'min:1000', 'max:500000'],
-            'email' => ['required', 'email']
+            'phone_number' => ['required', 'string', 'max:15'],
         ]);
 
-        $beneficiary = User::where('email', $request->email)->first();
+        $beneficiary = User::where('phone_number', $request->phone_number)->first();
 
         if (!$beneficiary || !$beneficiary->hasVerifiedEmail() || !$beneficiary->is_active) {
             return $this->failureResponse("The beneficairy account does not exist or is currently inactive", Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -162,6 +164,35 @@ class WalletController extends Controller
 
         $sender->walletTransfer($beneficiary, $request->amount);
 
-        return $this->successResponse("Transfer Successful");
+        return $this->successResponse("Transfer successful");
+    }
+
+    public function transferToMerchant(Request $request)
+    {
+        $request->validate([
+            'amount' => ['required', 'min:1000', 'max:500000'],
+            'merchant_code' => ['required', 'string', 'max:10'],
+        ]);
+
+        $beneficiaryMerchant = MerchantDetail::where('merchant_code', strtoupper($request->merchant_code))->first();
+
+        if (!$beneficiaryMerchant || !$beneficiaryMerchant->user->hasVerifiedEmail() || !$beneficiaryMerchant->user->is_active) {
+            return $this->failureResponse("The beneficairy account does not exist or is currently inactive", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $sender = User::find(auth()->id());
+
+        $sender->walletTransfer($beneficiaryMerchant->user, $request->amount);
+
+        return $this->successResponse("Transfer to merchant successful");
+    }
+
+    public function balance(Request $request)
+    {
+        $user = User::find(auth()->id());
+
+        return $this->successResponse("Wallet balance", [
+            'balance' => $user->balance
+        ]);
     }
 }
