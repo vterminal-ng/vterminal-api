@@ -150,7 +150,7 @@ class WalletController extends Controller
     public function transfer(Request $request)
     {
         $request->validate([
-            'amount' => ['required', 'min:1000', 'max:500000'],
+            'amount' => ['required'],
             'phone_number' => ['required', 'string', 'max:15'],
         ]);
 
@@ -170,7 +170,7 @@ class WalletController extends Controller
     public function transferToMerchant(Request $request)
     {
         $request->validate([
-            'amount' => ['required', 'min:1000', 'max:500000'],
+            'amount' => ['required'],
             'merchant_code' => ['required', 'string', 'max:10'],
         ]);
 
