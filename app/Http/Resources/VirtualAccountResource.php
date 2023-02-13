@@ -20,8 +20,8 @@ class VirtualAccountResource extends JsonResource
             'account_number' => $this->account_number,
             'account_name' => $this->account_name,
             "createDates" => [
-                'creadtedAtHuman' => $this->created_at->diffForHumans(),
-                'creadtedAt' => $this->created_at,
+                'createdAtHuman' => $this->created_at->diffForHumans(),
+                'createdAt' => $this->created_at,
             ],
             'user' => new UserResource($this->whenLoaded('user')),
         ];
