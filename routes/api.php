@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ResetPasswordController;
 use App\Http\Controllers\API\UserDetailController;
 use App\Http\Controllers\API\BankDetailController;
+use App\Http\Controllers\API\BillsPayment\BillPaymentServiceController;
 use App\Http\Controllers\API\BillsPayment\CableSubsController;
 use App\Http\Controllers\API\BillsPayment\DataController;
 use App\Http\Controllers\API\BillsPayment\EducationPaymentController;
@@ -75,10 +76,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //Update password
     Route::post('users/password-update', [ProfileController::class, 'changePassword']);
     // Temporary location for these routes for ease of testing
+    Route::get('bill/services', [BillPaymentServiceController::class, 'listServices']);
+    Route::get('bill/services/identifier/{identifier}', [BillPaymentServiceController::class, 'getServiceId']);
+
     Route::post('users/buy-airtime', [AirtimeController::class, 'topup']);
     Route::post('users/bill/verify-meter', [ElectricityController::class, 'verifyMeter']);
     Route::post('users/bill/pay-electricity', [ElectricityController::class, 'payElectricity']);
-    Route::get('users/bill/{serviceId}/get-data-plans', [DataController::class, 'getDataPlans']);
+    Route::get('users/bill/service-id/{serviceId}/get-data-plans', [DataController::class, 'getDataPlans']);
     Route::post('users/bill/buy-data', [DataController::class, 'buyData']);
 
     Route::post('users/bill/verify-decoder', [CableSubsController::class, 'verifySmartCard']);

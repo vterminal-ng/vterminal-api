@@ -68,4 +68,16 @@ class VtpassService
         
         return $reponse;
     }
+
+    public function getServiceId($identifier) {
+        
+        $response = $this->performBasicRequest(
+            'GET',
+            "/api/services?identifier=$identifier"
+        );
+
+        $reponse = json_decode($response, true);
+        
+        return $reponse;
+    }
 }
