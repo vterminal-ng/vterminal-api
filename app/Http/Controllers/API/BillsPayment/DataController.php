@@ -28,10 +28,7 @@ class DataController extends Controller
     public function getNetworks() {}
 
     public function getDataPlans(Request $request, $serviceId) {
-        // Get network service id (e.g mtn-data)
-
-        $serviceId = "mtn-data";
-        // return network data plans
+        
         $rep = $this->vtpassService->getServiceVariations($serviceId);
 
         if (isset($rep['content']['errors'])) {
