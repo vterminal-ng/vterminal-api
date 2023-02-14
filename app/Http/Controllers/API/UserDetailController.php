@@ -203,7 +203,7 @@ class UserDetailController extends Controller
 
         $user = User::find(auth()->id());
 
-        if (!$user->hasVerifiedBvn) {
+        if (!$user->hasVerifiedBvn()) {
             return $this->failureResponse("BVN is already verified for this profile", Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 

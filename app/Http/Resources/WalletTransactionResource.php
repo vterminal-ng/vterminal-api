@@ -22,8 +22,8 @@ class WalletTransactionResource extends JsonResource
             "newBalance" => $this->meta['previous_balance'] != null ? $this->amount + $this->meta['previous_balance'] : null,
             "reference" => $this->uuid,
             "createDates" => [
-                'creadtedAtHuman' => $this->created_at->diffForHumans(),
-                'creadtedAt' => $this->created_at,
+                'createdAtHuman' => $this->created_at->diffForHumans(),
+                'createdAt' => $this->created_at,
             ]
         ];
     }

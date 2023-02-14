@@ -28,8 +28,8 @@ class AuthorizedCardResource extends JsonResource
             "accountName" => $this->account_name,
             "reference" => $this->reference,
             "createDates" => [
-                'creadtedAtHuman' => $this->created_at->diffForHumans(),
-                'creadtedAt' => $this->created_at,
+                'createdAtHuman' => $this->created_at->diffForHumans(),
+                'createdAt' => $this->created_at,
             ]
         ];
     }

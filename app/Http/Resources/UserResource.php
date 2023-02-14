@@ -35,8 +35,8 @@ class UserResource extends JsonResource
         // }
 
         $user['createDates'] = [
-            'creadtedAtHuman' => $this->created_at->diffForHumans(),
-            'creadtedAt' => $this->created_at,
+            'createdAtHuman' => $this->created_at->diffForHumans(),
+            'createdAt' => $this->created_at,
         ];
 
         $user['updateDates'] = [

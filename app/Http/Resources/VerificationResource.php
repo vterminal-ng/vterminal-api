@@ -25,8 +25,8 @@ class VerificationResource extends JsonResource
             'gender' => $this->gender,
             'passport_base64_string' => $this->passport_base64_string,
             "createDates" => [
-                'creadtedAtHuman' => $this->created_at->diffForHumans(),
-                'creadtedAt' => $this->created_at,
+                'createdAtHuman' => $this->created_at->diffForHumans(),
+                'createdAt' => $this->created_at,
             ]
         ];
     }
