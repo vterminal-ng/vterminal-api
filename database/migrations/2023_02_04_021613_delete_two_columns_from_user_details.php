@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('user_details', function (Blueprint $table) {
-            
+            $table->dropColumn(['dedicated_account_no', 'dedicated_bank_name']);
         });
     }
 
@@ -26,7 +26,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('user_details', function (Blueprint $table) {
-            $table->dropColumn(['dedicated_account_no', 'dedicated_bank_name']);
+            $table->string('dedicated_account_no')->nullable();
+            $table->string('dedicated_bank_name')->nullable();
         });
     }
 };
