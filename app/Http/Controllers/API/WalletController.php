@@ -153,6 +153,7 @@ class WalletController extends Controller
         $request->validate([
             'amount' => ['required'],
             'phone_number' => ['required', 'string'],
+            'pin' => ['required'],
         ]);
 
         $beneficiary = User::where('phone_number', $request->phone_number)->first();
@@ -162,6 +163,9 @@ class WalletController extends Controller
         }
 
         $sender = User::find(auth()->id());
+
+        $sender->validatePin($request->pin);
+
 
         $sender->walletTransfer($beneficiary, $request->amount);
 
@@ -203,6 +207,7 @@ class WalletController extends Controller
         $request->validate([
             'amount' => ['required'],
             'merchant_code' => ['required', 'string'],
+            'pin' => ['required'],
         ]);
 
         $beneficiaryMerchant = MerchantDetail::where('merchant_code', strtoupper($request->merchant_code))->first();
@@ -212,6 +217,8 @@ class WalletController extends Controller
         }
 
         $sender = User::find(auth()->id());
+
+        $sender->validatePin($request->pin);
 
         $sender->walletTransfer($beneficiaryMerchant->user, $request->amount);
 
