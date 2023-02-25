@@ -7,6 +7,7 @@ use App\Constants\RewardAction;
 use App\Constants\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Merchant;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Models\MerchantDetail;
 use App\Models\User;
@@ -151,7 +152,7 @@ class WalletController extends Controller
     {
         $request->validate([
             'amount' => ['required'],
-            'phone_number' => ['required', 'string', 'max:15'],
+            'phone_number' => ['required', 'string'],
         ]);
 
         $beneficiary = User::where('phone_number', $request->phone_number)->first();
@@ -167,11 +168,41 @@ class WalletController extends Controller
         return $this->successResponse("Transfer successful");
     }
 
+    public function userNameEnquiry(Request $request)
+    {
+        $request->validate([
+            'phone_number' => ['required', 'string'],
+        ]);
+
+        $beneficiary = User::where('phone_number', $request->phone_number)->first();
+
+        if (!$beneficiary || !$beneficiary->hasVerifiedEmail() || !$beneficiary->is_active) {
+            return $this->failureResponse("The beneficairy account does not exist or is currently inactive", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return $this->successResponse("User Name Enquiry successful", new UserResource($beneficiary));
+    }
+
+    public function merchantNameEnquiry(Request $request)
+    {
+        $request->validate([
+            'merchant_code' => ['required', 'string'],
+        ]);
+
+        $beneficiaryMerchant = MerchantDetail::where('merchant_code', strtoupper($request->merchant_code))->first();
+
+        if (!$beneficiaryMerchant || !$beneficiaryMerchant->user->hasVerifiedEmail() || !$beneficiaryMerchant->user->is_active) {
+            return $this->failureResponse("The beneficairy account does not exist or is currently inactive", Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return $this->successResponse("Merchant Name Enquiry successful", new UserResource($beneficiaryMerchant));
+    }
+
     public function transferToMerchant(Request $request)
     {
         $request->validate([
             'amount' => ['required'],
-            'merchant_code' => ['required', 'string', 'max:10'],
+            'merchant_code' => ['required', 'string'],
         ]);
 
         $beneficiaryMerchant = MerchantDetail::where('merchant_code', strtoupper($request->merchant_code))->first();

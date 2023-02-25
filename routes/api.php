@@ -153,6 +153,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('my-wallet/withdraw', [WalletController::class, 'withdraw']);
             Route::post('my-wallet/transfer', [WalletController::class, 'transfer']);
             Route::post('my-wallet/transfer-to-merchant', [WalletController::class, 'transferToMerchant']);
+            Route::post('my-wallet/merchant-name-enquiry', [WalletController::class, 'merchantNameEnquiry']);
+            Route::post('my-wallet/user-name-enquiry ', [WalletController::class, 'userNameEnquiry']);
 
             //Card
             Route::post('cards/add', [AuthorizedCardController::class, 'add']);
