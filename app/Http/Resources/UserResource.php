@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             "role" => $this->role,
             "hasVerifiedPhone" => $this->hasVerifiedPhone(),
             "hasVerifiedEmail" => $this->hasVerifiedEmail(),
+            "hasBvnVerifed" => $this->hasVerifiedBvn(),
             "isProfileVerifed" => $this->isProfileVerified(),
             "hasSetPin" => $this->hasSetPin(),
             "userDetails" => new UserDetailResource($this->userDetail),
